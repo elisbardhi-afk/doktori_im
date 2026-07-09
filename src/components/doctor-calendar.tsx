@@ -5,6 +5,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { enUS, sq as sqLocale } from "date-fns/locale";
 import { formatInTirane, timeInTirane } from "@/lib/datetime";
 import { cn } from "@/lib/utils";
 import type { AppointmentView } from "@/lib/queries/appointments";
@@ -246,6 +247,7 @@ export function DoctorCalendar({
   const router = useRouter();
   const pathname = usePathname();
   const weekdayAbbr = locale === "en" ? DAYS_EN : DAYS_SQ;
+  const dateLocale = locale === "en" ? enUS : sqLocale;
 
   const date = new Date(dateStr + "T12:00:00");
   const today = new Date();
@@ -275,10 +277,10 @@ export function DoctorCalendar({
 
   const headerLabel =
     view === "day"
-      ? formatInTirane(date.toISOString(), "EEEE, d MMMM yyyy")
+      ? formatInTirane(date.toISOString(), "EEEE, d MMMM yyyy", dateLocale)
       : view === "week"
-        ? `${formatInTirane(weekDays[0].toISOString(), "d MMM")} – ${formatInTirane(weekDays[6].toISOString(), "d MMM yyyy")}`
-        : formatInTirane(new Date(date.getFullYear(), date.getMonth(), 1).toISOString(), "MMMM yyyy");
+        ? `${formatInTirane(weekDays[0].toISOString(), "d MMM", dateLocale)} – ${formatInTirane(weekDays[6].toISOString(), "d MMM yyyy", dateLocale)}`
+        : formatInTirane(new Date(date.getFullYear(), date.getMonth(), 1).toISOString(), "MMMM yyyy", dateLocale);
 
   return (
     <div className="flex flex-col gap-4">
@@ -332,7 +334,7 @@ export function DoctorCalendar({
               )}
               style={{ minWidth: 90 }}
             >
-              {formatInTirane(d.toISOString(), "EEE d")}
+              {formatInTirane(d.toISOString(), "EEE d", dateLocale)}
             </div>
           ))}
         </div>
