@@ -1,4 +1,4 @@
-import { getLocale, setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { requireDoctor } from "@/lib/guards";
 import { createClient } from "@/lib/supabase/server";
 import { AvailabilityManager } from "@/components/availability-manager";
@@ -13,7 +13,7 @@ export default async function AvailabilityPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const activeLocale = await getLocale();
+  const t = await getTranslations();
   const { user, status } = await requireDoctor();
 
   const supabase = createClient();
@@ -31,9 +31,7 @@ export default async function AvailabilityPage({
         <CardContent className="flex items-center gap-3 p-4">
           <AlertCircle className="size-5 text-warning-foreground" />
           <p className="text-sm font-semibold text-foreground">
-            {activeLocale === "en"
-              ? "You can set availability once your account is approved."
-              : "Mund të vendosni orare pasi llogaria juaj të miratohet."}
+            {t("availability.pendingMessage")}
           </p>
         </CardContent>
       </Card>
@@ -42,9 +40,7 @@ export default async function AvailabilityPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold text-foreground">
-        {activeLocale === "en" ? "Availability" : "Oraret"}
-      </h1>
+      <h1 className="text-2xl font-bold text-foreground">{t("availability.title")}</h1>
       <AvailabilityManager
         rules={rules.map((r) => ({
           id: r.id,

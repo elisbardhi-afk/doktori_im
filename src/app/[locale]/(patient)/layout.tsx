@@ -19,7 +19,7 @@ export default async function PatientLayout({
     { href: "/patient", label: t("nav.dashboard"), icon: "LayoutDashboard" },
     { href: "/doctors", label: t("search.title"), icon: "Search" },
     { href: "/patient/appointments", label: t("nav.myAppointments"), icon: "Calendar" },
-    { href: "/patient/waitlist", label: "Waitlist", icon: "Clock" },
+    { href: "/patient/waitlist", label: t("nav.waitlist"), icon: "Clock" },
   ];
 
   return (

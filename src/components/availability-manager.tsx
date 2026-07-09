@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useLocale } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,13 +19,12 @@ interface Rule {
   slotDurationMinutes: number;
 }
 
-const WEEKDAYS = {
-  sq: ["", "E hënë", "E martë", "E mërkurë", "E enjte", "E premte", "E shtunë", "E diel"],
-  en: ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-};
+const WEEKDAYS_SQ = ["", "E hënë", "E martë", "E mërkurë", "E enjte", "E premte", "E shtunë", "E diel"];
+const WEEKDAYS_EN = ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 export function AvailabilityManager({ rules }: { rules: Rule[] }) {
-  const locale = useLocale() as "sq" | "en";
+  const t = useTranslations();
+  const locale = useLocale();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [weekday, setWeekday] = useState(1);
@@ -33,7 +32,7 @@ export function AvailabilityManager({ rules }: { rules: Rule[] }) {
   const [endTime, setEndTime] = useState("13:00");
   const [duration, setDuration] = useState(30);
 
-  const days = WEEKDAYS[locale];
+  const days = locale === "en" ? WEEKDAYS_EN : WEEKDAYS_SQ;
 
   async function onAdd(e: React.FormEvent) {
     e.preventDefault();
@@ -64,16 +63,13 @@ export function AvailabilityManager({ rules }: { rules: Rule[] }) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      {/* Current rules */}
       <Card>
         <CardHeader>
-          <CardTitle>{locale === "en" ? "Weekly schedule" : "Orari javor"}</CardTitle>
+          <CardTitle>{t("availability.weeklySchedule")}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
           {rules.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              {locale === "en" ? "No rules yet." : "Ende pa orare."}
-            </p>
+            <p className="text-sm text-muted-foreground">{t("availability.noRules")}</p>
           ) : (
             rules.map((r) => (
               <div
@@ -86,12 +82,7 @@ export function AvailabilityManager({ rules }: { rules: Rule[] }) {
                     {r.startTime}–{r.endTime} · {r.slotDurationMinutes} min
                   </p>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onDelete(r.id)}
-                  aria-label="Delete"
-                >
+                <Button variant="ghost" size="icon" onClick={() => onDelete(r.id)} aria-label={t("common.delete")}>
                   <Trash2 className="size-4 text-destructive" />
                 </Button>
               </div>
@@ -100,53 +91,36 @@ export function AvailabilityManager({ rules }: { rules: Rule[] }) {
         </CardContent>
       </Card>
 
-      {/* Add rule */}
       <Card>
         <CardHeader>
-          <CardTitle>{locale === "en" ? "Add hours" : "Shto orare"}</CardTitle>
+          <CardTitle>{t("availability.addHours")}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={onAdd} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
-              <Label>{locale === "en" ? "Day" : "Dita"}</Label>
+              <Label>{t("availability.day")}</Label>
               <select
                 value={weekday}
                 onChange={(e) => setWeekday(Number(e.target.value))}
                 className="h-11 rounded-xl border border-input bg-background px-4 text-sm shadow-soft focus-visible:border-primary focus-visible:outline-none"
               >
                 {[1, 2, 3, 4, 5, 6, 7].map((d) => (
-                  <option key={d} value={d}>
-                    {days[d]}
-                  </option>
+                  <option key={d} value={d}>{days[d]}</option>
                 ))}
               </select>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="start">{locale === "en" ? "From" : "Nga"}</Label>
-                <Input
-                  id="start"
-                  type="time"
-                  value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
-                  required
-                />
+                <Label htmlFor="start">{t("availability.from")}</Label>
+                <Input id="start" type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} required />
               </div>
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="end">{locale === "en" ? "To" : "Deri"}</Label>
-                <Input
-                  id="end"
-                  type="time"
-                  value={endTime}
-                  onChange={(e) => setEndTime(e.target.value)}
-                  required
-                />
+                <Label htmlFor="end">{t("availability.to")}</Label>
+                <Input id="end" type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} required />
               </div>
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="dur">
-                {locale === "en" ? "Slot length (min)" : "Kohëzgjatja (min)"}
-              </Label>
+              <Label htmlFor="dur">{t("availability.slotLength")}</Label>
               <select
                 id="dur"
                 value={duration}
@@ -154,15 +128,13 @@ export function AvailabilityManager({ rules }: { rules: Rule[] }) {
                 className="h-11 rounded-xl border border-input bg-background px-4 text-sm shadow-soft focus-visible:border-primary focus-visible:outline-none"
               >
                 {[15, 20, 30, 45, 60].map((m) => (
-                  <option key={m} value={m}>
-                    {m} min
-                  </option>
+                  <option key={m} value={m}>{m} min</option>
                 ))}
               </select>
             </div>
             <Button type="submit" disabled={loading}>
               <Plus className="size-4" />
-              {loading ? "..." : locale === "en" ? "Add" : "Shto"}
+              {loading ? t("common.loading") : t("availability.add")}
             </Button>
           </form>
         </CardContent>

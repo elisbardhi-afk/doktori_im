@@ -1,4 +1,4 @@
-import { setRequestLocale } from "next-intl/server";
+import { setRequestLocale, getTranslations } from "next-intl/server";
 import { requireRole } from "@/lib/guards";
 import { PortalShell } from "@/components/portal-shell";
 import type { NavItem } from "@/components/portal-nav";
@@ -13,14 +13,15 @@ export default async function AdminLayout({
   const { locale } = await params;
   setRequestLocale(locale);
   const user = await requireRole(["admin"]);
+  const t = await getTranslations();
 
   const items: NavItem[] = [
-    { href: "/admin", label: "Dashboard", icon: "LayoutDashboard" },
-    { href: "/admin/approvals", label: "Approvals", icon: "BadgeCheck" },
-    { href: "/admin/doctors", label: "Doctors", icon: "Stethoscope" },
-    { href: "/admin/users", label: "Users", icon: "Users" },
-    { href: "/admin/specialties", label: "Specialties", icon: "Tags" },
-    { href: "/admin/appointments", label: "Appointments", icon: "Calendar" },
+    { href: "/admin", label: t("nav.dashboard"), icon: "LayoutDashboard" },
+    { href: "/admin/approvals", label: t("nav.approvals"), icon: "BadgeCheck" },
+    { href: "/admin/doctors", label: t("nav.doctors"), icon: "Stethoscope" },
+    { href: "/admin/users", label: t("nav.users"), icon: "Users" },
+    { href: "/admin/specialties", label: t("nav.specialties"), icon: "Tags" },
+    { href: "/admin/appointments", label: t("nav.appointments"), icon: "Calendar" },
   ];
 
   return (

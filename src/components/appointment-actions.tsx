@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ export function AppointmentActions({
   status: AppointmentStatus;
   startsAt: string;
 }) {
-  const locale = useLocale();
+  const t = useTranslations();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -35,28 +35,21 @@ export function AppointmentActions({
     router.refresh();
   }
 
-  const L = (en: string, sq: string) => (locale === "en" ? en : sq);
-
   return (
     <div className="flex flex-wrap gap-2">
       {status === "pending" && (
         <Button size="sm" onClick={() => act("confirm")} disabled={loading}>
-          {L("Confirm", "Konfirmo")}
+          {t("common.confirm")}
         </Button>
       )}
       {status === "confirmed" && (
         <>
           <Button size="sm" variant="soft" onClick={() => act("complete")} disabled={loading}>
-            {L("Complete", "Përfundo")}
+            {t("appointments.status.completed")}
           </Button>
           {past && (
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => act("no_show")}
-              disabled={loading}
-            >
-              {L("No-show", "Mungesë")}
+            <Button size="sm" variant="ghost" onClick={() => act("no_show")} disabled={loading}>
+              {t("appointments.status.no_show")}
             </Button>
           )}
         </>
