@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,8 @@ const START_HOUR = 6;
 const END_HOUR = 22;
 const PX_PER_15MIN = 16;
 const TOTAL_PX = (END_HOUR - START_HOUR) * 4 * PX_PER_15MIN;
+const DAYS_SQ = ["Hë", "Ma", "Më", "En", "Pr", "Sh", "Di"];
+const DAYS_EN = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 
 function statusColor(status: AppointmentStatus) {
   switch (status) {
@@ -159,22 +161,23 @@ function MonthView({
   month,
   appointments,
   onDayClick,
+  days,
 }: {
   year: number;
   month: number;
   appointments: AppointmentView[];
   onDayClick: (date: Date) => void;
+  days: string[];
 }) {
   const today = new Date();
   const firstOfMonth = new Date(year, month, 1);
   const gridStart = weekStart(firstOfMonth);
   const cells = Array.from({ length: 42 }, (_, i) => addDays(gridStart, i));
-  const DAYS_SQ = ["Hë", "Ma", "Më", "En", "Pr", "Sh", "Di"];
 
   return (
     <div>
       <div className="grid grid-cols-7 border-b border-border">
-        {DAYS_SQ.map((d) => (
+        {days.map((d) => (
           <div key={d} className="py-2 text-center text-xs font-semibold text-muted-foreground">
             {d}
           </div>
@@ -239,8 +242,10 @@ export function DoctorCalendar({
   appointments: AppointmentView[];
 }) {
   const t = useTranslations();
+  const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
+  const weekdayAbbr = locale === "en" ? DAYS_EN : DAYS_SQ;
 
   const date = new Date(dateStr + "T12:00:00");
   const today = new Date();
@@ -350,6 +355,7 @@ export function DoctorCalendar({
             month={date.getMonth()}
             appointments={appointments}
             onDayClick={(d) => navigate("day", d)}
+            days={weekdayAbbr}
           />
         )}
       </div>
