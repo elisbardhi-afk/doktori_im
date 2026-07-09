@@ -27,10 +27,14 @@ export async function deleteDoctorService(
   id: string,
 ): Promise<{ ok: boolean; error?: string }> {
   const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "AUTH_REQUIRED" };
+
   const { error } = await supabase
     .from("doctor_services")
     .update({ is_active: false })
-    .eq("id", id);
+    .eq("id", id)
+    .eq("doctor_id", user.id);
   if (error) return { ok: false, error: error.message };
   revalidatePath("/doctor/services");
   return { ok: true };

@@ -4,6 +4,7 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/auth";
 import { UserMenu } from "@/components/user-menu";
+import { NotificationBell } from "@/components/notification-bell";
 import { Stethoscope } from "lucide-react";
 
 export async function SiteHeader() {
@@ -38,6 +39,7 @@ export async function SiteHeader() {
 
         <div className="flex items-center gap-3">
           <LanguageSwitcher />
+          {user && <NotificationBell userId={user.id} />}
           {user ? (
             <UserMenu name={user.full_name ?? user.email} dashboardHref={dashboardHref} />
           ) : (

@@ -84,7 +84,7 @@ export function ServicesManager({ services }: { services: DoctorServiceRow[] }) 
                   variant="ghost"
                   size="icon"
                   onClick={() => onDelete(s.id)}
-                  aria-label="Delete"
+                  aria-label={t("common.delete")}
                 >
                   <Trash2 className="size-4 text-destructive" />
                 </Button>

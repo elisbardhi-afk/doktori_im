@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/status-badge";
+import { ReviewForm } from "@/components/review-form";
 import { cancelAppointment } from "@/actions/booking";
 import { formatInTirane } from "@/lib/datetime";
 import { Calendar, User, Stethoscope } from "lucide-react";
@@ -68,6 +69,9 @@ export function AppointmentCard({
           <Button variant="ghost" size="sm" onClick={onCancel} disabled={loading}>
             {t("common.cancel")}
           </Button>
+        )}
+        {perspective === "patient" && appt.status === "completed" && (
+          <ReviewForm appointmentId={appt.id} doctorName={appt.doctorName} />
         )}
       </div>
     </Card>

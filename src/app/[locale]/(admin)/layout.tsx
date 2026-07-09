@@ -28,6 +28,7 @@ export default async function AdminLayout({
       items={items}
       userName={user.full_name ?? user.email}
       dashboardHref="/admin"
+      userId={user.id}
     >
       {children}
     </PortalShell>

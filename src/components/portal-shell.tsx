@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { UserMenu } from "@/components/user-menu";
+import { NotificationBell } from "@/components/notification-bell";
 import { PortalNav, type NavItem } from "@/components/portal-nav";
 import { Stethoscope } from "lucide-react";
 
@@ -9,11 +10,13 @@ export async function PortalShell({
   items,
   userName,
   dashboardHref,
+  userId,
   children,
 }: {
   items: NavItem[];
   userName: string;
   dashboardHref: string;
+  userId: string;
   children: React.ReactNode;
 }) {
   await getTranslations();
@@ -29,6 +32,7 @@ export async function PortalShell({
           </Link>
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
+            <NotificationBell userId={userId} />
             <UserMenu name={userName} dashboardHref={dashboardHref} />
           </div>
         </div>
