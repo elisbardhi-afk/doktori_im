@@ -21,7 +21,17 @@
     "forPatients": "For patients",
     "forDoctors": "For doctors",
     "myAppointments": "My appointments",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "availability": "Availability",
+    "profile": "Profile",
+    "services": "Services",
+    "calendar": "Calendar",
+    "waitlist": "Waitlist",
+    "approvals": "Approvals",
+    "doctors": "Doctors",
+    "users": "Users",
+    "specialties": "Specialties",
+    "appointments": "Appointments"
   },
   "landing": {
     "heroTitle": "Find your doctor",
@@ -94,5 +104,56 @@
   "roles": {
     "pendingApproval": "Your account is pending administrator approval.",
     "suspended": "Your account has been suspended. Please contact the administrator."
+  },
+  "reviews": {
+    "title": "Rate your appointment",
+    "subtitle": "How was your appointment with {doctor}?",
+    "ratingLabel": "Rating",
+    "ratingRequired": "Please select a rating.",
+    "commentLabel": "Comment (optional)",
+    "commentPlaceholder": "Share your experience...",
+    "submit": "Submit review",
+    "submitted": "Review submitted successfully!",
+    "alreadyReviewed": "You have already reviewed this appointment.",
+    "error": "An error occurred. Please try again.",
+    "leaveReview": "Leave a review"
+  },
+  "notifications": {
+    "label": "Notifications",
+    "title": "Notifications",
+    "empty": "No notifications.",
+    "markAllRead": "Mark all as read"
+  },
+  "availability": {
+    "title": "Availability",
+    "weeklySchedule": "Weekly schedule",
+    "addHours": "Add hours",
+    "noRules": "No rules yet.",
+    "day": "Day",
+    "from": "From",
+    "to": "To",
+    "slotLength": "Slot length (min)",
+    "add": "Add",
+    "pendingMessage": "You can set availability once your account is approved."
+  },
+  "services": {
+    "title": "Services",
+    "myServices": "My services",
+    "addService": "Add service",
+    "noServices": "No services yet.",
+    "name": "Service name",
+    "duration": "Duration",
+    "price": "Price (optional)",
+    "selectService": "Select a service",
+    "min": "min",
+    "free": "Free"
+  },
+  "calendar": {
+    "title": "Calendar",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "noAppointments": "No appointments for this period.",
+    "today": "Today"
   }
 }

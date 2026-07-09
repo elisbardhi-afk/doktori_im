@@ -21,7 +21,17 @@
     "forPatients": "Për pacientët",
     "forDoctors": "Për mjekët",
     "myAppointments": "Takimet e mia",
-    "dashboard": "Paneli"
+    "dashboard": "Paneli",
+    "availability": "Oraret",
+    "profile": "Profili",
+    "services": "Shërbimet",
+    "calendar": "Kalendari",
+    "waitlist": "Lista e pritjes",
+    "approvals": "Miratimet",
+    "doctors": "Mjekët",
+    "users": "Përdoruesit",
+    "specialties": "Specialitetet",
+    "appointments": "Takimet"
   },
   "landing": {
     "heroTitle": "Gjeni mjekun tuaj",
@@ -94,5 +104,56 @@
   "roles": {
     "pendingApproval": "Llogaria juaj është në pritje të miratimit nga administratori.",
     "suspended": "Llogaria juaj është pezulluar. Kontaktoni administratorin."
+  },
+  "reviews": {
+    "title": "Vlerësoni takimin",
+    "subtitle": "Si ishte takimi juaj me {doctor}?",
+    "ratingLabel": "Vlerësimi",
+    "ratingRequired": "Ju lutem zgjidhni një vlerësim.",
+    "commentLabel": "Koment (opsionale)",
+    "commentPlaceholder": "Ndani përvojën tuaj...",
+    "submit": "Dërgoni vlerësimin",
+    "submitted": "Vlerësimi u dërgua me sukses!",
+    "alreadyReviewed": "Keni vlerësuar tashmë këtë takim.",
+    "error": "Ndodhi një gabim. Ju lutem provoni sërish.",
+    "leaveReview": "Lini vlerësim"
+  },
+  "notifications": {
+    "label": "Njoftimet",
+    "title": "Njoftimet",
+    "empty": "Nuk keni njoftime.",
+    "markAllRead": "Shënoji të gjitha si të lexuara"
+  },
+  "availability": {
+    "title": "Oraret",
+    "weeklySchedule": "Orari javor",
+    "addHours": "Shto orare",
+    "noRules": "Ende pa orare.",
+    "day": "Dita",
+    "from": "Nga",
+    "to": "Deri",
+    "slotLength": "Kohëzgjatja (min)",
+    "add": "Shto",
+    "pendingMessage": "Mund të vendosni orare pasi llogaria juaj të miratohet."
+  },
+  "services": {
+    "title": "Shërbimet",
+    "myServices": "Shërbimet e mia",
+    "addService": "Shto shërbim",
+    "noServices": "Ende pa shërbime.",
+    "name": "Emri i shërbimit",
+    "duration": "Kohëzgjatja",
+    "price": "Çmimi (opsionale)",
+    "selectService": "Zgjidhni shërbimin",
+    "min": "min",
+    "free": "Falas"
+  },
+  "calendar": {
+    "title": "Kalendari",
+    "daily": "E ditore",
+    "weekly": "Javore",
+    "monthly": "Mujore",
+    "noAppointments": "Nuk ka takime për këtë periudhë.",
+    "today": "Sot"
   }
 }

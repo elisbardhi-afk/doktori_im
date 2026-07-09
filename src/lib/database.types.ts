@@ -107,6 +107,17 @@ export interface AvailabilityExceptionRow {
   created_at: string;
 }
 
+export interface DoctorServiceRow {
+  id: string;
+  doctor_id: string;
+  name: string;
+  duration_minutes: number;
+  price: number | null;
+  is_active: boolean;
+  sort_order: number;
+  created_at: string;
+}
+
 export interface AppointmentRow {
   id: string;
   patient_id: string;
@@ -170,6 +181,7 @@ export interface Database {
       patient_profiles: Table<PatientProfileRow>;
       availability_rules: Table<AvailabilityRuleRow>;
       availability_exceptions: Table<AvailabilityExceptionRow>;
+      doctor_services: Table<DoctorServiceRow>;
       appointments: Table<AppointmentRow>;
       reviews: Table<ReviewRow>;
       notifications: Table<NotificationRow>;
@@ -192,11 +204,17 @@ export interface Database {
           p_from: string;
           p_to: string;
           p_exclude_appointment_id?: string;
+          p_duration_minutes?: number;
         };
         Returns: AvailableSlot[];
       };
       book_appointment: {
-        Args: { p_doctor_id: string; p_starts_at: string; p_reason?: string };
+        Args: {
+          p_doctor_id: string;
+          p_starts_at: string;
+          p_reason?: string;
+          p_service_id?: string;
+        };
         Returns: string;
       };
       cancel_appointment: {
