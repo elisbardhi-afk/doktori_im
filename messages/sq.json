@@ -1,0 +1,98 @@
+{
+  "common": {
+    "appName": "Doktori Im",
+    "search": "Kërko",
+    "book": "Rezervo",
+    "cancel": "Anulo",
+    "confirm": "Konfirmo",
+    "save": "Ruaj",
+    "loading": "Duke ngarkuar...",
+    "back": "Kthehu",
+    "next": "Vazhdo",
+    "logout": "Dil",
+    "login": "Hyr",
+    "register": "Regjistrohu",
+    "email": "Email",
+    "password": "Fjalëkalimi",
+    "fullName": "Emri i plotë",
+    "phone": "Telefoni"
+  },
+  "nav": {
+    "forPatients": "Për pacientët",
+    "forDoctors": "Për mjekët",
+    "myAppointments": "Takimet e mia",
+    "dashboard": "Paneli"
+  },
+  "landing": {
+    "heroTitle": "Gjeni mjekun tuaj",
+    "heroSubtitle": "Rezervoni takime online me mjekë në të gjithë Shqipërinë, 24/7.",
+    "searchSpecialty": "Specialiteti (p.sh. Kardiolog)",
+    "searchCity": "Qyteti",
+    "howItWorks": "Si funksionon",
+    "step1": "Kërkoni një mjek",
+    "step1Desc": "Sipas specialitetit dhe qytetit.",
+    "step2": "Zgjidhni një orar",
+    "step2Desc": "Shihni oraret e lira dhe rezervoni.",
+    "step3": "Merrni konfirmimin",
+    "step3Desc": "Njoftime dhe kujtues automatikë."
+  },
+  "search": {
+    "title": "Gjeni një mjek",
+    "resultsCount": "{count} mjekë u gjetën",
+    "noResults": "Nuk u gjet asnjë mjek.",
+    "nextAvailable": "Orari më i afërt",
+    "filterSpecialty": "Specialiteti",
+    "filterCity": "Qyteti",
+    "sortBy": "Rendit sipas"
+  },
+  "doctor": {
+    "about": "Rreth mjekut",
+    "reviews": "Vlerësimet",
+    "consultationFee": "Tarifa e konsultës",
+    "languages": "Gjuhët",
+    "bookAppointment": "Rezervo takim",
+    "noReviews": "Ende pa vlerësime."
+  },
+  "booking": {
+    "selectDate": "Zgjidhni datën",
+    "selectTime": "Zgjidhni orarin",
+    "morning": "Mëngjes",
+    "afternoon": "Pasdite",
+    "evening": "Mbrëmje",
+    "reason": "Arsyeja e vizitës",
+    "reasonPlaceholder": "Përshkruani shkurt arsyen (opsionale)",
+    "summary": "Përmbledhje",
+    "confirmBooking": "Konfirmo rezervimin",
+    "success": "Takimi u rezervua me sukses!",
+    "slotTaken": "Ky orar sapo u zu. Ju lutem zgjidhni një tjetër.",
+    "noSlots": "Nuk ka orare të lira për këtë datë."
+  },
+  "appointments": {
+    "upcoming": "Të ardhshme",
+    "past": "Të kaluara",
+    "status": {
+      "pending": "Në pritje",
+      "confirmed": "Konfirmuar",
+      "cancelled": "Anuluar",
+      "completed": "Përfunduar",
+      "no_show": "Mungesë"
+    },
+    "cancelConfirm": "Jeni i sigurt që doni ta anuloni?",
+    "empty": "Nuk keni takime."
+  },
+  "auth": {
+    "loginTitle": "Mirë se erdhët",
+    "registerTitle": "Krijoni një llogari",
+    "asPatient": "Si pacient",
+    "asDoctor": "Si mjek",
+    "haveAccount": "Keni llogari?",
+    "noAccount": "Nuk keni llogari?",
+    "licenseNumber": "Numri i licencës",
+    "consentHealth": "Pranoj përpunimin e të dhënave shëndetësore",
+    "consentTerms": "Pranoj kushtet e përdorimit dhe politikën e privatësisë"
+  },
+  "roles": {
+    "pendingApproval": "Llogaria juaj është në pritje të miratimit nga administratori.",
+    "suspended": "Llogaria juaj është pezulluar. Kontaktoni administratorin."
+  }
+}

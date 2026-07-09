@@ -1,0 +1,98 @@
+{
+  "common": {
+    "appName": "Doktori Im",
+    "search": "Search",
+    "book": "Book",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "loading": "Loading...",
+    "back": "Back",
+    "next": "Next",
+    "logout": "Log out",
+    "login": "Log in",
+    "register": "Sign up",
+    "email": "Email",
+    "password": "Password",
+    "fullName": "Full name",
+    "phone": "Phone"
+  },
+  "nav": {
+    "forPatients": "For patients",
+    "forDoctors": "For doctors",
+    "myAppointments": "My appointments",
+    "dashboard": "Dashboard"
+  },
+  "landing": {
+    "heroTitle": "Find your doctor",
+    "heroSubtitle": "Book appointments online with doctors across Albania, 24/7.",
+    "searchSpecialty": "Specialty (e.g. Cardiologist)",
+    "searchCity": "City",
+    "howItWorks": "How it works",
+    "step1": "Search for a doctor",
+    "step1Desc": "By specialty and city.",
+    "step2": "Pick a time",
+    "step2Desc": "See open slots and book instantly.",
+    "step3": "Get confirmation",
+    "step3Desc": "Automatic notifications and reminders."
+  },
+  "search": {
+    "title": "Find a doctor",
+    "resultsCount": "{count} doctors found",
+    "noResults": "No doctors found.",
+    "nextAvailable": "Next available",
+    "filterSpecialty": "Specialty",
+    "filterCity": "City",
+    "sortBy": "Sort by"
+  },
+  "doctor": {
+    "about": "About",
+    "reviews": "Reviews",
+    "consultationFee": "Consultation fee",
+    "languages": "Languages",
+    "bookAppointment": "Book appointment",
+    "noReviews": "No reviews yet."
+  },
+  "booking": {
+    "selectDate": "Select a date",
+    "selectTime": "Select a time",
+    "morning": "Morning",
+    "afternoon": "Afternoon",
+    "evening": "Evening",
+    "reason": "Reason for visit",
+    "reasonPlaceholder": "Briefly describe the reason (optional)",
+    "summary": "Summary",
+    "confirmBooking": "Confirm booking",
+    "success": "Appointment booked successfully!",
+    "slotTaken": "That slot was just taken. Please choose another.",
+    "noSlots": "No open slots for this date."
+  },
+  "appointments": {
+    "upcoming": "Upcoming",
+    "past": "Past",
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "cancelled": "Cancelled",
+      "completed": "Completed",
+      "no_show": "No-show"
+    },
+    "cancelConfirm": "Are you sure you want to cancel?",
+    "empty": "You have no appointments."
+  },
+  "auth": {
+    "loginTitle": "Welcome back",
+    "registerTitle": "Create an account",
+    "asPatient": "As a patient",
+    "asDoctor": "As a doctor",
+    "haveAccount": "Have an account?",
+    "noAccount": "No account yet?",
+    "licenseNumber": "License number",
+    "consentHealth": "I consent to the processing of health data",
+    "consentTerms": "I accept the terms of use and privacy policy"
+  },
+  "roles": {
+    "pendingApproval": "Your account is pending administrator approval.",
+    "suspended": "Your account has been suspended. Please contact the administrator."
+  }
+}

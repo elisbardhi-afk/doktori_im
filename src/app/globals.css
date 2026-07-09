@@ -2,22 +2,95 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Teal & Light — warm white surface, deep teal brand (#0D6B8C) */
+    --background: 40 33% 98%; /* #FBFAF7 warm white */
+    --foreground: 199 42% 15%; /* deep teal-ink */
+
+    --card: 0 0% 100%;
+    --card-foreground: 199 42% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 199 42% 15%;
+
+    --primary: 197 83% 30%; /* #0D6B8C */
+    --primary-foreground: 0 0% 100%;
+    --primary-soft: 197 60% 92%; /* chip / hover fill */
+    --primary-tint: 197 55% 97%; /* subtle section bg */
+
+    --secondary: 197 30% 94%;
+    --secondary-foreground: 199 42% 20%;
+
+    --muted: 200 20% 95%;
+    --muted-foreground: 200 12% 45%;
+
+    --accent: 197 60% 92%;
+    --accent-foreground: 197 83% 25%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 160 84% 32%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 30 40% 15%;
+
+    --border: 200 20% 88%;
+    --input: 200 20% 88%;
+    --ring: 197 83% 30%;
+
+    --radius: 1rem; /* 16px — MediLink rounded cards */
+  }
+
+  .dark {
+    --background: 200 30% 8%;
+    --foreground: 40 20% 96%;
+
+    --card: 200 28% 11%;
+    --card-foreground: 40 20% 96%;
+
+    --popover: 200 28% 11%;
+    --popover-foreground: 40 20% 96%;
+
+    --primary: 197 70% 55%;
+    --primary-foreground: 200 40% 10%;
+    --primary-soft: 197 40% 22%;
+    --primary-tint: 200 30% 14%;
+
+    --secondary: 200 22% 18%;
+    --secondary-foreground: 40 20% 96%;
+
+    --muted: 200 22% 18%;
+    --muted-foreground: 200 12% 65%;
+
+    --accent: 197 40% 24%;
+    --accent-foreground: 197 70% 85%;
+
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 160 60% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 80% 55%;
+    --warning-foreground: 30 40% 15%;
+
+    --border: 200 20% 22%;
+    --input: 200 20% 22%;
+    --ring: 197 70% 55%;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "ss01", "cv01";
+  }
 }
 
 @layer utilities {

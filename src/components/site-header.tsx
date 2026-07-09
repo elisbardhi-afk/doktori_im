@@ -1,0 +1,57 @@
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { Button } from "@/components/ui/button";
+import { getCurrentUser } from "@/lib/auth";
+import { UserMenu } from "@/components/user-menu";
+import { Stethoscope } from "lucide-react";
+
+export async function SiteHeader() {
+  const t = await getTranslations();
+  const user = await getCurrentUser();
+
+  const dashboardHref =
+    user?.role === "doctor"
+      ? "/doctor"
+      : user?.role === "admin"
+        ? "/admin"
+        : "/patient";
+
+  return (
+    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md">
+      <div className="container flex h-16 items-center justify-between gap-4">
+        <Link href="/" className="flex items-center gap-2 font-extrabold text-primary">
+          <span className="flex size-9 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-card">
+            <Stethoscope className="size-5" />
+          </span>
+          <span className="text-lg">Doktori Im</span>
+        </Link>
+
+        <nav className="hidden items-center gap-6 text-sm font-semibold text-muted-foreground md:flex">
+          <Link href="/doctors" className="transition-colors hover:text-foreground">
+            {t("nav.forPatients")}
+          </Link>
+          <Link href="/register/doctor" className="transition-colors hover:text-foreground">
+            {t("nav.forDoctors")}
+          </Link>
+        </nav>
+
+        <div className="flex items-center gap-3">
+          <LanguageSwitcher />
+          {user ? (
+            <UserMenu name={user.full_name ?? user.email} dashboardHref={dashboardHref} />
+          ) : (
+            <>
+              <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
+                <Link href="/login">{t("common.login")}</Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link href="/register">{t("common.register")}</Link>
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
+    </header>
+  );
+}
