@@ -19,6 +19,8 @@ type Side = "patient" | "doctor";
 export async function getMyAppointments(
   side: Side,
   locale: string,
+  from?: string,
+  to?: string,
 ): Promise<AppointmentView[]> {
   const supabase = createClient();
   const {
@@ -28,7 +30,7 @@ export async function getMyAppointments(
 
   const column = side === "patient" ? "patient_id" : "doctor_id";
 
-  const { data } = await supabase
+  let query = supabase
     .from("appointments")
     .select(
       `
@@ -42,6 +44,11 @@ export async function getMyAppointments(
     )
     .eq(column, user.id)
     .order("starts_at", { ascending: false });
+
+  if (from) query = query.gte("starts_at", from);
+  if (to) query = query.lte("starts_at", to);
+
+  const { data } = await query;
 
   if (!data) return [];
 
