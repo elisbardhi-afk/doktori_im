@@ -5,6 +5,7 @@ import {
   getDoctorReviews,
   getDoctorSlots,
 } from "@/lib/queries/doctor-profile";
+import { getDoctorServices } from "@/lib/queries/services";
 import { getCurrentUser } from "@/lib/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,10 +36,11 @@ export default async function DoctorProfilePage({
   const from = today.toISOString().slice(0, 10);
   const to = new Date(today.getTime() + 21 * 86400000).toISOString().slice(0, 10);
 
-  const [reviews, slots, user] = await Promise.all([
+  const [reviews, slots, user, services] = await Promise.all([
     getDoctorReviews(doctor.userId),
     getDoctorSlots(doctor.userId, from, to),
     getCurrentUser(),
+    getDoctorServices(doctor.userId),
   ]);
 
   return (
@@ -138,6 +140,7 @@ export default async function DoctorProfilePage({
               doctorName={doctor.fullName}
               slots={slots}
               isAuthed={!!user}
+              services={services}
             />
           </CardContent>
         </Card>

@@ -6,11 +6,12 @@ import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { createBooking, type BookErrorCode } from "@/actions/booking";
 import { timeInTirane, formatInTirane } from "@/lib/datetime";
 import { cn } from "@/lib/utils";
 import { CalendarCheck, Clock } from "lucide-react";
-import type { AvailableSlot } from "@/lib/database.types";
+import type { AvailableSlot, DoctorServiceRow } from "@/lib/database.types";
 
 const errorMsg: Record<BookErrorCode, string> = {
   SLOT_TAKEN: "booking.slotTaken",
@@ -19,6 +20,7 @@ const errorMsg: Record<BookErrorCode, string> = {
   DUPLICATE_BOOKING: "booking.slotTaken",
   DOCTOR_NOT_BOOKABLE: "booking.slotTaken",
   AUTH_REQUIRED: "booking.slotTaken",
+  SERVICE_NOT_FOUND: "booking.slotTaken",
   UNKNOWN: "booking.slotTaken",
 };
 
@@ -34,28 +36,37 @@ export function BookingWizard({
   doctorName,
   slots,
   isAuthed,
+  services = [],
 }: {
   doctorId: string;
   doctorName: string;
   slots: AvailableSlot[];
   isAuthed: boolean;
+  services?: DoctorServiceRow[];
 }) {
   const t = useTranslations();
   const router = useRouter();
+
+  const hasServices = services.length > 0;
+  const [selectedService, setSelectedService] = useState<DoctorServiceRow | null>(null);
   const [selected, setSelected] = useState<AvailableSlot | null>(null);
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Group slots by local date.
+  const filteredSlots = useMemo(() => {
+    if (!selectedService) return slots;
+    return slots.filter((s) => s.duration_minutes === selectedService.duration_minutes);
+  }, [slots, selectedService]);
+
   const byDate = useMemo(() => {
     const map = new Map<string, AvailableSlot[]>();
-    for (const s of slots) {
+    for (const s of filteredSlots) {
       const arr = map.get(s.local_date) ?? [];
       arr.push(s);
       map.set(s.local_date, arr);
     }
     return map;
-  }, [slots]);
+  }, [filteredSlots]);
 
   const dates = Array.from(byDate.keys());
   const [activeDate, setActiveDate] = useState<string | null>(dates[0] ?? null);
@@ -78,12 +89,12 @@ export function BookingWizard({
       doctorId,
       startsAt: selected.slot_start,
       reason: reason || undefined,
+      serviceId: selectedService?.id,
     });
     setLoading(false);
 
     if (!res.ok) {
       toast.error(t(errorMsg[res.error ?? "UNKNOWN"]));
-      // Refresh to pull fresh availability if the slot was taken.
       router.refresh();
       setSelected(null);
       return;
@@ -93,29 +104,81 @@ export function BookingWizard({
     router.refresh();
   }
 
-  if (slots.length === 0) {
+  if (hasServices && !selectedService) {
     return (
-      <p className="rounded-xl bg-muted p-4 text-sm text-muted-foreground">
-        {t("booking.noSlots")}
-      </p>
+      <div className="flex flex-col gap-4">
+        <p className="text-sm font-semibold text-foreground">{t("services.selectService")}</p>
+        <div className="flex flex-col gap-2">
+          {services.map((s) => (
+            <button
+              key={s.id}
+              onClick={() => {
+                setSelectedService(s);
+                setSelected(null);
+                setActiveDate(null);
+              }}
+              className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3 text-left shadow-soft transition-colors hover:border-primary hover:bg-primary-tint"
+            >
+              <span className="font-semibold text-foreground">{s.name}</span>
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary">
+                  {s.duration_minutes} {t("services.min")}
+                </Badge>
+                {s.price != null && (
+                  <span className="text-sm text-muted-foreground">
+                    {Number(s.price).toLocaleString()} L
+                  </span>
+                )}
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (filteredSlots.length === 0) {
+    return (
+      <div className="flex flex-col gap-3">
+        {selectedService && (
+          <div className="flex items-center justify-between rounded-xl border border-primary/30 bg-primary-tint px-4 py-2">
+            <span className="text-sm font-semibold text-foreground">{selectedService.name}</span>
+            <button
+              onClick={() => setSelectedService(null)}
+              className="text-xs text-primary hover:underline"
+            >
+              {t("common.back")}
+            </button>
+          </div>
+        )}
+        <p className="rounded-xl bg-muted p-4 text-sm text-muted-foreground">
+          {t("booking.noSlots")}
+        </p>
+      </div>
     );
   }
 
   return (
     <div className="flex flex-col gap-5">
-      {/* Date selector */}
+      {selectedService && (
+        <div className="flex items-center justify-between rounded-xl border border-primary/30 bg-primary-tint px-4 py-2">
+          <span className="text-sm font-semibold text-foreground">{selectedService.name}</span>
+          <button
+            onClick={() => { setSelectedService(null); setSelected(null); }}
+            className="text-xs text-primary hover:underline"
+          >
+            {t("common.back")}
+          </button>
+        </div>
+      )}
+
       <div>
-        <p className="mb-2 text-sm font-semibold text-foreground">
-          {t("booking.selectDate")}
-        </p>
+        <p className="mb-2 text-sm font-semibold text-foreground">{t("booking.selectDate")}</p>
         <div className="flex gap-2 overflow-x-auto pb-1">
           {dates.map((d) => (
             <button
               key={d}
-              onClick={() => {
-                setActiveDate(d);
-                setSelected(null);
-              }}
+              onClick={() => { setActiveDate(d); setSelected(null); }}
               className={cn(
                 "flex min-w-16 flex-col items-center rounded-xl border px-3 py-2 text-sm shadow-soft transition-colors",
                 activeDate === d
@@ -130,11 +193,8 @@ export function BookingWizard({
         </div>
       </div>
 
-      {/* Time selector grouped by period */}
       <div>
-        <p className="mb-2 text-sm font-semibold text-foreground">
-          {t("booking.selectTime")}
-        </p>
+        <p className="mb-2 text-sm font-semibold text-foreground">{t("booking.selectTime")}</p>
         <div className="flex flex-col gap-3">
           {(["morning", "afternoon", "evening"] as const).map((period) =>
             periods[period].length > 0 ? (
@@ -164,7 +224,6 @@ export function BookingWizard({
         </div>
       </div>
 
-      {/* Summary + confirm */}
       {selected && (
         <div className="flex flex-col gap-3 rounded-2xl border border-primary/30 bg-primary-tint p-4">
           <p className="text-sm font-semibold text-foreground">{t("booking.summary")}</p>

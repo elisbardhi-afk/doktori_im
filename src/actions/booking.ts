@@ -10,6 +10,7 @@ export type BookErrorCode =
   | "SLOT_TAKEN"
   | "DUPLICATE_BOOKING"
   | "DOCTOR_NOT_BOOKABLE"
+  | "SERVICE_NOT_FOUND"
   | "UNKNOWN";
 
 export interface BookingResult {
@@ -27,6 +28,7 @@ function mapError(message: string): BookErrorCode {
     "SLOT_TAKEN",
     "DUPLICATE_BOOKING",
     "DOCTOR_NOT_BOOKABLE",
+    "SERVICE_NOT_FOUND",
   ];
   const found = codes.find((c) => message.includes(c));
   return found ?? "UNKNOWN";
@@ -37,12 +39,14 @@ export async function createBooking(input: {
   doctorId: string;
   startsAt: string; // ISO UTC
   reason?: string;
+  serviceId?: string;
 }): Promise<BookingResult> {
   const supabase = createClient();
   const { data, error } = await supabase.rpc("book_appointment", {
     p_doctor_id: input.doctorId,
     p_starts_at: input.startsAt,
     p_reason: input.reason ?? undefined,
+    p_service_id: input.serviceId ?? undefined,
   });
 
   if (error) {
