@@ -38,13 +38,14 @@ begin
   on conflict (id) do nothing;
 
   if v_role = 'doctor' then
-    insert into public.doctor_profiles (user_id, slug, license_number, status)
+    insert into public.doctor_profiles (user_id, slug, license_number, status, full_name)
     values (
       new.id,
       -- provisional unique slug; doctor edits later
       'dr-' || substr(new.id::text, 1, 8),
       coalesce(new.raw_user_meta_data->>'license_number', 'PENDING-' || substr(new.id::text, 1, 8)),
-      'pending'
+      'pending',
+      v_full_name
     )
     on conflict (user_id) do nothing;
   else
@@ -476,6 +477,7 @@ declare
   v_uid uuid := auth.uid();
   a record;
   v_id uuid;
+  v_name text;
 begin
   select * into a from public.appointments where id = p_appointment_id;
   if not found then raise exception 'NOT_FOUND' using errcode='P0001'; end if;
@@ -483,8 +485,10 @@ begin
   if a.status <> 'completed' then raise exception 'NOT_COMPLETED' using errcode='P0001'; end if;
   if p_rating < 1 or p_rating > 5 then raise exception 'INVALID_RATING' using errcode='P0001'; end if;
 
-  insert into public.reviews (appointment_id, patient_id, doctor_id, rating, comment)
-  values (p_appointment_id, v_uid, a.doctor_id, p_rating, p_comment)
+  select full_name into v_name from public.users where id = v_uid;
+
+  insert into public.reviews (appointment_id, patient_id, doctor_id, rating, comment, patient_name)
+  values (p_appointment_id, v_uid, a.doctor_id, p_rating, p_comment, v_name)
   returning id into v_id;
 
   return v_id;

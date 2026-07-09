@@ -91,6 +91,7 @@ create table if not exists public.specialties (
 create table if not exists public.doctor_profiles (
   user_id uuid primary key references public.users(id) on delete cascade,
   slug text unique not null,
+  full_name text, -- denormalized (doctor names are public; users rows are not)
   bio text,
   license_number text unique not null,
   clinic_name text,
@@ -291,6 +292,7 @@ create table if not exists public.reviews (
   doctor_id uuid not null references public.doctor_profiles(user_id) on delete cascade,
   rating smallint not null check (rating between 1 and 5),
   comment text,
+  patient_name text, -- denormalized (reviews are public; users rows are not)
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

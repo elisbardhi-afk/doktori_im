@@ -31,9 +31,8 @@ export async function searchDoctors(
     .from("doctor_profiles")
     .select(
       `
-      user_id, slug, photo_url, city, clinic_name, avg_rating, review_count,
-      consultation_fee,
-      users:users!inner(full_name),
+      user_id, slug, full_name, photo_url, city, clinic_name, avg_rating,
+      review_count, consultation_fee,
       doctor_specialties(specialty_id, specialties(slug, name_sq, name_en))
     `,
     )
@@ -49,13 +48,13 @@ export async function searchDoctors(
   let rows = data as unknown as Array<{
     user_id: string;
     slug: string;
+    full_name: string | null;
     photo_url: string | null;
     city: string | null;
     clinic_name: string | null;
     avg_rating: number;
     review_count: number;
     consultation_fee: number | null;
-    users: { full_name: string | null } | { full_name: string | null }[];
     doctor_specialties: Array<{
       specialties: { slug: string; name_sq: string; name_en: string };
     }>;
@@ -68,10 +67,7 @@ export async function searchDoctors(
   }
   if (params.q) {
     const needle = params.q.toLowerCase();
-    rows = rows.filter((r) => {
-      const u = Array.isArray(r.users) ? r.users[0] : r.users;
-      return (u?.full_name ?? "").toLowerCase().includes(needle);
-    });
+    rows = rows.filter((r) => (r.full_name ?? "").toLowerCase().includes(needle));
   }
 
   // Fetch next available slot per doctor (cheap: 14-day window, first row).
@@ -81,7 +77,6 @@ export async function searchDoctors(
 
   const cards = await Promise.all(
     rows.map(async (r): Promise<DoctorCardData> => {
-      const u = Array.isArray(r.users) ? r.users[0] : r.users;
       const { data: slotsData } = await supabase.rpc("get_available_slots", {
         p_doctor_id: r.user_id,
         p_from: from,
@@ -92,7 +87,7 @@ export async function searchDoctors(
 
       return {
         slug: r.slug,
-        fullName: u?.full_name ?? "—",
+        fullName: r.full_name ?? "—",
         photoUrl: r.photo_url,
         city: r.city,
         clinicName: r.clinic_name,

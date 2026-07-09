@@ -36,6 +36,17 @@ drop policy if exists users_admin_all on public.users;
 create policy users_admin_all on public.users
   for all using (public.is_admin()) with check (public.is_admin());
 
+-- Read a counterparty's user row when you share an appointment (doctor↔patient).
+drop policy if exists users_shared_appointment on public.users;
+create policy users_shared_appointment on public.users
+  for select using (
+    exists (
+      select 1 from public.appointments a
+      where (a.patient_id = public.users.id and a.doctor_id = auth.uid())
+         or (a.doctor_id = public.users.id and a.patient_id = auth.uid())
+    )
+  );
+
 -- ------------------------- specialties (public read) -------------------------
 drop policy if exists specialties_read on public.specialties;
 create policy specialties_read on public.specialties

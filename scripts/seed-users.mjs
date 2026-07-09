@@ -173,6 +173,7 @@ async function main() {
       { user_id: id },
       {
         slug: d.slug,
+        full_name: d.full_name,
         bio: d.bio,
         license_number: d.license,
         clinic_name: d.clinic,

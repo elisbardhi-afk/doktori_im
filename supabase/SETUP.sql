@@ -97,6 +97,7 @@ create table if not exists public.specialties (
 create table if not exists public.doctor_profiles (
   user_id uuid primary key references public.users(id) on delete cascade,
   slug text unique not null,
+  full_name text, -- denormalized (doctor names are public; users rows are not)
   bio text,
   license_number text unique not null,
   clinic_name text,
@@ -297,6 +298,7 @@ create table if not exists public.reviews (
   doctor_id uuid not null references public.doctor_profiles(user_id) on delete cascade,
   rating smallint not null check (rating between 1 and 5),
   comment text,
+  patient_name text, -- denormalized (reviews are public; users rows are not)
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -362,13 +364,14 @@ begin
   on conflict (id) do nothing;
 
   if v_role = 'doctor' then
-    insert into public.doctor_profiles (user_id, slug, license_number, status)
+    insert into public.doctor_profiles (user_id, slug, license_number, status, full_name)
     values (
       new.id,
       -- provisional unique slug; doctor edits later
       'dr-' || substr(new.id::text, 1, 8),
       coalesce(new.raw_user_meta_data->>'license_number', 'PENDING-' || substr(new.id::text, 1, 8)),
-      'pending'
+      'pending',
+      v_full_name
     )
     on conflict (user_id) do nothing;
   else
@@ -800,6 +803,7 @@ declare
   v_uid uuid := auth.uid();
   a record;
   v_id uuid;
+  v_name text;
 begin
   select * into a from public.appointments where id = p_appointment_id;
   if not found then raise exception 'NOT_FOUND' using errcode='P0001'; end if;
@@ -807,8 +811,10 @@ begin
   if a.status <> 'completed' then raise exception 'NOT_COMPLETED' using errcode='P0001'; end if;
   if p_rating < 1 or p_rating > 5 then raise exception 'INVALID_RATING' using errcode='P0001'; end if;
 
-  insert into public.reviews (appointment_id, patient_id, doctor_id, rating, comment)
-  values (p_appointment_id, v_uid, a.doctor_id, p_rating, p_comment)
+  select full_name into v_name from public.users where id = v_uid;
+
+  insert into public.reviews (appointment_id, patient_id, doctor_id, rating, comment, patient_name)
+  values (p_appointment_id, v_uid, a.doctor_id, p_rating, p_comment, v_name)
   returning id into v_id;
 
   return v_id;
@@ -866,6 +872,17 @@ create policy users_update_self on public.users
 drop policy if exists users_admin_all on public.users;
 create policy users_admin_all on public.users
   for all using (public.is_admin()) with check (public.is_admin());
+
+-- Read a counterparty's user row when you share an appointment (doctor↔patient).
+drop policy if exists users_shared_appointment on public.users;
+create policy users_shared_appointment on public.users
+  for select using (
+    exists (
+      select 1 from public.appointments a
+      where (a.patient_id = public.users.id and a.doctor_id = auth.uid())
+         or (a.doctor_id = public.users.id and a.patient_id = auth.uid())
+    )
+  );
 
 -- ------------------------- specialties (public read) -------------------------
 drop policy if exists specialties_read on public.specialties;
