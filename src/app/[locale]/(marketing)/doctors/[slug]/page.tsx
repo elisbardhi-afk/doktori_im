@@ -15,6 +15,8 @@ import { BookingWizard } from "@/components/booking-wizard";
 import { formatInTirane } from "@/lib/datetime";
 import { MapPin, Languages as LangIcon } from "lucide-react";
 
+export const revalidate = 60;
+
 function initials(name: string) {
   return name.replace(/^Dr\.?\s*/i, "").split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase();
 }
