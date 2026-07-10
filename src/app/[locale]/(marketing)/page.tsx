@@ -21,9 +21,6 @@ export default async function LandingPage({
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-b from-primary-tint to-background">
         <div className="container flex flex-col items-center gap-6 py-16 text-center sm:py-24">
-          <span className="rounded-full bg-primary-soft px-4 py-1.5 text-sm font-semibold text-primary">
-            🇦🇱 Shqipëri
-          </span>
           <h1 className="max-w-3xl text-balance text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl">
             {t("heroTitle")}
           </h1>
