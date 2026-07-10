@@ -6,6 +6,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { UserMenu } from "@/components/user-menu";
 import { NotificationBell } from "@/components/notification-bell";
 import { Stethoscope } from "lucide-react";
+import { SiteHeaderMobileMenu } from "@/components/site-header-mobile-menu";
 
 export async function SiteHeader() {
   const t = await getTranslations();
@@ -47,10 +48,21 @@ export async function SiteHeader() {
               <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
                 <Link href="/login">{t("common.login")}</Link>
               </Button>
-              <Button asChild size="sm">
+              <Button asChild size="sm" className="hidden sm:inline-flex">
                 <Link href="/register">{t("common.register")}</Link>
               </Button>
             </>
+          )}
+          {/* Mobile hamburger — only shown when user is not logged in (nav links are hidden) */}
+          {!user && (
+            <SiteHeaderMobileMenu
+              menuLabel={t("nav.menu")}
+              closeLabel={t("nav.close")}
+              forPatientsLabel={t("nav.forPatients")}
+              forDoctorsLabel={t("nav.forDoctors")}
+              loginLabel={t("common.login")}
+              registerLabel={t("common.register")}
+            />
           )}
         </div>
       </div>
