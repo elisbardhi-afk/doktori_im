@@ -12,8 +12,10 @@ export default async function PatientLayout({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const user = await requireRole(["patient"]);
-  const t = await getTranslations();
+  const [user, t] = await Promise.all([
+    requireRole(["patient"]),
+    getTranslations(),
+  ]);
 
   const items: NavItem[] = [
     { href: "/patient", label: t("nav.dashboard"), icon: "LayoutDashboard" },

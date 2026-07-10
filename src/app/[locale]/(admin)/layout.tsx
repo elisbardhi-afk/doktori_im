@@ -12,8 +12,10 @@ export default async function AdminLayout({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const user = await requireRole(["admin"]);
-  const t = await getTranslations();
+  const [user, t] = await Promise.all([
+    requireRole(["admin"]),
+    getTranslations(),
+  ]);
 
   const items: NavItem[] = [
     { href: "/admin", label: t("nav.dashboard"), icon: "LayoutDashboard" },

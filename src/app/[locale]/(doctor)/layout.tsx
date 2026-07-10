@@ -12,8 +12,10 @@ export default async function DoctorLayout({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const user = await requireRole(["doctor"]);
-  const t = await getTranslations();
+  const [user, t] = await Promise.all([
+    requireRole(["doctor"]),
+    getTranslations(),
+  ]);
 
   const items: NavItem[] = [
     { href: "/doctor", label: t("nav.dashboard"), icon: "LayoutDashboard" },
