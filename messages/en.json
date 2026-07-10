@@ -32,7 +32,10 @@
     "doctors": "Doctors",
     "users": "Users",
     "specialties": "Specialties",
-    "appointments": "Appointments"
+    "appointments": "Appointments",
+    "findDoctor": "Find Doctor",
+    "menu": "Menu",
+    "close": "Close"
   },
   "landing": {
     "heroTitle": "Find your doctor",
