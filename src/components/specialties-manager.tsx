@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ interface SpecialtyItem {
 }
 
 export function SpecialtiesManager({ initial }: { initial: SpecialtyItem[] }) {
+  const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -35,7 +36,7 @@ export function SpecialtiesManager({ initial }: { initial: SpecialtyItem[] }) {
       toast.error(res.error ?? "Error");
       return;
     }
-    toast.success("✓");
+    toast.success(t("common.saved"));
     setForm({ slug: "", nameEn: "", nameSq: "", iconSlug: "stethoscope" });
     router.refresh();
   }

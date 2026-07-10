@@ -16,7 +16,6 @@ interface Rule {
   weekday: number;
   startTime: string;
   endTime: string;
-  slotDurationMinutes: number;
 }
 
 const WEEKDAYS_SQ = ["", "E hënë", "E martë", "E mërkurë", "E enjte", "E premte", "E shtunë", "E diel"];
@@ -30,7 +29,6 @@ export function AvailabilityManager({ rules }: { rules: Rule[] }) {
   const [weekday, setWeekday] = useState(1);
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("13:00");
-  const [duration, setDuration] = useState(30);
 
   const days = locale === "en" ? WEEKDAYS_EN : WEEKDAYS_SQ;
 
@@ -41,14 +39,13 @@ export function AvailabilityManager({ rules }: { rules: Rule[] }) {
       weekday,
       startTime,
       endTime,
-      slotDurationMinutes: duration,
     });
     setLoading(false);
     if (!res.ok) {
       toast.error(res.error ?? "Error");
       return;
     }
-    toast.success("✓");
+    toast.success(t("common.saved"));
     router.refresh();
   }
 
@@ -79,7 +76,7 @@ export function AvailabilityManager({ rules }: { rules: Rule[] }) {
                 <div>
                   <p className="font-semibold text-foreground">{days[r.weekday]}</p>
                   <p className="text-sm text-muted-foreground">
-                    {r.startTime}–{r.endTime} · {r.slotDurationMinutes} min
+                    {r.startTime}–{r.endTime}
                   </p>
                 </div>
                 <Button variant="ghost" size="icon" onClick={() => onDelete(r.id)} aria-label={t("common.delete")}>
@@ -118,19 +115,6 @@ export function AvailabilityManager({ rules }: { rules: Rule[] }) {
                 <Label htmlFor="end">{t("availability.to")}</Label>
                 <Input id="end" type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} required />
               </div>
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="dur">{t("availability.slotLength")}</Label>
-              <select
-                id="dur"
-                value={duration}
-                onChange={(e) => setDuration(Number(e.target.value))}
-                className="h-11 rounded-xl border border-input bg-background px-4 text-sm shadow-soft focus-visible:border-primary focus-visible:outline-none"
-              >
-                {[15, 20, 30, 45, 60].map((m) => (
-                  <option key={m} value={m}>{m} min</option>
-                ))}
-              </select>
             </div>
             <Button type="submit" disabled={loading}>
               <Plus className="size-4" />

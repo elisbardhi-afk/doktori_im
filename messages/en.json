@@ -6,6 +6,7 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "save": "Save",
+    "saved": "Changes saved successfully",
     "delete": "Delete",
     "loading": "Loading...",
     "back": "Back",
@@ -133,7 +134,6 @@
     "day": "Day",
     "from": "From",
     "to": "To",
-    "slotLength": "Slot length (min)",
     "add": "Add",
     "pendingMessage": "You can set availability once your account is approved."
   },

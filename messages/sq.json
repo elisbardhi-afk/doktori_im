@@ -6,6 +6,7 @@
     "cancel": "Anulo",
     "confirm": "Konfirmo",
     "save": "Ruaj",
+    "saved": "Ndryshimet u ruajtën",
     "delete": "Fshi",
     "loading": "Duke ngarkuar...",
     "back": "Kthehu",
@@ -133,7 +134,6 @@
     "day": "Dita",
     "from": "Nga",
     "to": "Deri",
-    "slotLength": "Kohëzgjatja (min)",
     "add": "Shto",
     "pendingMessage": "Mund të vendosni orare pasi llogaria juaj të miratohet."
   },

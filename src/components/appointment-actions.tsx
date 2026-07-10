@@ -31,7 +31,7 @@ export function AppointmentActions({
       toast.error(res.error ?? "Error");
       return;
     }
-    toast.success("✓");
+    toast.success(t("common.saved"));
     router.refresh();
   }
 

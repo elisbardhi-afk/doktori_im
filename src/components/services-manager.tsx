@@ -36,7 +36,7 @@ export function ServicesManager({ services }: { services: DoctorServiceRow[] }) 
       toast.error(res.error ?? "Error");
       return;
     }
-    toast.success("✓");
+    toast.success(t("common.saved"));
     setName("");
     setPrice("");
     setDuration(30);
@@ -49,7 +49,7 @@ export function ServicesManager({ services }: { services: DoctorServiceRow[] }) 
       toast.error(res.error ?? "Error");
       return;
     }
-    toast.success("✓");
+    toast.success(t("common.saved"));
     router.refresh();
   }
 
