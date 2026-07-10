@@ -17,8 +17,8 @@ export default async function DoctorAppointmentsPage({
   setRequestLocale(locale);
   const activeLocale = await getLocale();
   const t = await getTranslations();
-  await requireDoctor();
-  const appts = await getMyAppointments("doctor", activeLocale);
+  const { user } = await requireDoctor();
+  const appts = await getMyAppointments("doctor", activeLocale, undefined, undefined, user.id);
 
   return (
     <div className="flex flex-col gap-6">

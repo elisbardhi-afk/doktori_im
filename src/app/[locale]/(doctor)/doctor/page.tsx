@@ -18,7 +18,7 @@ export default async function DoctorDashboard({
   const activeLocale = await getLocale();
   const t = await getTranslations();
   const { user, status } = await requireDoctor();
-  const appts = await getMyAppointments("doctor", activeLocale);
+  const appts = await getMyAppointments("doctor", activeLocale, undefined, undefined, user.id);
 
   const todayStr = dateInTirane(new Date());
   const today = appts.filter((a) => dateInTirane(a.startsAt) === todayStr);

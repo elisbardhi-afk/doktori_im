@@ -45,7 +45,7 @@ export default async function DoctorCalendarPage({
   setRequestLocale(locale);
   const activeLocale = await getLocale();
   const t = await getTranslations();
-  await requireDoctor();
+  const { user } = await requireDoctor();
 
   const sp = await searchParams;
   const view = (sp.view ?? "week") as CalendarView;
@@ -55,7 +55,7 @@ export default async function DoctorCalendarPage({
 
   const { from, to } = getRange(view, date);
 
-  const appointments = await getMyAppointments("doctor", activeLocale, from + "T00:00:00Z", to + "T23:59:59Z");
+  const appointments = await getMyAppointments("doctor", activeLocale, from + "T00:00:00Z", to + "T23:59:59Z", user.id);
 
   return (
     <div className="flex flex-col gap-6">

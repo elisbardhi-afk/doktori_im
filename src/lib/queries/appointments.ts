@@ -21,12 +21,11 @@ export async function getMyAppointments(
   locale: string,
   from?: string,
   to?: string,
+  userId?: string,
 ): Promise<AppointmentView[]> {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return [];
+  const id = userId ?? (await supabase.auth.getUser()).data.user?.id;
+  if (!id) return [];
 
   const column = side === "patient" ? "patient_id" : "doctor_id";
 
@@ -42,7 +41,7 @@ export async function getMyAppointments(
       )
     `,
     )
-    .eq(column, user.id)
+    .eq(column, id)
     .order("starts_at", { ascending: false });
 
   if (from) query = query.gte("starts_at", from);
