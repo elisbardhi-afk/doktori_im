@@ -7,6 +7,35 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, MapPin } from "lucide-react";
 
+const ALBANIAN_CITIES = [
+  "Tiranë", "Durrës", "Vlorë", "Shkodër", "Elbasan", "Fier", "Korçë",
+  "Berat", "Lushnjë", "Kavajë", "Gjirokastër", "Sarandë", "Lezhë", "Kukës",
+  "Peshkopi", "Pogradec", "Laç", "Krujë", "Rrogozhinë", "Patos", "Cërrik",
+  "Burrel", "Gramsh", "Librazhd", "Përmet", "Tepelenë", "Ersekë",
+  "Bajram Curri", "Has", "Bulqizë", "Dibër", "Mallakastër",
+];
+
+const SPECIALTY_SUGGESTIONS = [
+  "Mjek i Përgjithshëm", "General Practitioner",
+  "Pediatri", "Pediatrics",
+  "Kardiologji", "Cardiology",
+  "Dermatologji", "Dermatology",
+  "Stomatologji", "Dentistry",
+  "Gjinekologji", "Gynecology",
+  "Ortopedi", "Orthopedics",
+  "Oftalmologji", "Ophthalmology",
+  "ORL", "ENT",
+  "Neurologji", "Neurology",
+  "Psikiatri", "Psychiatry",
+  "Psikologji", "Psychology",
+  "Endokrinologji", "Endocrinology",
+  "Gastroenterologji", "Gastroenterology",
+  "Urologji", "Urology",
+  "Pulmonologji", "Pulmonology",
+  "Reumatologji", "Rheumatology",
+  "Fizioterapi", "Physiotherapy",
+];
+
 export function HeroSearch() {
   const t = useTranslations("landing");
   const tc = useTranslations("common");
@@ -27,12 +56,24 @@ export function HeroSearch() {
       onSubmit={submit}
       className="flex w-full flex-col gap-2 rounded-2xl bg-card p-2 shadow-lift sm:flex-row"
     >
+      <datalist id="specialty-suggestions">
+        {SPECIALTY_SUGGESTIONS.map((s) => (
+          <option key={s} value={s} />
+        ))}
+      </datalist>
+      <datalist id="city-suggestions">
+        {ALBANIAN_CITIES.map((c) => (
+          <option key={c} value={c} />
+        ))}
+      </datalist>
+
       <div className="flex flex-1 items-center gap-2 rounded-xl bg-primary-tint px-3">
         <Search className="size-5 shrink-0 text-primary" />
         <Input
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder={t("searchSpecialty")}
+          list="specialty-suggestions"
           className="border-0 bg-transparent shadow-none focus-visible:shadow-none"
         />
       </div>
@@ -42,6 +83,7 @@ export function HeroSearch() {
           value={city}
           onChange={(e) => setCity(e.target.value)}
           placeholder={t("searchCity")}
+          list="city-suggestions"
           className="border-0 bg-transparent shadow-none focus-visible:shadow-none"
         />
       </div>
