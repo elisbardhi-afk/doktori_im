@@ -98,6 +98,18 @@ async function select(table, qs) {
   return res.json();
 }
 
+async function upsertServices(doctorId, services) {
+  const rows = services.map((s, i) => ({
+    doctor_id: doctorId,
+    name: s.name,
+    duration_minutes: s.duration,
+    price: s.price,
+    is_active: true,
+    sort_order: i,
+  }));
+  await upsert("doctor_services", rows, "doctor_id,name");
+}
+
 async function main() {
   console.log("Seeding users…");
 
@@ -132,6 +144,12 @@ async function main() {
       fee: 3000,
       specialties: ["cardiology", "general-practitioner"],
       status: "approved",
+      services: [
+        { name: "Vizitë kardiologjike", duration: 30, price: 3000 },
+        { name: "Elektrokardiogram (EKG)", duration: 15, price: 1500 },
+        { name: "Ekokardiografi", duration: 30, price: 4000 },
+        { name: "Monitorim Holter 24h", duration: 20, price: 5000 },
+      ],
     },
     {
       email: "dr.leka@doktori-im.al",
@@ -144,6 +162,11 @@ async function main() {
       fee: 2500,
       specialties: ["pediatrics"],
       status: "approved",
+      services: [
+        { name: "Vizitë pediatrike", duration: 20, price: 2500 },
+        { name: "Vaksinim", duration: 15, price: 1000 },
+        { name: "Kontroll zhvillimi", duration: 30, price: 3000 },
+      ],
     },
     {
       email: "dr.prifti@doktori-im.al",
@@ -156,6 +179,94 @@ async function main() {
       fee: 2800,
       specialties: ["dermatology"],
       status: "pending",
+    },
+    {
+      email: "dr.brahimi@doktori-im.al",
+      full_name: "Dr. Olta Brahimi",
+      license: "AL-GYN-4004",
+      slug: "dr-olta-brahimi",
+      bio: "Gjinekologia dhe obstetrika me 12 vjet përvojë. Specializim në Gjermani (2015).",
+      city: "Tiranë",
+      clinic: "Qendra Gjinekologjike Brahimi",
+      fee: 4000,
+      specialties: ["gynecology"],
+      status: "approved",
+      services: [
+        { name: "Vizitë gjinekologjike", duration: 30, price: 4000 },
+        { name: "Ultratingull gjinekologjik", duration: 20, price: 3000 },
+        { name: "Pap smear", duration: 15, price: 2000 },
+        { name: "Kolposkopi", duration: 20, price: 3500 },
+      ],
+    },
+    {
+      email: "dr.koci@doktori-im.al",
+      full_name: "Dr. Erjon Koçi",
+      license: "AL-ORTH-5005",
+      slug: "dr-erjon-koci",
+      bio: "Ortoped me fokus tek kirurgjia e gjurit dhe kofshës. Anëtar i EFORT.",
+      city: "Durrës",
+      clinic: "Klinika Ortopedike Koçi",
+      fee: 5000,
+      specialties: ["orthopedics"],
+      status: "approved",
+      services: [
+        { name: "Vizitë ortopedike", duration: 30, price: 5000 },
+        { name: "Injeksion intra-artikular", duration: 20, price: 4000 },
+        { name: "Fizioterapi ortopedike", duration: 45, price: 2500 },
+        { name: "Raport mjekësor", duration: 15, price: 1500 },
+      ],
+    },
+    {
+      email: "dr.shehu@doktori-im.al",
+      full_name: "Dr. Besmir Shehu",
+      license: "AL-GP-6006",
+      slug: "dr-besmir-shehu",
+      bio: "Mjek i përgjithshëm me 20 vjet praktikë. Shërbej komunitetin e Vlorës.",
+      city: "Vlorë",
+      clinic: "Ambulanca Shehu",
+      fee: 2500,
+      specialties: ["general-practitioner"],
+      status: "approved",
+      services: [
+        { name: "Vizitë e përgjithshme", duration: 20, price: 2500 },
+        { name: "Kontroll rutinë", duration: 15, price: 2000 },
+        { name: "Recetë mjekësore", duration: 10, price: 500 },
+      ],
+    },
+    {
+      email: "dr.malaj@doktori-im.al",
+      full_name: "Dr. Anila Malaj",
+      license: "AL-OPH-7007",
+      slug: "dr-anila-malaj",
+      bio: "Oftalmologe, specializim në sëmundjet e retinës dhe glaukomën.",
+      city: "Shkodër",
+      clinic: "Qendra Okuliste Malaj",
+      fee: 3500,
+      specialties: ["ophthalmology"],
+      status: "approved",
+      services: [
+        { name: "Ekzaminim i syve", duration: 20, price: 3500 },
+        { name: "Tonometri (presioni okulare)", duration: 10, price: 1500 },
+        { name: "Fundoskopi", duration: 15, price: 2500 },
+      ],
+    },
+    {
+      email: "dr.zajmi@doktori-im.al",
+      full_name: "Dr. Flamur Zajmi",
+      license: "AL-PULM-8008",
+      slug: "dr-flamur-zajmi",
+      bio: "Pulmonolog dhe alergolog. Ekspert i sëmundjeve të mushkërive dhe astmës.",
+      city: "Elbasan",
+      clinic: "Klinika Pulmonologjike Zajmi",
+      fee: 4500,
+      specialties: ["pulmonology"],
+      status: "approved",
+      services: [
+        { name: "Vizitë pulmonologjike", duration: 30, price: 4500 },
+        { name: "Spirometri", duration: 20, price: 2000 },
+        { name: "Test alergjie", duration: 30, price: 3500 },
+        { name: "Oksigjeni pulsoksimetrik", duration: 10, price: 800 },
+      ],
     },
   ];
 
@@ -201,7 +312,7 @@ async function main() {
           weekday,
           start_time: "09:00",
           end_time: "13:00",
-          slot_duration_minutes: 30,
+          // slot_duration_minutes removed — column dropped in migration 0005
         });
       }
       // Insert (skip if they already exist by checking count).
@@ -212,6 +323,9 @@ async function main() {
       if (existing.length === 0) {
         await upsert("availability_rules", rules);
       }
+    }
+    if (d.services && d.services.length > 0) {
+      await upsertServices(id, d.services);
     }
     console.log(`  ${d.email}  (${d.status})`);
   }
