@@ -53,10 +53,9 @@ export function BookingWizard({
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const filteredSlots = useMemo(() => {
-    if (!selectedService) return slots;
-    return slots.filter((s) => s.duration_minutes === selectedService.duration_minutes);
-  }, [slots, selectedService]);
+  // All slots are 15-min grid points. Service duration is passed to book_appointment
+  // which blocks the right number of consecutive slots — no client-side filtering needed.
+  const filteredSlots = slots;
 
   const byDate = useMemo(() => {
     const map = new Map<string, AvailableSlot[]>();
