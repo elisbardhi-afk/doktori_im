@@ -26,7 +26,7 @@ export async function SiteHeader() {
           <span className="flex size-9 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-card">
             <Stethoscope className="size-5" />
           </span>
-          <span className="text-lg">Doktori Im</span>
+          <span className="text-lg">{t("common.appName")}</span>
         </Link>
 
         <nav className="hidden items-center gap-6 text-sm font-semibold text-muted-foreground md:flex">
@@ -62,6 +62,7 @@ export async function SiteHeader() {
               forDoctorsLabel={t("nav.forDoctors")}
               loginLabel={t("common.login")}
               registerLabel={t("common.register")}
+              appNameLabel={t("common.appName")}
             />
           )}
         </div>

@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, Link } from "@/i18n/navigation";
-import { Menu } from "lucide-react";
+import { Menu, Stethoscope } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Stethoscope } from "lucide-react";
 
 export function SiteHeaderMobileMenu({
   menuLabel,
@@ -14,6 +13,7 @@ export function SiteHeaderMobileMenu({
   forDoctorsLabel,
   loginLabel,
   registerLabel,
+  appNameLabel,
 }: {
   menuLabel: string;
   closeLabel: string;
@@ -21,6 +21,7 @@ export function SiteHeaderMobileMenu({
   forDoctorsLabel: string;
   loginLabel: string;
   registerLabel: string;
+  appNameLabel: string;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -33,7 +34,7 @@ export function SiteHeaderMobileMenu({
     <div className="md:hidden">
       <button
         onClick={() => setOpen(true)}
-        className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-muted-foreground hover:text-foreground"
+        className="flex min-h-[48px] min-w-[48px] items-center justify-center rounded-lg text-muted-foreground hover:text-foreground"
         aria-label={open ? closeLabel : menuLabel}
       >
         <Menu className="size-5" />
@@ -46,7 +47,7 @@ export function SiteHeaderMobileMenu({
               <span className="flex size-8 items-center justify-center rounded-xl bg-primary text-primary-foreground">
                 <Stethoscope className="size-4" />
               </span>
-              Doktori Im
+              {appNameLabel}
             </SheetTitle>
           </SheetHeader>
 

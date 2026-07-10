@@ -3,10 +3,9 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { Menu } from "lucide-react";
+import { Menu, Stethoscope } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { PortalNav, type NavItem } from "@/components/portal-nav";
-import { Stethoscope } from "lucide-react";
 
 export function MobileDrawer({
   items,
@@ -28,7 +27,7 @@ export function MobileDrawer({
     <div className="md:hidden">
       <button
         onClick={() => setOpen(true)}
-        className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-muted-foreground hover:text-foreground"
+        className="flex min-h-[48px] min-w-[48px] items-center justify-center rounded-lg text-muted-foreground hover:text-foreground"
         aria-label={t("menu")}
       >
         <Menu className="size-5" />

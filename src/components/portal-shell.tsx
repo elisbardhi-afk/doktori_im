@@ -38,7 +38,7 @@ export async function PortalShell({
             <span className="flex size-9 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-card">
               <Stethoscope className="size-5" />
             </span>
-            <span className="text-lg">Doktori Im</span>
+            <span className="text-lg">{t("common.appName")}</span>
           </Link>
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
