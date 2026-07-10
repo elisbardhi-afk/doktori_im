@@ -29,14 +29,16 @@ export async function SiteHeader() {
           <span className="text-lg">{t("common.appName")}</span>
         </Link>
 
-        <nav className="hidden items-center gap-6 text-sm font-semibold text-muted-foreground md:flex">
-          <Link href="/doctors" className="transition-colors hover:text-foreground">
-            {t("nav.forPatients")}
-          </Link>
-          <Link href="/register/doctor" className="transition-colors hover:text-foreground">
-            {t("nav.forDoctors")}
-          </Link>
-        </nav>
+        {!user && (
+          <nav className="hidden items-center gap-6 text-sm font-semibold text-muted-foreground md:flex">
+            <Link href="/doctors" className="transition-colors hover:text-foreground">
+              {t("nav.forPatients")}
+            </Link>
+            <Link href="/register/doctor" className="transition-colors hover:text-foreground">
+              {t("nav.forDoctors")}
+            </Link>
+          </nav>
+        )}
 
         <div className="flex items-center gap-3">
           <LanguageSwitcher />
