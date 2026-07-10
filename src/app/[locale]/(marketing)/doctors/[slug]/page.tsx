@@ -44,9 +44,9 @@ export default async function DoctorProfilePage({
   ]);
 
   return (
-    <div className="grid gap-6 lg:grid-cols-3">
+    <div className="flex flex-col gap-6 md:grid md:grid-cols-3">
       {/* Left: profile + reviews */}
-      <div className="flex flex-col gap-6 lg:col-span-2">
+      <div className="flex flex-col gap-6 md:col-span-2">
         <Card>
           <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-start">
             <Avatar className="size-20">
@@ -129,8 +129,8 @@ export default async function DoctorProfilePage({
       </div>
 
       {/* Right: booking */}
-      <div className="lg:col-span-1">
-        <Card className="lg:sticky lg:top-24">
+      <div className="md:col-span-1">
+        <Card className="md:sticky md:top-24">
           <CardHeader>
             <CardTitle>{t("doctor.bookAppointment")}</CardTitle>
           </CardHeader>
