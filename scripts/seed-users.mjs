@@ -148,7 +148,7 @@ async function main() {
         { name: "Vizitë kardiologjike", duration: 30, price: 3000 },
         { name: "Elektrokardiogram (EKG)", duration: 15, price: 1500 },
         { name: "Ekokardiografi", duration: 30, price: 4000 },
-        { name: "Monitorim Holter 24h", duration: 20, price: 5000 },
+        { name: "Monitorim Holter 24h", duration: 30, price: 5000 },
       ],
     },
     {
@@ -163,7 +163,7 @@ async function main() {
       specialties: ["pediatrics"],
       status: "approved",
       services: [
-        { name: "Vizitë pediatrike", duration: 20, price: 2500 },
+        { name: "Vizitë pediatrike", duration: 30, price: 2500 },
         { name: "Vaksinim", duration: 15, price: 1000 },
         { name: "Kontroll zhvillimi", duration: 30, price: 3000 },
       ],
@@ -193,9 +193,9 @@ async function main() {
       status: "approved",
       services: [
         { name: "Vizitë gjinekologjike", duration: 30, price: 4000 },
-        { name: "Ultratingull gjinekologjik", duration: 20, price: 3000 },
+        { name: "Ultratingull gjinekologjik", duration: 30, price: 3000 },
         { name: "Pap smear", duration: 15, price: 2000 },
-        { name: "Kolposkopi", duration: 20, price: 3500 },
+        { name: "Kolposkopi", duration: 30, price: 3500 },
       ],
     },
     {
@@ -211,7 +211,7 @@ async function main() {
       status: "approved",
       services: [
         { name: "Vizitë ortopedike", duration: 30, price: 5000 },
-        { name: "Injeksion intra-artikular", duration: 20, price: 4000 },
+        { name: "Injeksion intra-artikular", duration: 30, price: 4000 },
         { name: "Fizioterapi ortopedike", duration: 45, price: 2500 },
         { name: "Raport mjekësor", duration: 15, price: 1500 },
       ],
@@ -228,9 +228,9 @@ async function main() {
       specialties: ["general-practitioner"],
       status: "approved",
       services: [
-        { name: "Vizitë e përgjithshme", duration: 20, price: 2500 },
+        { name: "Vizitë e përgjithshme", duration: 30, price: 2500 },
         { name: "Kontroll rutinë", duration: 15, price: 2000 },
-        { name: "Recetë mjekësore", duration: 10, price: 500 },
+        { name: "Recetë mjekësore", duration: 15, price: 500 },
       ],
     },
     {
@@ -245,8 +245,8 @@ async function main() {
       specialties: ["ophthalmology"],
       status: "approved",
       services: [
-        { name: "Ekzaminim i syve", duration: 20, price: 3500 },
-        { name: "Tonometri (presioni okulare)", duration: 10, price: 1500 },
+        { name: "Ekzaminim i syve", duration: 30, price: 3500 },
+        { name: "Tonometri (presioni okulare)", duration: 15, price: 1500 },
         { name: "Fundoskopi", duration: 15, price: 2500 },
       ],
     },
@@ -263,9 +263,9 @@ async function main() {
       status: "approved",
       services: [
         { name: "Vizitë pulmonologjike", duration: 30, price: 4500 },
-        { name: "Spirometri", duration: 20, price: 2000 },
+        { name: "Spirometri", duration: 30, price: 2000 },
         { name: "Test alergjie", duration: 30, price: 3500 },
-        { name: "Oksigjeni pulsoksimetrik", duration: 10, price: 800 },
+        { name: "Oksigjeni pulsoksimetrik", duration: 15, price: 800 },
       ],
     },
   ];
