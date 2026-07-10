@@ -8,7 +8,6 @@ export async function addAvailabilityRule(input: {
   weekday: number;
   startTime: string;
   endTime: string;
-  slotDurationMinutes: number;
 }): Promise<{ ok: boolean; error?: string }> {
   const supabase = createClient();
   const {
@@ -21,7 +20,6 @@ export async function addAvailabilityRule(input: {
     weekday: input.weekday,
     start_time: input.startTime,
     end_time: input.endTime,
-    slot_duration_minutes: input.slotDurationMinutes,
   });
   if (error) return { ok: false, error: error.message };
   revalidatePath("/doctor/availability");

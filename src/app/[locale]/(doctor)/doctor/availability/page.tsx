@@ -47,7 +47,6 @@ export default async function AvailabilityPage({
           weekday: r.weekday,
           startTime: r.start_time.slice(0, 5),
           endTime: r.end_time.slice(0, 5),
-          slotDurationMinutes: r.slot_duration_minutes,
         }))}
       />
     </div>

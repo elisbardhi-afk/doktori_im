@@ -5,7 +5,6 @@ export interface AvailabilityRule {
   weekday: number; // ISODOW 1=Mon..7=Sun
   startTime: string; // "HH:mm"
   endTime: string; // "HH:mm"
-  slotDurationMinutes: number;
   validFrom: string; // "YYYY-MM-DD" inclusive
   validUntil: string | null; // "YYYY-MM-DD" inclusive, or null = open-ended
   isActive: boolean;
@@ -128,7 +127,7 @@ export function generateSlots(input: GenerateSlotsInput): Slot[] {
       windows.push({
         startMin: timeToMinutes(rule.startTime),
         endMin: timeToMinutes(rule.endTime),
-        duration: rule.slotDurationMinutes,
+        duration: 15,
       });
     }
 

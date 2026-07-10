@@ -88,7 +88,6 @@ export interface AvailabilityRuleRow {
   weekday: number;
   start_time: string;
   end_time: string;
-  slot_duration_minutes: number;
   valid_from: string;
   valid_until: string | null;
   is_active: boolean;
