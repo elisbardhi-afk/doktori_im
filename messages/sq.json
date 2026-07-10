@@ -33,7 +33,10 @@
     "doctors": "Mjekët",
     "users": "Përdoruesit",
     "specialties": "Specialitetet",
-    "appointments": "Takimet"
+    "appointments": "Takimet",
+    "findDoctor": "Gjej mjek",
+    "menu": "Menyja",
+    "close": "Mbyll"
   },
   "landing": {
     "heroTitle": "Gjeni mjekun tuaj",

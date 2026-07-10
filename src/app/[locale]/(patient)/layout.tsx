@@ -30,6 +30,7 @@ export default async function PatientLayout({
       userName={user.full_name ?? user.email}
       dashboardHref="/patient"
       userId={user.id}
+      variant="patient"
     >
       {children}
     </PortalShell>
