@@ -80,6 +80,14 @@
     "confirmBooking": "Confirm booking",
     "success": "Appointment booked successfully!",
     "slotTaken": "That slot was just taken. Please choose another.",
+    "errSlotTaken": "That slot was just taken. Please choose another.",
+    "errSlotNotAvailable": "That time slot is not available.",
+    "errSlotInPast": "You cannot book a slot in the past.",
+    "errDuplicate": "You already have an appointment at this time.",
+    "errDoctorNotBookable": "This doctor is not currently accepting bookings.",
+    "errAuthRequired": "Please log in to book an appointment.",
+    "errServiceNotFound": "The selected service was not found.",
+    "errUnknown": "Something went wrong. Please try again.",
     "noSlots": "No open slots for this date."
   },
   "appointments": {

@@ -14,14 +14,14 @@ import { CalendarCheck, Clock } from "lucide-react";
 import type { AvailableSlot, DoctorServiceRow } from "@/lib/database.types";
 
 const errorMsg: Record<BookErrorCode, string> = {
-  SLOT_TAKEN: "booking.slotTaken",
-  SLOT_NOT_AVAILABLE: "booking.slotTaken",
-  SLOT_IN_PAST: "booking.slotTaken",
-  DUPLICATE_BOOKING: "booking.slotTaken",
-  DOCTOR_NOT_BOOKABLE: "booking.slotTaken",
-  AUTH_REQUIRED: "booking.slotTaken",
-  SERVICE_NOT_FOUND: "booking.slotTaken",
-  UNKNOWN: "booking.slotTaken",
+  SLOT_TAKEN: "booking.errSlotTaken",
+  SLOT_NOT_AVAILABLE: "booking.errSlotNotAvailable",
+  SLOT_IN_PAST: "booking.errSlotInPast",
+  DUPLICATE_BOOKING: "booking.errDuplicate",
+  DOCTOR_NOT_BOOKABLE: "booking.errDoctorNotBookable",
+  AUTH_REQUIRED: "booking.errAuthRequired",
+  SERVICE_NOT_FOUND: "booking.errServiceNotFound",
+  UNKNOWN: "booking.errUnknown",
 };
 
 function periodOf(localTime: string): "morning" | "afternoon" | "evening" {

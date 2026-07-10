@@ -80,6 +80,14 @@
     "confirmBooking": "Konfirmo rezervimin",
     "success": "Takimi u rezervua me sukses!",
     "slotTaken": "Ky orar sapo u zu. Ju lutem zgjidhni një tjetër.",
+    "errSlotTaken": "Ky orar sapo u zu. Ju lutem zgjidhni një tjetër.",
+    "errSlotNotAvailable": "Ky orar nuk është i disponueshëm.",
+    "errSlotInPast": "Nuk mund të rezervoni një orar në të kaluarën.",
+    "errDuplicate": "Keni tashmë një takim në këtë orar.",
+    "errDoctorNotBookable": "Ky mjek nuk pranon rezervime për momentin.",
+    "errAuthRequired": "Ju lutem hyni në llogari për të rezervuar.",
+    "errServiceNotFound": "Shërbimi i zgjedhur nuk u gjet.",
+    "errUnknown": "Ndodhi një gabim. Ju lutem provoni sërish.",
     "noSlots": "Nuk ka orare të lira për këtë datë."
   },
   "appointments": {
