@@ -25,9 +25,11 @@ export async function updateSession(request: NextRequest, response: NextResponse
     },
   );
 
+  // getSession() reads the JWT from the cookie (no network round-trip).
+  // Middleware is redirect-only — authorization checks in route layouts use getUser().
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
 
-  return { response, user, supabase };
+  return { response, user: session?.user ?? null, supabase };
 }
