@@ -1,12 +1,9 @@
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
-import { Link } from "@/i18n/navigation";
 import { getMyAppointments } from "@/lib/queries/appointments";
 import { getCurrentUser } from "@/lib/auth";
 import { AppointmentCard } from "@/components/appointment-card";
 import { EmptyState } from "@/components/empty-state";
 import { PastAppointmentsCollapsible } from "@/components/past-appointments-collapsible";
-import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
 
 export default async function PatientDashboard({
   params,
@@ -38,23 +35,13 @@ export default async function PatientDashboard({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">
-            {activeLocale === "en" ? "Welcome" : "Mirë se erdhët"}, {user?.full_name}
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            {activeLocale === "en" ? "Manage your appointments" : "Menaxhoni takimet tuaja"}
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button asChild>
-            <Link href="/doctors">
-              <Search className="size-4" />
-              {t("search.title")}
-            </Link>
-          </Button>
-        </div>
+      <div>
+        <h1 className="text-2xl font-bold text-foreground">
+          {activeLocale === "en" ? "Welcome" : "Mirë se erdhët"}, {user?.full_name}
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          {activeLocale === "en" ? "Manage your appointments" : "Menaxhoni takimet tuaja"}
+        </p>
       </div>
 
       {todayAppts.length > 0 && (
