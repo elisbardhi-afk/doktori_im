@@ -26,7 +26,8 @@ export type NotificationType =
   | "doctor_approved"
   | "doctor_rejected"
   | "doctor_suspended"
-  | "new_booking";
+  | "new_booking"
+  | "message_received";
 export type ExceptionKind = "block" | "extra";
 
 export interface UserRow {
@@ -161,6 +162,25 @@ export interface NotificationRow {
   created_at: string;
 }
 
+export interface MessageThreadRow {
+  id: string;
+  type: "appointment" | "general";
+  appointment_id: string | null;
+  patient_id: string;
+  doctor_id: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MessageRow {
+  id: string;
+  thread_id: string;
+  sender_id: string;
+  body: string;
+  created_at: string;
+  read_at: string | null;
+}
+
 export interface AvailableSlot {
   slot_start: string;
   slot_end: string;
@@ -187,6 +207,8 @@ export interface Database {
       appointments: Table<AppointmentRow>;
       reviews: Table<ReviewRow>;
       notifications: Table<NotificationRow>;
+      message_threads: Table<MessageThreadRow>;
+      messages: Table<MessageRow>;
     };
     Views: Record<string, never>;
     Enums: {
