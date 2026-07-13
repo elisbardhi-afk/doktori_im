@@ -49,7 +49,7 @@ export default async function PatientDashboard({
 
       <div>
         <h2 className="mb-3 text-lg font-bold text-foreground">
-          {t("appointments.upcoming")}
+          {t("appointments.upcoming")} ({upcoming.length})
         </h2>
         {upcoming.length === 0 ? (
           <EmptyState title={t("appointments.empty")} icon="CalendarX" />
