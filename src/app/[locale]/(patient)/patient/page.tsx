@@ -4,6 +4,7 @@ import { getMyAppointments } from "@/lib/queries/appointments";
 import { getCurrentUser } from "@/lib/auth";
 import { AppointmentCard } from "@/components/appointment-card";
 import { EmptyState } from "@/components/empty-state";
+import { PastAppointmentsCollapsible } from "@/components/past-appointments-collapsible";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 
@@ -22,8 +23,17 @@ export default async function PatientDashboard({
   ]);
 
   const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const todayAppts = appts.filter((a) => {
+    const apptDate = new Date(new Date(a.startsAt).getFullYear(), new Date(a.startsAt).getMonth(), new Date(a.startsAt).getDate());
+    return apptDate.getTime() === today.getTime() && ["confirmed", "pending"].includes(a.status);
+  });
+
   const upcoming = appts.filter(
-    (a) => new Date(a.startsAt) > now && ["confirmed", "pending"].includes(a.status),
+    (a) => new Date(a.startsAt) >= tomorrow && ["confirmed", "pending"].includes(a.status),
   );
 
   return (
@@ -47,20 +57,32 @@ export default async function PatientDashboard({
         </div>
       </div>
 
-      <div>
-        <h2 className="mb-3 text-lg font-bold text-foreground">
-          {t("appointments.upcoming")} ({upcoming.length})
-        </h2>
-        {upcoming.length === 0 ? (
-          <EmptyState title={t("appointments.empty")} icon="CalendarX" />
-        ) : (
+      {todayAppts.length > 0 && (
+        <div>
+          <h2 className="mb-3 text-lg font-bold text-foreground">
+            {activeLocale === "en" ? "Today" : "Sot"} ({todayAppts.length})
+          </h2>
+          <div className="flex flex-col gap-3">
+            {todayAppts.map((a) => (
+              <AppointmentCard key={a.id} appt={a} perspective="patient" />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {upcoming.length > 0 && (
+        <PastAppointmentsCollapsible title={`${t("appointments.upcoming")} (${upcoming.length})`}>
           <div className="flex flex-col gap-3">
             {upcoming.map((a) => (
               <AppointmentCard key={a.id} appt={a} perspective="patient" />
             ))}
           </div>
-        )}
-      </div>
+        </PastAppointmentsCollapsible>
+      )}
+
+      {todayAppts.length === 0 && upcoming.length === 0 && (
+        <EmptyState title={t("appointments.empty")} icon="CalendarX" />
+      )}
     </div>
   );
 }
