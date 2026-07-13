@@ -55,7 +55,8 @@ export default async function DoctorCalendarPage({
 
   const { from, to } = getRange(view, date);
 
-  const appointments = await getMyAppointments("doctor", activeLocale, from + "T00:00:00Z", to + "T23:59:59Z", user.id);
+  const allAppointments = await getMyAppointments("doctor", activeLocale, from + "T00:00:00Z", to + "T23:59:59Z", user.id);
+  const appointments = allAppointments.filter((a) => a.status !== "cancelled");
 
   return (
     <div className="flex flex-col gap-6">
