@@ -35,6 +35,9 @@ export interface UserRow {
   role: UserRole;
   full_name: string | null;
   phone: string | null;
+  address: string | null;
+  city: string | null;
+  postal_code: string | null;
   preferred_locale: string;
   notify_email: boolean;
   notify_sms: boolean;
