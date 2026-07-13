@@ -62,7 +62,7 @@ export function BookingWizard({
     for (const s of filteredSlots) {
       const arr = map.get(s.local_date) ?? [];
       arr.push(s);
-      map.set(s.local_date, arr);
+      map.set(s.local_date, arr.sort((a, b) => a.slot_start.localeCompare(b.slot_start)));
     }
     return map;
   }, [filteredSlots]);
