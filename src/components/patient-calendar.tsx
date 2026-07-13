@@ -93,30 +93,31 @@ function AppointmentBlock({ appt }: { appt: AppointmentView }) {
 
   let nameClass = "text-xs";
   let timeClass = "text-xs";
-  let padding = "px-1 py-0.5";
+  let paddingClass = "px-1 py-0.5";
 
   if (durationMins >= 120) {
     nameClass = "text-lg";
     timeClass = "text-sm";
-    padding = "px-2 py-2";
+    paddingClass = "px-2 py-2";
   } else if (durationMins >= 60) {
     nameClass = "text-base";
     timeClass = "text-xs";
-    padding = "px-2 py-1.5";
+    paddingClass = "px-2 py-1.5";
   } else if (durationMins >= 45) {
     nameClass = "text-sm";
     timeClass = "text-xs";
-    padding = "px-2 py-1";
+    paddingClass = "px-2 py-1";
   } else if (durationMins >= 30) {
     nameClass = "text-sm";
     timeClass = "text-xs";
-    padding = "px-1.5 py-1";
+    paddingClass = "px-1.5 py-1";
   }
 
   return (
     <div
       className={cn(
-        `absolute left-0.5 right-0.5 overflow-hidden rounded-lg ${padding} font-semibold shadow-sm`,
+        "absolute left-0.5 right-0.5 overflow-hidden rounded-lg font-semibold shadow-sm",
+        paddingClass,
         statusColor(appt.status),
       )}
       style={{ top, height }}
