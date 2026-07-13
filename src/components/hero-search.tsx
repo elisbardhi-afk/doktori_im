@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Input } from "@/components/ui/input";
@@ -42,6 +42,37 @@ export function HeroSearch() {
   const router = useRouter();
   const [q, setQ] = useState("");
   const [city, setCity] = useState("");
+
+  useEffect(() => {
+    // Check localStorage for preferred city first
+    const preferredCity = localStorage.getItem("preferredCity");
+    if (preferredCity) {
+      setCity(preferredCity);
+      return;
+    }
+
+    // Fetch city from user profile if not in localStorage
+    const fetchUserCity = async () => {
+      try {
+        const response = await fetch("/api/user/profile", {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.city) {
+            setCity(data.city);
+            localStorage.setItem("preferredCity", data.city);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching user profile:", err);
+      }
+    };
+
+    fetchUserCity();
+  }, []);
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
