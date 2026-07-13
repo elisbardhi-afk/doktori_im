@@ -91,13 +91,13 @@ function AppointmentBlock({ appt }: { appt: AppointmentView }) {
   return (
     <div
       className={cn(
-        "absolute left-0.5 right-0.5 overflow-hidden rounded-lg px-1.5 py-0.5 text-xs font-semibold shadow-sm",
+        "absolute left-0.5 right-0.5 overflow-hidden rounded-lg px-2 py-1 text-sm font-semibold shadow-sm",
         statusColor(appt.status),
       )}
       style={{ top, height }}
     >
       <p className="truncate">{appt.doctorName}</p>
-      <p className="truncate opacity-80">
+      <p className="truncate text-xs opacity-80">
         {timeInTirane(appt.startsAt)}–{timeInTirane(appt.endsAt)}
       </p>
     </div>
