@@ -5,7 +5,7 @@ import { useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import { LayoutDashboard, LogOut } from "lucide-react";
+import { LayoutDashboard, LogOut, User } from "lucide-react";
 
 export function UserMenu({
   name,
@@ -35,6 +35,11 @@ export function UserMenu({
       <span className="hidden max-w-28 truncate text-sm font-semibold text-foreground lg:inline">
         {name}
       </span>
+      <Button asChild variant="ghost" size="icon" aria-label={t("profile.title")}>
+        <Link href="/patient/profile">
+          <User className="size-4" />
+        </Link>
+      </Button>
       <Button variant="ghost" size="icon" onClick={logout} aria-label={t("common.logout")}>
         <LogOut className="size-4" />
       </Button>
