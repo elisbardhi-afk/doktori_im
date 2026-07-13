@@ -101,7 +101,10 @@
       "no_show": "Mungesë"
     },
     "cancelConfirm": "Jeni i sigurt që doni ta anuloni?",
-    "empty": "Nuk keni takime."
+    "empty": "Nuk keni takime.",
+    "viewDetails": "Shiko detajet",
+    "sendMessage": "Dërgo mesazh",
+    "changeTime": "Ndrysho orarin"
   },
   "auth": {
     "loginTitle": "Mirë se erdhët",
