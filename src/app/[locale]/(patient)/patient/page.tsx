@@ -27,11 +27,11 @@ export default async function PatientDashboard({
   const todayAppts = appts.filter((a) => {
     const apptDate = new Date(new Date(a.startsAt).getFullYear(), new Date(a.startsAt).getMonth(), new Date(a.startsAt).getDate());
     return apptDate.getTime() === today.getTime() && ["confirmed", "pending"].includes(a.status);
-  });
+  }).sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime());
 
   const upcoming = appts.filter(
     (a) => new Date(a.startsAt) >= tomorrow && ["confirmed", "pending"].includes(a.status),
-  );
+  ).sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime());
 
   return (
     <div className="flex flex-col gap-6">
