@@ -67,7 +67,7 @@ export function BookingWizard({
     return map;
   }, [filteredSlots]);
 
-  const dates = Array.from(byDate.keys());
+  const dates = Array.from(byDate.keys()).sort();
   const [activeDate, setActiveDate] = useState<string | null>(dates[0] ?? null);
 
   const daySlots = activeDate ? (byDate.get(activeDate) ?? []).sort((a, b) => a.slot_start.localeCompare(b.slot_start)) : [];
