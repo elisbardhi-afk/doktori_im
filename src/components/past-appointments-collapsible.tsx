@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -15,7 +14,7 @@ export function PastAppointmentsCollapsible({
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+    <div>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground"
@@ -23,9 +22,7 @@ export function PastAppointmentsCollapsible({
         {title}
         <ChevronDown className={cn("size-4 transition-transform", isOpen && "rotate-180")} />
       </button>
-      <CollapsibleContent className="mt-3" isOpen={isOpen}>
-        {children}
-      </CollapsibleContent>
-    </Collapsible>
+      {isOpen && <div className="mt-3">{children}</div>}
+    </div>
   );
 }
