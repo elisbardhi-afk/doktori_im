@@ -26,14 +26,10 @@ export function UserMenu({
 
   return (
     <div className="flex items-center gap-2">
-      <Button asChild variant="ghost" size="sm" className="hidden max-w-36 sm:flex">
-        <Link href={dashboardHref}>
-          <span className="truncate font-semibold">{name}</span>
-        </Link>
-      </Button>
-      <Button asChild variant="ghost" size="icon" aria-label={t("profile.title")}>
-        <Link href="/patient/profile">
-          <User className="size-4" />
+      <Button asChild variant="ghost" size="sm" className="hidden gap-2 sm:flex">
+        <Link href={dashboardHref} className="flex items-center gap-2">
+          <User className="size-4 shrink-0" />
+          <span className="max-w-24 truncate font-semibold">{name}</span>
         </Link>
       </Button>
       <Button variant="ghost" size="icon" onClick={logout} aria-label={t("common.logout")}>
