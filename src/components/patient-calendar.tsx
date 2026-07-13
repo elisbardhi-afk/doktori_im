@@ -88,16 +88,41 @@ function TimelineLabels() {
 function AppointmentBlock({ appt }: { appt: AppointmentView }) {
   const top = topPx(appt.startsAt);
   const height = heightPx(appt.startsAt, appt.endsAt);
+  const durationMs = new Date(appt.endsAt).getTime() - new Date(appt.startsAt).getTime();
+  const durationMins = durationMs / 60000;
+
+  let nameClass = "text-xs";
+  let timeClass = "text-xs";
+  let padding = "px-1 py-0.5";
+
+  if (durationMins >= 120) {
+    nameClass = "text-lg";
+    timeClass = "text-sm";
+    padding = "px-2 py-2";
+  } else if (durationMins >= 60) {
+    nameClass = "text-base";
+    timeClass = "text-xs";
+    padding = "px-2 py-1.5";
+  } else if (durationMins >= 45) {
+    nameClass = "text-sm";
+    timeClass = "text-xs";
+    padding = "px-2 py-1";
+  } else if (durationMins >= 30) {
+    nameClass = "text-sm";
+    timeClass = "text-xs";
+    padding = "px-1.5 py-1";
+  }
+
   return (
     <div
       className={cn(
-        "absolute left-0.5 right-0.5 overflow-hidden rounded-lg px-2 py-1 text-sm font-semibold shadow-sm",
+        `absolute left-0.5 right-0.5 overflow-hidden rounded-lg ${padding} font-semibold shadow-sm`,
         statusColor(appt.status),
       )}
       style={{ top, height }}
     >
-      <p className="truncate">{appt.doctorName}</p>
-      <p className="truncate text-xs opacity-80">
+      <p className={cn("truncate", nameClass)}>{appt.doctorName}</p>
+      <p className={cn("truncate opacity-80", timeClass)}>
         {timeInTirane(appt.startsAt)}–{timeInTirane(appt.endsAt)}
       </p>
     </div>
@@ -110,11 +135,14 @@ function DayView({ date, appointments }: { date: Date; appointments: Appointment
     <div className="flex overflow-x-auto">
       <TimelineLabels />
       <div className="relative flex-1 border-l border-border" style={{ height: TOTAL_PX }}>
-        {Array.from({ length: END_HOUR - START_HOUR }).map((_, i) => (
+        {Array.from({ length: (END_HOUR - START_HOUR) * 4 }).map((_, i) => (
           <div
             key={i}
-            className="absolute left-0 right-0 border-t border-border/40"
-            style={{ top: i * 4 * PX_PER_15MIN }}
+            className={cn(
+              "absolute left-0 right-0",
+              i % 4 === 0 ? "border-t border-border/40" : "border-t border-border/10",
+            )}
+            style={{ top: i * PX_PER_15MIN }}
           />
         ))}
         {dayAppts.map((a) => <AppointmentBlock key={a.id} appt={a} />)}
@@ -142,11 +170,14 @@ function WeekView({ weekOf, appointments }: { weekOf: Date; appointments: Appoin
             )}
             style={{ height: TOTAL_PX, minWidth: 90 }}
           >
-            {Array.from({ length: END_HOUR - START_HOUR }).map((_, i) => (
+            {Array.from({ length: (END_HOUR - START_HOUR) * 4 }).map((_, i) => (
               <div
                 key={i}
-                className="absolute left-0 right-0 border-t border-border/40"
-                style={{ top: i * 4 * PX_PER_15MIN }}
+                className={cn(
+                  "absolute left-0 right-0",
+                  i % 4 === 0 ? "border-t border-border/40" : "border-t border-border/10",
+                )}
+                style={{ top: i * PX_PER_15MIN }}
               />
             ))}
             {dayAppts.map((a) => <AppointmentBlock key={a.id} appt={a} />)}
