@@ -94,15 +94,18 @@ function AppointmentBlock({ appt }: { appt: AppointmentView }) {
   let nameClass = "text-xs";
   let timeClass = "text-xs";
   let paddingClass = "px-1 py-0.5";
+  let truncateName = true;
 
   if (durationMins >= 120) {
     nameClass = "text-lg";
     timeClass = "text-sm";
     paddingClass = "px-2 py-2";
+    truncateName = false;
   } else if (durationMins >= 60) {
     nameClass = "text-base";
     timeClass = "text-xs";
     paddingClass = "px-2 py-1.5";
+    truncateName = false;
   } else if (durationMins >= 45) {
     nameClass = "text-sm";
     timeClass = "text-xs";
@@ -116,14 +119,14 @@ function AppointmentBlock({ appt }: { appt: AppointmentView }) {
   return (
     <div
       className={cn(
-        "absolute left-0.5 right-0.5 overflow-hidden rounded-lg font-semibold shadow-sm",
+        "absolute left-0.5 right-0.5 overflow-hidden rounded-lg font-semibold shadow-sm flex flex-col",
         paddingClass,
         statusColor(appt.status),
       )}
       style={{ top, height }}
     >
-      <p className={cn("truncate", nameClass)}>{appt.doctorName}</p>
-      <p className={cn("truncate opacity-80", timeClass)}>
+      <p className={cn(truncateName && "truncate", nameClass)}>{appt.doctorName}</p>
+      <p className={cn("opacity-80 leading-tight", timeClass)}>
         {timeInTirane(appt.startsAt)}–{timeInTirane(appt.endsAt)}
       </p>
     </div>
