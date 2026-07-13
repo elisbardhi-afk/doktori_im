@@ -70,11 +70,11 @@ export function BookingWizard({
   const dates = Array.from(byDate.keys());
   const [activeDate, setActiveDate] = useState<string | null>(dates[0] ?? null);
 
-  const daySlots = activeDate ? (byDate.get(activeDate) ?? []) : [];
+  const daySlots = activeDate ? (byDate.get(activeDate) ?? []).sort((a, b) => a.slot_start.localeCompare(b.slot_start)) : [];
   const periods = {
-    morning: daySlots.filter((s) => periodOf(s.local_time) === "morning").sort((a, b) => a.slot_start.localeCompare(b.slot_start)),
-    afternoon: daySlots.filter((s) => periodOf(s.local_time) === "afternoon").sort((a, b) => a.slot_start.localeCompare(b.slot_start)),
-    evening: daySlots.filter((s) => periodOf(s.local_time) === "evening").sort((a, b) => a.slot_start.localeCompare(b.slot_start)),
+    morning: daySlots.filter((s) => periodOf(s.local_time) === "morning"),
+    afternoon: daySlots.filter((s) => periodOf(s.local_time) === "afternoon"),
+    evening: daySlots.filter((s) => periodOf(s.local_time) === "evening"),
   };
 
   async function confirm() {
