@@ -6,7 +6,7 @@ import { AppointmentCard } from "@/components/appointment-card";
 import { StatCard } from "@/components/stat-card";
 import { EmptyState } from "@/components/empty-state";
 import { Button } from "@/components/ui/button";
-import { Search, User } from "lucide-react";
+import { Search } from "lucide-react";
 
 export default async function PatientDashboard({
   params,
@@ -39,12 +39,6 @@ export default async function PatientDashboard({
           </p>
         </div>
         <div className="flex gap-2">
-          <Button asChild variant="outline">
-            <Link href="/patient/profile">
-              <User className="size-4" />
-              {t("profile.title")}
-            </Link>
-          </Button>
           <Button asChild>
             <Link href="/doctors">
               <Search className="size-4" />
