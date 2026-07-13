@@ -255,7 +255,7 @@ export function DoctorCalendar({
   const navigate = useCallback(
     (newView: CalendarView, newDate: Date) => {
       const d = formatInTirane(newDate.toISOString(), "yyyy-MM-dd");
-      router.push(`${pathname}?view=${newView}&date=${d}`);
+      router.replace(`${pathname}?view=${newView}&date=${d}`);
     },
     [router, pathname],
   );
