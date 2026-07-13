@@ -84,15 +84,18 @@ export async function updateUserProfile(
   const { error } = await supabase
     .from("users")
     .update(updateData)
-    .eq("id", user.id);
+    .eq("id", user.id)
+    .select();
 
   if (error) {
     console.error("Failed to update user profile:", error);
-    return { success: false, error: "Failed to save profile" };
+    return { success: false, error: error.message || "Failed to save profile" };
   }
 
   // Revalidate the profile page cache
   revalidatePath("/patient/profile");
+  revalidatePath("/patient");
+  revalidatePath("/");
 
   return { success: true };
 }
