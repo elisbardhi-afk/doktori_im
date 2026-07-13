@@ -256,6 +256,40 @@ export interface Database {
         Returns: string;
       };
       is_admin: { Args: Record<string, never>; Returns: boolean };
+      reschedule_appointment: {
+        Args: {
+          p_appointment_id: string;
+          p_new_starts_at: string;
+          p_duration_minutes: number;
+        };
+        Returns: Array<{
+          success: boolean;
+          appointment_id: string | null;
+          error_code: string | null;
+        }>;
+      };
+      create_or_get_message_thread: {
+        Args: {
+          p_type: string;
+          p_appointment_id: string | null;
+          p_patient_id: string;
+          p_doctor_id: string;
+        };
+        Returns: Array<{
+          thread_id: string;
+        }>;
+      };
+      send_message: {
+        Args: {
+          p_thread_id: string;
+          p_sender_id: string;
+          p_body: string;
+        };
+        Returns: Array<{
+          message_id: string;
+          created_at: string;
+        }>;
+      };
     };
   };
 }
