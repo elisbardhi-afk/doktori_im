@@ -53,7 +53,8 @@ export default async function PatientCalendarPage({
 
   const { from, to } = getRange(view, date);
 
-  const appointments = await getMyAppointments("patient", activeLocale, from + "T00:00:00Z", to + "T23:59:59Z");
+  const allAppointments = await getMyAppointments("patient", activeLocale, from + "T00:00:00Z", to + "T23:59:59Z");
+  const appointments = allAppointments.filter((a) => a.status !== "cancelled");
 
   return (
     <div className="flex flex-col gap-6">
