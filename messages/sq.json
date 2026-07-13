@@ -167,5 +167,35 @@
     "monthly": "Mujore",
     "noAppointments": "Nuk ka takime për këtë periudhë.",
     "today": "Sot"
+  },
+  "profile": {
+    "title": "Profili",
+    "firstName": "Emri",
+    "lastName": "Mbiemri",
+    "email": "Email",
+    "emailReadOnly": "Email nuk mund të ndryshohet",
+    "phone": "Telefoni",
+    "address": "Adresa",
+    "addressPlaceholder": "Futni adresën tuaj",
+    "city": "Qyteti",
+    "cityPlaceholder": "Zgjidhni ose futni qytetin tuaj",
+    "postalCode": "Kodi postar",
+    "postalCodePlaceholder": "Futni kodin postar",
+    "save": "Ruaj",
+    "saving": "Duke ruajtur...",
+    "saveSuccess": "Profili u ruajt",
+    "saveSuccessDescription": "Profili juaj u përditësua me sukses",
+    "saveError": "Gabim në ruajtje",
+    "saveErrorDescription": "Ndodhi një gabim gjatë ruajtjes. Ju lutem provoni sërish.",
+    "errors": {
+      "firstNameRequired": "Emri është i detyrueshëm",
+      "firstNameTooLong": "Emri nuk duhet të kalojë 50 karaktere",
+      "lastNameRequired": "Mbiemri është i detyrueshëm",
+      "lastNameTooLong": "Mbiemri nuk duhet të kalojë 50 karaktere",
+      "phoneRequired": "Numri i telefonit është i detyrueshëm",
+      "addressTooLong": "Adresa nuk duhet të kalojë 150 karaktere",
+      "cityInvalid": "Ju lutem zgjidhni një qytet të vlefshëm nga lista",
+      "postalCodeTooLong": "Kodi postar nuk duhet të kalojë 20 karaktere"
+    }
   }
 }

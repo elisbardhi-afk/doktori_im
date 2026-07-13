@@ -167,5 +167,35 @@
     "monthly": "Monthly",
     "noAppointments": "No appointments for this period.",
     "today": "Today"
+  },
+  "profile": {
+    "title": "Profile",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email",
+    "emailReadOnly": "Your email cannot be changed",
+    "phone": "Phone",
+    "address": "Address",
+    "addressPlaceholder": "Enter your address",
+    "city": "City",
+    "cityPlaceholder": "Select or enter your city",
+    "postalCode": "Postal code",
+    "postalCodePlaceholder": "Enter your postal code",
+    "save": "Save",
+    "saving": "Saving...",
+    "saveSuccess": "Profile saved",
+    "saveSuccessDescription": "Your profile has been updated successfully",
+    "saveError": "Error saving profile",
+    "saveErrorDescription": "An error occurred while saving your profile. Please try again.",
+    "errors": {
+      "firstNameRequired": "First name is required",
+      "firstNameTooLong": "First name must not exceed 50 characters",
+      "lastNameRequired": "Last name is required",
+      "lastNameTooLong": "Last name must not exceed 50 characters",
+      "phoneRequired": "Phone number is required",
+      "addressTooLong": "Address must not exceed 150 characters",
+      "cityInvalid": "Please select a valid city from the list",
+      "postalCodeTooLong": "Postal code must not exceed 20 characters"
+    }
   }
 }
