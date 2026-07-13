@@ -55,7 +55,8 @@ export interface GetThreadResult {
  */
 export async function rescheduleAppointment(
   appointmentId: string,
-  newStartsAt: string
+  newStartsAt: string,
+  durationMinutes?: number
 ): Promise<RescheduleResult> {
   // Verify authentication
   const user = await getCurrentUser();
@@ -65,7 +66,7 @@ export async function rescheduleAppointment(
 
   const supabase = createClient();
 
-  // Fetch the appointment to get duration
+  // Fetch the appointment to get duration if not provided
   const { data: appointment, error: fetchError } = await supabase
     .from("appointments")
     .select("starts_at, ends_at, status, doctor_id, patient_id")
@@ -81,16 +82,19 @@ export async function rescheduleAppointment(
     return { ok: false, error: "UNAUTHORIZED" };
   }
 
-  // Calculate duration in minutes
-  const startTime = new Date(appointment.starts_at).getTime();
-  const endTime = new Date(appointment.ends_at).getTime();
-  const durationMinutes = Math.round((endTime - startTime) / (1000 * 60));
+  // Use provided duration or calculate from appointment times
+  let finalDurationMinutes = durationMinutes;
+  if (!finalDurationMinutes) {
+    const startTime = new Date(appointment.starts_at).getTime();
+    const endTime = new Date(appointment.ends_at).getTime();
+    finalDurationMinutes = Math.round((endTime - startTime) / (1000 * 60));
+  }
 
   // Call RPC to reschedule
   const { data, error } = await supabase.rpc("reschedule_appointment", {
     p_appointment_id: appointmentId,
     p_new_starts_at: newStartsAt,
-    p_duration_minutes: durationMinutes,
+    p_duration_minutes: finalDurationMinutes,
   });
 
   if (error) {

@@ -78,7 +78,7 @@ export function RescheduleModal({
 
     setLoading(true);
     const newStartsAt = `${selectedDate}T${selectedTime}:00`;
-    const result = await rescheduleAppointment(appointmentId, newStartsAt);
+    const result = await rescheduleAppointment(appointmentId, newStartsAt, durationMinutes);
     setLoading(false);
 
     if (!result.ok) {
