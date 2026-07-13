@@ -15,7 +15,7 @@ import { cancelAppointment } from "@/actions/booking";
 import { getMessageThread } from "@/lib/queries/messages";
 import { getOrCreateMessageThread } from "@/actions/appointment-edit";
 import { formatInTirane, timeInTirane } from "@/lib/datetime";
-import { Calendar, User, Stethoscope, Clock } from "lucide-react";
+import { Calendar, Stethoscope, Clock } from "lucide-react";
 import type { AppointmentView } from "@/lib/queries/appointments";
 import type { MessageThread as MessageThreadType } from "@/lib/queries/messages";
 
@@ -23,13 +23,11 @@ export function AppointmentEditClient({
   appointment,
   messageThread: initialThread,
   isUpcoming,
-  locale,
   currentUserId,
 }: {
   appointment: AppointmentView;
   messageThread: MessageThreadType | null;
   isUpcoming: boolean;
-  locale: string;
   currentUserId: string;
 }) {
   const t = useTranslations();
@@ -62,7 +60,8 @@ export function AppointmentEditClient({
         }
       })();
     }
-  }, [appointment, threadData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appointment.status, appointment.doctorId, appointment.id]);
 
   // Poll for new messages every 3 seconds if thread exists
   useEffect(() => {
@@ -79,7 +78,8 @@ export function AppointmentEditClient({
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [threadData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [threadData?.id]);
 
   // Handle cancel appointment
   const handleCancel = async () => {

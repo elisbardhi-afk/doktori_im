@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
+import { getLocale, setRequestLocale } from "next-intl/server";
 import { getCurrentUser } from "@/lib/auth";
 import { getMyAppointments } from "@/lib/queries/appointments";
 import { getMessageThread } from "@/lib/queries/messages";
@@ -49,7 +49,6 @@ export default async function AppointmentEditPage({
       appointment={appointment}
       messageThread={messageThread}
       isUpcoming={isUpcoming}
-      locale={activeLocale}
       currentUserId={user.id}
     />
   );

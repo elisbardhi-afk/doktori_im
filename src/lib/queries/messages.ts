@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import type { MessageThreadRow, MessageRow } from "@/lib/database.types";
+import type { MessageThreadRow } from "@/lib/database.types";
 
 export interface Message {
   id: string;
