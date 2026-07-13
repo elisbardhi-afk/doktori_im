@@ -3,7 +3,6 @@ import { Link } from "@/i18n/navigation";
 import { getMyAppointments } from "@/lib/queries/appointments";
 import { getCurrentUser } from "@/lib/auth";
 import { AppointmentCard } from "@/components/appointment-card";
-import { StatCard } from "@/components/stat-card";
 import { EmptyState } from "@/components/empty-state";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
@@ -46,24 +45,6 @@ export default async function PatientDashboard({
             </Link>
           </Button>
         </div>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-3">
-        <StatCard
-          label={t("appointments.upcoming")}
-          value={upcoming.length}
-          icon="CalendarClock"
-        />
-        <StatCard
-          label={t("appointments.past")}
-          value={appts.length - upcoming.length}
-          icon="History"
-        />
-        <StatCard
-          label={activeLocale === "en" ? "Total" : "Gjithsej"}
-          value={appts.length}
-          icon="Calendar"
-        />
       </div>
 
       <div>
