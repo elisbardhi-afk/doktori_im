@@ -9,7 +9,6 @@ export async function updateDoctorProfile(input: {
   clinicName: string;
   clinicAddress: string;
   city: string;
-  consultationFee: number | null;
 }): Promise<{ ok: boolean; error?: string }> {
   const supabase = createClient();
   const {
@@ -24,7 +23,6 @@ export async function updateDoctorProfile(input: {
       clinic_name: input.clinicName,
       clinic_address: input.clinicAddress,
       city: input.city,
-      consultation_fee: input.consultationFee,
     })
     .eq("user_id", user.id);
 

@@ -38,7 +38,6 @@ export default async function DoctorProfilePage({
             clinicName={p?.clinic_name ?? ""}
             clinicAddress={p?.clinic_address ?? ""}
             city={p?.city ?? ""}
-            consultationFee={p?.consultation_fee != null ? Number(p.consultation_fee) : null}
           />
         </CardContent>
       </Card>

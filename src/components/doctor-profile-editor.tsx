@@ -15,7 +15,6 @@ interface Props {
   clinicName: string;
   clinicAddress: string;
   city: string;
-  consultationFee: number | null;
 }
 
 export function DoctorProfileEditor(initial: Props) {
@@ -34,7 +33,6 @@ export function DoctorProfileEditor(initial: Props) {
       clinicName: form.clinicName,
       clinicAddress: form.clinicAddress,
       city: form.city,
-      consultationFee: form.consultationFee,
     });
     setLoading(false);
     if (!res.ok) {
@@ -80,21 +78,6 @@ export function DoctorProfileEditor(initial: Props) {
           id="address"
           value={form.clinicAddress}
           onChange={(e) => setForm({ ...form, clinicAddress: e.target.value })}
-        />
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="fee">{L("Consultation fee (L)", "Tarifa e konsultës (L)")}</Label>
-        <Input
-          id="fee"
-          type="number"
-          min={0}
-          value={form.consultationFee ?? ""}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              consultationFee: e.target.value ? Number(e.target.value) : null,
-            })
-          }
         />
       </div>
       <Button type="submit" disabled={loading} className="self-start">
