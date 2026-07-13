@@ -13,7 +13,6 @@ function rule(overrides: Partial<AvailabilityRule> = {}): AvailabilityRule {
     weekday: 1, // Monday
     startTime: "09:00",
     endTime: "12:00",
-    slotDurationMinutes: 30,
     validFrom: "2020-01-01",
     validUntil: null,
     isActive: true,
@@ -22,7 +21,7 @@ function rule(overrides: Partial<AvailabilityRule> = {}): AvailabilityRule {
 }
 
 describe("generateSlots — basic grid", () => {
-  it("09:00–12:00 @30min on a Monday yields 6 slots", () => {
+  it("09:00–12:00 on a Monday yields 12 slots (15-min grid)", () => {
     // 2026-07-06 is a Monday.
     const slots = generateSlots({
       rules: [rule()],
@@ -32,19 +31,25 @@ describe("generateSlots — basic grid", () => {
       toDate: "2026-07-06",
       now: PAST_NOW,
     });
-    expect(slots).toHaveLength(6);
+    expect(slots).toHaveLength(12);
     expect(slots.map((s) => s.localTime)).toEqual([
       "09:00",
+      "09:15",
       "09:30",
+      "09:45",
       "10:00",
+      "10:15",
       "10:30",
+      "10:45",
       "11:00",
+      "11:15",
       "11:30",
+      "11:45",
     ]);
   });
 
   it("does not emit a slot that would run past endTime", () => {
-    // 09:00–10:15 @30min → 09:00, 09:30 (10:00→10:30 exceeds 10:15).
+    // 09:00–10:15 @15min → 09:00, 09:15, 09:30, 09:45, 10:00 (10:15 would exceed 10:15).
     const slots = generateSlots({
       rules: [rule({ endTime: "10:15" })],
       exceptions: [],
@@ -53,7 +58,7 @@ describe("generateSlots — basic grid", () => {
       toDate: "2026-07-06",
       now: PAST_NOW,
     });
-    expect(slots.map((s) => s.localTime)).toEqual(["09:00", "09:30"]);
+    expect(slots.map((s) => s.localTime)).toEqual(["09:00", "09:15", "09:30", "09:45", "10:00"]);
   });
 
   it("only generates on matching weekday", () => {
@@ -86,7 +91,7 @@ describe("generateSlots — DST correctness (Europe/Tirane)", () => {
   it("winter slot resolves at +01:00 UTC", () => {
     // 2026-01-19 is a Monday (winter). 09:00 local → 08:00 UTC.
     const slots = generateSlots({
-      rules: [rule({ slotDurationMinutes: 60, endTime: "10:00" })],
+      rules: [rule({ endTime: "10:00" })],
       exceptions: [],
       busy: [],
       fromDate: "2026-01-19",
@@ -99,7 +104,7 @@ describe("generateSlots — DST correctness (Europe/Tirane)", () => {
   it("summer slot resolves at +02:00 UTC", () => {
     // 2026-07-06 Monday (summer). 09:00 local → 07:00 UTC.
     const slots = generateSlots({
-      rules: [rule({ slotDurationMinutes: 60, endTime: "10:00" })],
+      rules: [rule({ endTime: "10:00" })],
       exceptions: [],
       busy: [],
       fromDate: "2026-07-06",
@@ -119,7 +124,6 @@ describe("generateSlots — DST correctness (Europe/Tirane)", () => {
           weekday: 7, // Sunday
           startTime: "00:00",
           endTime: "06:00",
-          slotDurationMinutes: 60,
         }),
       ],
       exceptions: [],
@@ -146,7 +150,6 @@ describe("generateSlots — DST correctness (Europe/Tirane)", () => {
           weekday: 7,
           startTime: "00:00",
           endTime: "06:00",
-          slotDurationMinutes: 60,
         }),
       ],
       exceptions: [],
@@ -168,7 +171,7 @@ describe("generateSlots — DST correctness (Europe/Tirane)", () => {
 
 describe("generateSlots — busy exclusion", () => {
   it("a confirmed appointment removes its slot", () => {
-    // Busy 09:30–10:00 (summer → 07:30–08:00 UTC) removes the 09:30 slot only.
+    // Busy 09:30–10:00 (summer → 07:30–08:00 UTC) removes the 09:30 and 09:45 slots.
     const slots = generateSlots({
       rules: [rule()],
       exceptions: [],
@@ -184,15 +187,20 @@ describe("generateSlots — busy exclusion", () => {
     });
     expect(slots.map((s) => s.localTime)).toEqual([
       "09:00",
+      "09:15",
       "10:00",
+      "10:15",
       "10:30",
+      "10:45",
       "11:00",
+      "11:15",
       "11:30",
+      "11:45",
     ]);
   });
 
-  it("a 60-min appointment suppresses two adjacent 30-min slots", () => {
-    // Busy 10:00–11:00 local (summer → 08:00–09:00 UTC) removes 10:00 & 10:30.
+  it("a 60-min appointment suppresses four adjacent 15-min slots", () => {
+    // Busy 10:00–11:00 local (summer → 08:00–09:00 UTC) removes 10:00, 10:15, 10:30, 10:45.
     const slots = generateSlots({
       rules: [rule()],
       exceptions: [],
@@ -208,9 +216,13 @@ describe("generateSlots — busy exclusion", () => {
     });
     expect(slots.map((s) => s.localTime)).toEqual([
       "09:00",
+      "09:15",
       "09:30",
+      "09:45",
       "11:00",
+      "11:15",
       "11:30",
+      "11:45",
     ]);
   });
 
@@ -271,14 +283,19 @@ describe("generateSlots — exceptions", () => {
     });
     expect(slots.map((s) => s.localTime)).toEqual([
       "09:00",
+      "09:15",
       "09:30",
+      "09:45",
       "11:00",
+      "11:15",
       "11:30",
+      "11:45",
     ]);
   });
 
   it("extra exception adds slots on a non-rule weekday", () => {
     // Tuesday 2026-07-07 has no rule; an extra window adds slots.
+    // Extra windows default to 30-minute slots (from line 141 in slots.ts).
     const exc: AvailabilityException = {
       date: "2026-07-07",
       kind: "extra",
@@ -300,8 +317,8 @@ describe("generateSlots — exceptions", () => {
 
 describe("generateSlots — past filtering", () => {
   it("excludes slots at or before now", () => {
-    // now = 2026-07-06 10:00 local = 08:00 UTC. Slots 09:00, 09:30, 10:00
-    // are at/before now; 10:30, 11:00, 11:30 remain.
+    // now = 2026-07-06 10:00 local = 08:00 UTC. Slots 09:00–10:00 are at/before now;
+    // 10:15, 10:30, 10:45, 11:00, 11:15, 11:30, 11:45 remain.
     const slots = generateSlots({
       rules: [rule()],
       exceptions: [],
@@ -310,6 +327,6 @@ describe("generateSlots — past filtering", () => {
       toDate: "2026-07-06",
       now: new Date("2026-07-06T08:00:00Z"),
     });
-    expect(slots.map((s) => s.localTime)).toEqual(["10:30", "11:00", "11:30"]);
+    expect(slots.map((s) => s.localTime)).toEqual(["10:15", "10:30", "10:45", "11:00", "11:15", "11:30", "11:45"]);
   });
 });
