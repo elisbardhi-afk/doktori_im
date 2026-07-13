@@ -46,7 +46,7 @@ export default async function DoctorAppointmentsPage({
                     </div>
                     <div className=”flex items-center gap-2 text-sm text-muted-foreground”>
                       <Calendar className=”size-4” />
-                      {formatInTirane(a.startsAt, “EEEE, d MMM yyyy — HH:mm”)}
+                      {formatInTirane(a.startsAt, “EEEE, d MMM yyyy – HH:mm”)}
                     </div>
                     {a.reason && (
                       <p className=”text-sm text-muted-foreground”>”{a.reason}”</p>
@@ -82,7 +82,7 @@ export default async function DoctorAppointmentsPage({
                       </div>
                       <div className=”flex items-center gap-2 text-sm text-muted-foreground”>
                         <Calendar className=”size-4” />
-                        {formatInTirane(a.startsAt, “EEEE, d MMM yyyy — HH:mm”)}
+                        {formatInTirane(a.startsAt, “EEEE, d MMM yyyy – HH:mm”)}
                       </div>
                       {a.reason && (
                         <p className=”text-sm text-muted-foreground”>”{a.reason}”</p>
