@@ -9,34 +9,6 @@ import { PastAppointmentsCollapsible } from “@/components/past-appointments-co
 import { formatInTirane } from “@/lib/datetime”;
 import { User, Calendar } from “lucide-react”;
 
-function AppointmentCard({ a }: { a: any }) {
-  return (
-    <Card className=”flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between”>
-      <div className=”flex flex-col gap-1.5”>
-        <div className=”flex items-center gap-2”>
-          <User className=”size-4 text-primary” />
-          <span className=”font-bold text-foreground”>{a.patientName}</span>
-        </div>
-        <div className=”flex items-center gap-2 text-sm text-muted-foreground”>
-          <Calendar className=”size-4” />
-          {formatInTirane(a.startsAt, “EEEE, d MMM yyyy — HH:mm”)}
-        </div>
-        {a.reason && (
-          <p className=”text-sm text-muted-foreground”>”{a.reason}”</p>
-        )}
-      </div>
-      <div className=”flex items-center gap-3”>
-        <StatusBadge status={a.status} />
-        <AppointmentActions
-          appointmentId={a.id}
-          status={a.status}
-          startsAt={a.startsAt}
-        />
-      </div>
-    </Card>
-  );
-}
-
 export default async function DoctorAppointmentsPage({
   params,
 }: {
@@ -63,7 +35,32 @@ export default async function DoctorAppointmentsPage({
           {active.length > 0 && (
             <div className=”flex flex-col gap-3”>
               {active.map((a) => (
-                <AppointmentCard key={a.id} a={a} />
+                <Card
+                  key={a.id}
+                  className=”flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between”
+                >
+                  <div className=”flex flex-col gap-1.5”>
+                    <div className=”flex items-center gap-2”>
+                      <User className=”size-4 text-primary” />
+                      <span className=”font-bold text-foreground”>{a.patientName}</span>
+                    </div>
+                    <div className=”flex items-center gap-2 text-sm text-muted-foreground”>
+                      <Calendar className=”size-4” />
+                      {formatInTirane(a.startsAt, “EEEE, d MMM yyyy — HH:mm”)}
+                    </div>
+                    {a.reason && (
+                      <p className=”text-sm text-muted-foreground”>”{a.reason}”</p>
+                    )}
+                  </div>
+                  <div className=”flex items-center gap-3”>
+                    <StatusBadge status={a.status} />
+                    <AppointmentActions
+                      appointmentId={a.id}
+                      status={a.status}
+                      startsAt={a.startsAt}
+                    />
+                  </div>
+                </Card>
               ))}
             </div>
           )}
@@ -74,7 +71,32 @@ export default async function DoctorAppointmentsPage({
             >
               <div className=”flex flex-col gap-3”>
                 {cancelled.map((a) => (
-                  <AppointmentCard key={a.id} a={a} />
+                  <Card
+                    key={a.id}
+                    className=”flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between”
+                  >
+                    <div className=”flex flex-col gap-1.5”>
+                      <div className=”flex items-center gap-2”>
+                        <User className=”size-4 text-primary” />
+                        <span className=”font-bold text-foreground”>{a.patientName}</span>
+                      </div>
+                      <div className=”flex items-center gap-2 text-sm text-muted-foreground”>
+                        <Calendar className=”size-4” />
+                        {formatInTirane(a.startsAt, “EEEE, d MMM yyyy — HH:mm”)}
+                      </div>
+                      {a.reason && (
+                        <p className=”text-sm text-muted-foreground”>”{a.reason}”</p>
+                      )}
+                    </div>
+                    <div className=”flex items-center gap-3”>
+                      <StatusBadge status={a.status} />
+                      <AppointmentActions
+                        appointmentId={a.id}
+                        status={a.status}
+                        startsAt={a.startsAt}
+                      />
+                    </div>
+                  </Card>
                 ))}
               </div>
             </PastAppointmentsCollapsible>
