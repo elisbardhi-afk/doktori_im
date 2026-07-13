@@ -123,5 +123,6 @@ export async function getDoctorSlots(
     p_from: fromDate,
     p_to: toDate,
   });
-  return (data ?? []) as AvailableSlot[];
+  const slots = (data ?? []) as AvailableSlot[];
+  return slots.sort((a, b) => a.slot_start.localeCompare(b.slot_start));
 }

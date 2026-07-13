@@ -223,7 +223,7 @@ function MonthView({
         {cells.map((cell, i) => {
           const isCurrentMonth = cell.getMonth() === month;
           const isToday = isSameDay(cell, today);
-          const dayAppts = appointments.filter((a) => isSameDay(localDateOf(a.startsAt), cell));
+          const dayAppts = appointments.filter((a) => isSameDay(localDateOf(a.startsAt), cell)).sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime());
           const shown = dayAppts.slice(0, 3);
           const overflow = dayAppts.length - 3;
 
