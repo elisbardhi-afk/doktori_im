@@ -9,7 +9,15 @@ import { PastAppointmentsCollapsible } from “@/components/past-appointments-co
 import { formatInTirane } from “@/lib/datetime”;
 import { User, Calendar } from “lucide-react”;
 
-function AppointmentCard({ a }: { a: any }) {
+interface Appointment {
+  id: string;
+  patientName: string;
+  startsAt: string;
+  reason?: string;
+  status: string;
+}
+
+function AppointmentCard({ a }: { a: Appointment }) {
   return (
     <Card className=”flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between”>
       <div className=”flex flex-col gap-1.5”>
