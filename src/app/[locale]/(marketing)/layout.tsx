@@ -23,6 +23,7 @@ export default async function MarketingLayout({
     { href: "/patient", label: t("nav.dashboard"), icon: "LayoutDashboard" },
     { href: "/patient/appointments", label: t("nav.myAppointments"), icon: "Calendar" },
     { href: "/patient/waitlist", label: t("nav.waitlist"), icon: "Clock" },
+    { href: "/patient/profile", label: t("profile.title"), icon: "User" },
   ] : [];
 
   return (
