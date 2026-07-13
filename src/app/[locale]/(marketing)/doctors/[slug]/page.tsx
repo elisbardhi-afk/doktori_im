@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { BookingWizard } from "@/components/booking-wizard";
 import { formatInTirane } from "@/lib/datetime";
 import { MapPin, Languages as LangIcon } from "lucide-react";
+import { BackButton } from "@/components/back-button";
 
 export const revalidate = 60;
 
@@ -46,7 +47,9 @@ export default async function DoctorProfilePage({
   ]);
 
   return (
-    <div className="flex flex-col gap-6 md:grid md:grid-cols-3">
+    <div className="flex flex-col gap-6">
+      <BackButton label={activeLocale === "en" ? "Back" : "Kthehu"} />
+      <div className="flex flex-col gap-6 md:grid md:grid-cols-3">
       {/* Left: profile + reviews */}
       <div className="flex flex-col gap-6 md:col-span-2">
         <Card>
@@ -146,6 +149,7 @@ export default async function DoctorProfilePage({
             />
           </CardContent>
         </Card>
+      </div>
       </div>
     </div>
   );

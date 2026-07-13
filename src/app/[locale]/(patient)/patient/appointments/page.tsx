@@ -2,6 +2,7 @@ import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 import { getMyAppointments } from "@/lib/queries/appointments";
 import { AppointmentCard } from "@/components/appointment-card";
 import { EmptyState } from "@/components/empty-state";
+import { PastAppointmentsCollapsible } from "@/components/past-appointments-collapsible";
 
 export default async function PatientAppointmentsPage({
   params,
@@ -41,14 +42,13 @@ export default async function PatientAppointmentsPage({
 
       {past.length > 0 && (
         <section>
-          <h2 className="mb-3 text-lg font-bold text-foreground">
-            {t("appointments.past")}
-          </h2>
-          <div className="flex flex-col gap-3">
-            {past.map((a) => (
-              <AppointmentCard key={a.id} appt={a} perspective="patient" />
-            ))}
-          </div>
+          <PastAppointmentsCollapsible title={`${t("appointments.past")} (${past.length})`}>
+            <div className="flex flex-col gap-3">
+              {past.map((a) => (
+                <AppointmentCard key={a.id} appt={a} perspective="patient" />
+              ))}
+            </div>
+          </PastAppointmentsCollapsible>
         </section>
       )}
     </div>

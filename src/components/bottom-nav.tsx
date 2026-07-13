@@ -16,7 +16,7 @@ export function BottomNav({ items }: { items: NavItem[] }) {
     >
       {items.map((item) => {
         const Icon = Icons[item.icon] as LucideIcon;
-        const active = pathname === item.href || pathname.startsWith(item.href + "/");
+        const active = pathname === item.href;
         return (
           <Link
             key={item.href}
