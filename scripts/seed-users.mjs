@@ -312,7 +312,7 @@ async function main() {
           weekday,
           start_time: "09:00",
           end_time: "13:00",
-          // slot_duration_minutes removed — column dropped in migration 0005
+          slot_duration_minutes: 15,
         });
       }
       // Insert (skip if they already exist by checking count).
