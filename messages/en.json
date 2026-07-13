@@ -169,7 +169,8 @@
     "today": "Today"
   },
   "profile": {
-    "title": "Profile",
+    "title": "My Information",
+    "description": "Update your personal information",
     "firstName": "First name",
     "lastName": "Last name",
     "email": "Email",

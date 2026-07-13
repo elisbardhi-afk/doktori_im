@@ -169,7 +169,8 @@
     "today": "Sot"
   },
   "profile": {
-    "title": "Profili",
+    "title": "Informata e mia",
+    "description": "Përditësoni informacionin tuaj personal",
     "firstName": "Emri",
     "lastName": "Mbiemri",
     "email": "Email",
