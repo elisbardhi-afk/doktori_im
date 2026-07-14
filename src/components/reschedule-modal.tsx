@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { formatInTirane, timeInTirane } from "@/lib/datetime";
+import { formatInTirane } from "@/lib/datetime";
 import { rescheduleAppointment, fetchDoctorSlots } from "@/actions/appointment-edit";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";

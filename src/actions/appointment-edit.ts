@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/auth";
 import type { AvailableSlot } from "@/lib/database.types";
-import type { MessageThread, Message } from "@/lib/queries/messages";
+import type { MessageThread } from "@/lib/queries/messages";
 
 // ============================================================================
 // Types & Interfaces

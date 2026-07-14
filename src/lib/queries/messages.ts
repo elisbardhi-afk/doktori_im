@@ -12,10 +12,10 @@ export interface Message {
 
 export interface MessageThread {
   id: string;
-  type: "appointment" | "doctor";
+  type: "appointment" | "general";
   appointmentId: string | null;
-  patientId: string;
-  doctorId: string;
+  patientId?: string;
+  doctorId?: string;
   messages: Message[];
 }
 
@@ -60,7 +60,7 @@ export async function getMessageThread(
   if (!messagesData) {
     return {
       id: thread.id,
-      type: thread.type as "appointment" | "doctor",
+      type: thread.type as "appointment" | "general",
       appointmentId: thread.appointment_id,
       patientId: thread.patient_id,
       doctorId: thread.doctor_id,
@@ -95,7 +95,7 @@ export async function getMessageThread(
 
   return {
     id: thread.id,
-    type: thread.type as "appointment" | "doctor",
+    type: thread.type as "appointment" | "general",
     appointmentId: thread.appointment_id,
     patientId: thread.patient_id,
     doctorId: thread.doctor_id,
@@ -178,7 +178,7 @@ export async function getAppointmentMessageThreads(
 
   return threads.map((thread) => ({
     id: thread.id,
-    type: thread.type as "appointment" | "doctor",
+    type: thread.type as "appointment" | "general",
     appointmentId: thread.appointment_id,
     patientId: thread.patient_id,
     doctorId: thread.doctor_id,
