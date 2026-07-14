@@ -3,8 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/auth";
+import { requireDoctor } from "@/lib/guards";
 import type { AvailableSlot } from "@/lib/database.types";
-import type { MessageThread } from "@/lib/queries/messages";
+import type { MessageThread, DoctorThreadSummary } from "@/lib/queries/messages";
+import { getDoctorMessageThreads } from "@/lib/queries/messages";
 
 // ============================================================================
 // Types & Interfaces
@@ -157,6 +159,7 @@ export async function sendMessage(
 
   // Revalidate caches if needed (optional for messaging)
   revalidatePath("/patient");
+  revalidatePath("/doctor/messages");
 
   return { ok: true, messageId: result.message_id };
 }
@@ -275,4 +278,13 @@ export async function fetchMessageThread(
       })
     ),
   };
+}
+
+/**
+ * Fetch all message threads for the currently authenticated doctor.
+ * Returns threads sorted by most-recent message descending.
+ */
+export async function fetchDoctorMessageThreads(): Promise<DoctorThreadSummary[]> {
+  const { user } = await requireDoctor();
+  return getDoctorMessageThreads(user.id);
 }
