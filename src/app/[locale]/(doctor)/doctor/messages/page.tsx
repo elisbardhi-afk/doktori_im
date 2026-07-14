@@ -1,6 +1,6 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { requireDoctor } from "@/lib/guards";
-import { fetchDoctorMessageThreads } from "@/actions/appointment-edit";
+import { getDoctorMessageThreads } from "@/lib/queries/messages";
 import { DoctorMessagesInbox } from "@/components/doctor-messages-inbox";
 import { EmptyState } from "@/components/empty-state";
 
@@ -14,7 +14,7 @@ export default async function DoctorMessagesPage({
   const t = await getTranslations();
   const { user } = await requireDoctor();
 
-  const threads = await fetchDoctorMessageThreads();
+  const threads = await getDoctorMessageThreads(user.id);
 
   return (
     <div className="flex flex-col gap-6">

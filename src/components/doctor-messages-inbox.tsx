@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MessageThread } from "@/components/message-thread";
 import { MessageInput } from "@/components/message-input";
-import { fetchMessageThread } from "@/actions/appointment-edit";
+import { fetchMessageThread, markThreadRead } from "@/actions/appointment-edit";
 import { formatInTirane } from "@/lib/datetime";
 import type { DoctorThreadSummary } from "@/lib/queries/messages";
 import type { Message } from "@/lib/queries/messages";
@@ -32,6 +32,7 @@ export function DoctorMessagesInbox({ threads, currentUserId }: Props) {
         ...prev,
         [threadId]: result?.messages ?? [],
       }));
+      markThreadRead(threadId);
     } catch {
       toast.error(t("messages.loadError"));
     } finally {
