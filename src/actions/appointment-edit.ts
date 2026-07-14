@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/auth";
+import type { AvailableSlot } from "@/lib/database.types";
+import type { MessageThread, Message } from "@/lib/queries/messages";
 
 // ============================================================================
 // Types & Interfaces
@@ -196,4 +198,81 @@ export async function getOrCreateMessageThread(
   }
 
   return { ok: true, threadId: result.thread_id };
+}
+
+/**
+ * Fetch available slots for a doctor on a given date range.
+ * Server action wrapper around getDoctorSlots query (cannot be called from client).
+ */
+export async function fetchDoctorSlots(
+  doctorId: string,
+  fromDate: string,
+  toDate: string
+): Promise<AvailableSlot[]> {
+  const supabase = createClient();
+  const { data } = await supabase.rpc("get_available_slots", {
+    p_doctor_id: doctorId,
+    p_from: fromDate,
+    p_to: toDate,
+  });
+  const slots = (data ?? []) as AvailableSlot[];
+  return slots.sort((a, b) => a.slot_start.localeCompare(b.slot_start));
+}
+
+/**
+ * Fetch a message thread with all messages.
+ * Server action wrapper (cannot be called from client due to server-only imports).
+ */
+export async function fetchMessageThread(
+  threadId: string
+): Promise<MessageThread | null> {
+  const user = await getCurrentUser();
+  if (!user) {
+    throw new Error("AUTH_REQUIRED");
+  }
+
+  const supabase = createClient();
+
+  const { data: thread } = await supabase
+    .from("message_threads")
+    .select("*")
+    .eq("id", threadId)
+    .maybeSingle();
+
+  if (!thread) {
+    return null;
+  }
+
+  // Verify user is a participant
+  if (thread.patient_id !== user.id && thread.doctor_id !== user.id) {
+    throw new Error("UNAUTHORIZED");
+  }
+
+  // Fetch all messages in thread, ordered chronologically
+  const { data: messages } = await supabase
+    .from("messages")
+    .select(
+      `
+      id, sender_id, body, created_at, read_at,
+      sender:users(full_name)
+    `
+    )
+    .eq("thread_id", threadId)
+    .order("created_at", { ascending: true });
+
+  return {
+    id: thread.id,
+    type: thread.type as "appointment" | "general",
+    appointmentId: thread.appointment_id,
+    messages: (messages || []).map(
+      (m: Record<string, unknown>) => ({
+        id: m.id as string,
+        senderId: m.sender_id as string,
+        senderName: ((m.sender as Record<string, unknown> | null)?.full_name as string) ?? "Unknown",
+        body: m.body as string,
+        createdAt: m.created_at as string,
+        readAt: (m.read_at as string | null) ?? null,
+      })
+    ),
+  };
 }

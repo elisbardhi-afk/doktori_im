@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import { getLocale, setRequestLocale } from "next-intl/server";
 import { getCurrentUser } from "@/lib/auth";
 import { getMyAppointments } from "@/lib/queries/appointments";
-import { getMessageThread } from "@/lib/queries/messages";
 import { AppointmentEditClient } from "./appointment-edit-client";
 
 export default async function AppointmentEditPage({
@@ -34,9 +33,6 @@ export default async function AppointmentEditPage({
     redirect("/patient/appointments");
   }
 
-  // Fetch message thread
-  const messageThread = await getMessageThread(id, user.id);
-
   // Calculate isUpcoming: startsAt > now AND status in [confirmed, pending]
   const now = new Date();
   const startsAt = new Date(appointment.startsAt);
@@ -47,7 +43,6 @@ export default async function AppointmentEditPage({
   return (
     <AppointmentEditClient
       appointment={appointment}
-      messageThread={messageThread}
       isUpcoming={isUpcoming}
       currentUserId={user.id}
     />

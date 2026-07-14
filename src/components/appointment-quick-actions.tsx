@@ -37,7 +37,7 @@ export function AppointmentQuickActions({
     (appointment.status === "confirmed" || appointment.status === "pending");
 
   const handleViewDetails = () => {
-    router.push(`/doctor/${appointment.doctorSlug}/appointments/${appointment.id}`);
+    router.push(`/patient/appointments/${appointment.id}`);
     onClose();
   };
 

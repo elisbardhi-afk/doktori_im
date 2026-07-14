@@ -12,8 +12,7 @@ import { MessageThread } from "@/components/message-thread";
 import { MessageInput } from "@/components/message-input";
 import { RescheduleModal } from "@/components/reschedule-modal";
 import { cancelAppointment } from "@/actions/booking";
-import { getMessageThread } from "@/lib/queries/messages";
-import { getOrCreateMessageThread } from "@/actions/appointment-edit";
+import { getOrCreateMessageThread, fetchMessageThread } from "@/actions/appointment-edit";
 import { formatInTirane, timeInTirane } from "@/lib/datetime";
 import { Calendar, Stethoscope, Clock } from "lucide-react";
 import type { AppointmentView } from "@/lib/queries/appointments";
@@ -21,12 +20,10 @@ import type { MessageThread as MessageThreadType } from "@/lib/queries/messages"
 
 export function AppointmentEditClient({
   appointment,
-  messageThread: initialThread,
   isUpcoming,
   currentUserId,
 }: {
   appointment: AppointmentView;
-  messageThread: MessageThreadType | null;
   isUpcoming: boolean;
   currentUserId: string;
 }) {
@@ -35,43 +32,38 @@ export function AppointmentEditClient({
 
   const [rescheduleOpen, setRescheduleOpen] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
-  const [threadData, setThreadData] = useState<MessageThreadType | null>(
-    initialThread,
-  );
+  const [threadData, setThreadData] = useState<MessageThreadType | null>(null);
   const [messagesLoading, setMessagesLoading] = useState(false);
 
-  // Initialize message thread if not present
+  // Initialize message thread on mount
   useEffect(() => {
-    if (!threadData && appointment.status !== "cancelled") {
-      (async () => {
-        setMessagesLoading(true);
-        const result = await getOrCreateMessageThread(
-          "appointment",
-          appointment.doctorId,
-          appointment.id,
-        );
-        setMessagesLoading(false);
+    if (appointment.status === "cancelled") return;
 
-        if (result.ok && result.threadId) {
-          const thread = await getMessageThread(result.threadId, currentUserId);
-          if (thread) {
-            setThreadData(thread);
-          }
+    (async () => {
+      setMessagesLoading(true);
+      const result = await getOrCreateMessageThread(
+        "appointment",
+        appointment.doctorId,
+        appointment.id,
+      );
+
+      if (result.ok && result.threadId) {
+        const thread = await fetchMessageThread(result.threadId);
+        if (thread) {
+          setThreadData(thread);
         }
-      })();
-    }
+      }
+      setMessagesLoading(false);
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [appointment.status, appointment.doctorId, appointment.id]);
+  }, [appointment.id, appointment.doctorId, appointment.status]);
 
   // Poll for new messages every 3 seconds if thread exists
   useEffect(() => {
     if (!threadData) return;
 
     const interval = setInterval(async () => {
-      setMessagesLoading(true);
-      const updatedThread = await getMessageThread(threadData.id, currentUserId);
-      setMessagesLoading(false);
-
+      const updatedThread = await fetchMessageThread(threadData.id);
       if (updatedThread) {
         setThreadData(updatedThread);
       }

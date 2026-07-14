@@ -12,12 +12,6 @@ create table if not exists public.message_threads (
   doctor_id uuid not null references public.doctor_profiles(user_id) on delete cascade,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  -- Appointment-scoped threads: one thread per (patient, doctor, appointment)
-  constraint unique_appointment_thread unique (appointment_id, patient_id, doctor_id)
-    where (type = 'appointment'),
-  -- Doctor-scoped threads: one thread per (patient, doctor) for general messaging
-  constraint unique_general_thread unique (patient_id, doctor_id)
-    where (type = 'general'),
   -- appointment_id must be present when type='appointment'
   check (
     (type = 'appointment' and appointment_id is not null) or
@@ -25,6 +19,14 @@ create table if not exists public.message_threads (
   )
 );
 
+-- Partial unique indexes (cannot use table constraints with WHERE clause)
+create unique index if not exists idx_unique_appointment_thread on public.message_threads(appointment_id, patient_id, doctor_id)
+  where (type = 'appointment');
+
+create unique index if not exists idx_unique_general_thread on public.message_threads(patient_id, doctor_id)
+  where (type = 'general');
+
+-- Additional lookup indexes
 create index if not exists idx_msg_threads_patient on public.message_threads(patient_id);
 create index if not exists idx_msg_threads_doctor on public.message_threads(doctor_id);
 create index if not exists idx_msg_threads_appointment on public.message_threads(appointment_id)

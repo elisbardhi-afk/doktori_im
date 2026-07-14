@@ -6,8 +6,7 @@ import { toast } from "sonner";
 import { X } from "lucide-react";
 import { MessageThread } from "@/components/message-thread";
 import { MessageInput } from "@/components/message-input";
-import { getOrCreateMessageThread } from "@/actions/appointment-edit";
-import { getMessageThread } from "@/lib/queries/messages";
+import { getOrCreateMessageThread, fetchMessageThread } from "@/actions/appointment-edit";
 import type { AppointmentView } from "@/lib/queries/appointments";
 import type { Message } from "@/lib/queries/messages";
 
@@ -48,7 +47,7 @@ export function AppointmentMessageModal({
       setThreadId(newThreadId);
 
       // Fetch the thread with messages
-      const thread = await getMessageThread(newThreadId, currentUserId);
+      const thread = await fetchMessageThread(newThreadId);
 
       if (thread) {
         setMessages(thread.messages);
@@ -63,7 +62,7 @@ export function AppointmentMessageModal({
   const handleSendSuccess = async () => {
     // Refresh messages after sending
     if (threadId) {
-      const thread = await getMessageThread(threadId, currentUserId);
+      const thread = await fetchMessageThread(threadId);
       if (thread) {
         setMessages(thread.messages);
       }

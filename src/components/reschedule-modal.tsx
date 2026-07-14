@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { getDoctorSlots } from "@/lib/queries/doctor-profile";
 import { formatInTirane, timeInTirane } from "@/lib/datetime";
-import { rescheduleAppointment } from "@/actions/appointment-edit";
+import { rescheduleAppointment, fetchDoctorSlots } from "@/actions/appointment-edit";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import type { AvailableSlot } from "@/lib/database.types";
@@ -42,16 +41,16 @@ export function RescheduleModal({
   const currentDateObj = new Date(year, month - 1, day);
 
   // Fetch slots when date changes
-  useMemo(() => {
+  useEffect(() => {
     setSlotsLoading(true);
-    getDoctorSlots(
-      doctorId,
-      selectedDate,
-      selectedDate, // Same-day slots only for now
-    )
+    fetchDoctorSlots(doctorId, selectedDate, selectedDate)
       .then((result) => {
         setSlots(result);
         setSelectedTime(null);
+      })
+      .catch(() => {
+        toast.error("Failed to load available slots");
+        setSlots([]);
       })
       .finally(() => setSlotsLoading(false));
   }, [selectedDate, doctorId]);
@@ -77,7 +76,8 @@ export function RescheduleModal({
     }
 
     setLoading(true);
-    const newStartsAt = `${selectedDate}T${selectedTime}:00`;
+    // Construct ISO timestamp with +00:00 offset (UTC; DB stores all times as UTC)
+    const newStartsAt = `${selectedDate}T${selectedTime}:00+00:00`;
     const result = await rescheduleAppointment(appointmentId, newStartsAt, durationMinutes);
     setLoading(false);
 
@@ -151,15 +151,15 @@ export function RescheduleModal({
               {slots.map((slot) => (
                 <button
                   key={slot.slot_start}
-                  onClick={() => setSelectedTime(slot.slot_start)}
+                  onClick={() => setSelectedTime(slot.local_time)}
                   className={cn(
                     "rounded-full border px-3 py-1 text-sm font-semibold shadow-soft transition-colors",
-                    selectedTime === slot.slot_start
+                    selectedTime === slot.local_time
                       ? "border-primary bg-primary text-primary-foreground"
                       : "border-border bg-card text-foreground hover:bg-secondary",
                   )}
                 >
-                  {timeInTirane(`${selectedDate}T${slot.slot_start}:00`)}
+                  {slot.local_time}
                 </button>
               ))}
             </div>
