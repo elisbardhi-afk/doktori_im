@@ -82,11 +82,6 @@ export default async function DoctorProfilePage({
                   </span>
                 )}
               </div>
-              {doctor.consultationFee != null && (
-                <Badge className="mt-3">
-                  {t("doctor.consultationFee")}: {doctor.consultationFee.toLocaleString(activeLocale)} L
-                </Badge>
-              )}
             </div>
           </CardContent>
         </Card>
