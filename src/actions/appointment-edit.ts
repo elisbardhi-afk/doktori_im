@@ -288,3 +288,24 @@ export async function fetchDoctorMessageThreads(): Promise<DoctorThreadSummary[]
   const { user } = await requireDoctor();
   return getDoctorMessageThreads(user.id);
 }
+
+/**
+ * Mark all messages in a thread as read for the current user.
+ * Only marks messages where the current user is NOT the sender and read_at is null.
+ * Fire-and-forget — errors are caught silently to avoid breaking UX.
+ */
+export async function markThreadRead(threadId: string): Promise<void> {
+  try {
+    const user = await getCurrentUser();
+    if (!user) return;
+    const supabase = createClient();
+    await supabase
+      .from("messages")
+      .update({ read_at: new Date().toISOString() })
+      .eq("thread_id", threadId)
+      .neq("sender_id", user.id)
+      .is("read_at", null);
+  } catch {
+    // Silently ignore — marking read is best-effort and must not break UX
+  }
+}
