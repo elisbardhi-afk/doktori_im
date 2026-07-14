@@ -104,7 +104,19 @@
     "empty": "You have no appointments.",
     "viewDetails": "View Details",
     "sendMessage": "Send Message",
-    "changeTime": "Change Time"
+    "changeTime": "Change Time",
+    "edit": "Edit Appointment",
+    "cancel": "Cancel Appointment",
+    "cancelled": "Cannot reschedule a cancelled appointment"
+  },
+  "messages": {
+    "title": "Messages",
+    "empty": "No messages yet.",
+    "inputPlaceholder": "Type a message...",
+    "send": "Send",
+    "sent": "Message sent",
+    "emptyError": "Message cannot be empty",
+    "loadError": "Failed to load messages"
   },
   "auth": {
     "loginTitle": "Welcome back",

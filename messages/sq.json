@@ -104,7 +104,19 @@
     "empty": "Nuk keni takime.",
     "viewDetails": "Shiko detajet",
     "sendMessage": "Dërgo mesazh",
-    "changeTime": "Ndrysho orarin"
+    "changeTime": "Ndrysho orarin",
+    "edit": "Ndrysho takimin",
+    "cancel": "Anulo takimin",
+    "cancelled": "Nuk mund të riplanifikoni një takim të anuluar"
+  },
+  "messages": {
+    "title": "Mesazhet",
+    "empty": "Ende pa mesazhe.",
+    "inputPlaceholder": "Shkruani një mesazh...",
+    "send": "Dërgo",
+    "sent": "Mesazhi u dërgua",
+    "emptyError": "Mesazhi nuk mund të jetë bosh",
+    "loadError": "Nuk u ngarkuan dot mesazhet"
   },
   "auth": {
     "loginTitle": "Mirë se erdhët",
