@@ -123,11 +123,9 @@ export function BookingWizard({
                 <Badge variant="secondary">
                   {s.duration_minutes} {t("services.min")}
                 </Badge>
-                {s.price != null && (
-                  <span className="text-sm text-muted-foreground">
-                    {Number(s.price).toLocaleString()} L
-                  </span>
-                )}
+                <span className="text-sm text-muted-foreground">
+                  {s.price != null ? `${Number(s.price).toLocaleString()} L` : t("services.free")}
+                </span>
               </div>
             </button>
           ))}
