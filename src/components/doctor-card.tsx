@@ -70,11 +70,6 @@ export async function DoctorCard({ doctor }: { doctor: DoctorCardData }) {
       </div>
 
       <div className="mt-auto flex items-center justify-between gap-3 pt-1">
-        {doctor.consultationFee != null && (
-          <span className="text-sm font-semibold text-foreground">
-            {doctor.consultationFee.toLocaleString(locale)} L
-          </span>
-        )}
         <Button asChild size="sm" className="ml-auto">
           <Link href={`/doctors/${doctor.slug}`}>{t("common.book")}</Link>
         </Button>
