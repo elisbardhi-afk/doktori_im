@@ -185,3 +185,95 @@ export async function getAppointmentMessageThreads(
     messages: messagesByThread.get(thread.id) ?? [],
   }));
 }
+
+export interface DoctorThreadSummary {
+  threadId: string;
+  appointmentId: string;
+  appointmentStartsAt: string;
+  patientName: string;
+  lastMessageBody: string | null;
+  lastMessageAt: string | null;
+  unreadCount: number;
+}
+
+/**
+ * Fetch all message threads for a doctor, with patient info, last message
+ * preview, and unread count. Sorted by most-recent message descending.
+ */
+export async function getDoctorMessageThreads(
+  doctorId: string,
+): Promise<DoctorThreadSummary[]> {
+  const supabase = createClient();
+
+  // Fetch all threads for this doctor with their messages
+  const { data: threadsData } = await supabase
+    .from("message_threads")
+    .select(
+      `
+      id, appointment_id,
+      patient:users!message_threads_patient_id_fkey(full_name),
+      appointment:appointments!message_threads_appointment_id_fkey(starts_at),
+      messages(id, body, created_at, read_at, sender_id)
+    `,
+    )
+    .eq("doctor_id", doctorId)
+    .not("appointment_id", "is", null);
+
+  if (!threadsData || threadsData.length === 0) return [];
+
+  return (
+    threadsData as unknown as Array<{
+      id: string;
+      appointment_id: string;
+      patient: { full_name: string | null } | { full_name: string | null }[];
+      appointment:
+        | { starts_at: string }
+        | { starts_at: string }[]
+        | null;
+      messages: Array<{
+        id: string;
+        body: string;
+        created_at: string;
+        read_at: string | null;
+        sender_id: string;
+      }>;
+    }>
+  )
+    .map((t) => {
+      const patientRaw = t.patient;
+      const patientName = Array.isArray(patientRaw)
+        ? (patientRaw[0]?.full_name ?? "Unknown")
+        : ((patientRaw as { full_name: string | null })?.full_name ?? "Unknown");
+
+      const apptRaw = t.appointment;
+      const appointmentStartsAt = Array.isArray(apptRaw)
+        ? (apptRaw[0]?.starts_at ?? "")
+        : ((apptRaw as { starts_at: string } | null)?.starts_at ?? "");
+
+      const msgs = t.messages ?? [];
+      const sorted = [...msgs].sort((a, b) =>
+        b.created_at.localeCompare(a.created_at),
+      );
+      const last = sorted[0] ?? null;
+      const unreadCount = msgs.filter(
+        (m) => m.read_at === null && m.sender_id !== doctorId,
+      ).length;
+
+      return {
+        threadId: t.id,
+        appointmentId: t.appointment_id,
+        appointmentStartsAt,
+        patientName,
+        lastMessageBody: last?.body ?? null,
+        lastMessageAt: last?.created_at ?? null,
+        unreadCount,
+      };
+    })
+    .filter((t) => t.appointmentStartsAt !== "")
+    .sort((a, b) => {
+      if (!a.lastMessageAt && !b.lastMessageAt) return 0;
+      if (!a.lastMessageAt) return 1;
+      if (!b.lastMessageAt) return -1;
+      return b.lastMessageAt.localeCompare(a.lastMessageAt);
+    });
+}
