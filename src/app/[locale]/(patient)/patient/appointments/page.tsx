@@ -2,6 +2,7 @@ import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 import { getMyAppointments } from "@/lib/queries/appointments";
 import { PatientCalendar, type CalendarView } from "@/components/patient-calendar";
 import { formatInTirane } from "@/lib/datetime";
+import { getCurrentUser } from "@/lib/auth";
 
 function getRange(view: string, date: Date): { from: string; to: string } {
   if (view === "day") {
@@ -45,6 +46,11 @@ export default async function PatientCalendarPage({
   const activeLocale = await getLocale();
   const t = await getTranslations();
 
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
+    return <div>{t("common.unauthorized")}</div>;
+  }
+
   const sp = await searchParams;
   const view = (sp.view ?? "month") as CalendarView;
   const today = new Date();
@@ -63,6 +69,7 @@ export default async function PatientCalendarPage({
         view={view}
         dateStr={dateStr}
         appointments={appointments}
+        currentUserId={currentUser.id}
       />
     </div>
   );

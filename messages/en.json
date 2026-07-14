@@ -101,7 +101,10 @@
       "no_show": "No-show"
     },
     "cancelConfirm": "Are you sure you want to cancel?",
-    "empty": "You have no appointments."
+    "empty": "You have no appointments.",
+    "viewDetails": "View Details",
+    "sendMessage": "Send Message",
+    "changeTime": "Change Time"
   },
   "auth": {
     "loginTitle": "Welcome back",

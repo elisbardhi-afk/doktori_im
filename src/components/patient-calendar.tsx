@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button";
 import { enUS, sq as sqLocale } from "date-fns/locale";
 import { formatInTirane, timeInTirane } from "@/lib/datetime";
 import { cn } from "@/lib/utils";
+import { AppointmentQuickActions } from "@/components/appointment-quick-actions";
+import { RescheduleModal } from "@/components/reschedule-modal";
+import { AppointmentMessageModal } from "@/components/appointment-message-modal";
 import type { AppointmentView } from "@/lib/queries/appointments";
 import type { AppointmentStatus } from "@/lib/database.types";
 
@@ -85,7 +88,13 @@ function TimelineLabels() {
   );
 }
 
-function AppointmentBlock({ appt }: { appt: AppointmentView }) {
+function AppointmentBlock({
+  appt,
+  onAppointmentClick,
+}: {
+  appt: AppointmentView;
+  onAppointmentClick?: (appt: AppointmentView, event: React.MouseEvent) => void;
+}) {
   const top = topPx(appt.startsAt);
   const height = heightPx(appt.startsAt, appt.endsAt);
   const durationMs = new Date(appt.endsAt).getTime() - new Date(appt.startsAt).getTime();
@@ -117,9 +126,11 @@ function AppointmentBlock({ appt }: { appt: AppointmentView }) {
   }
 
   return (
-    <div
+    <button
+      onClick={(e) => onAppointmentClick?.(appt, e)}
       className={cn(
         "absolute left-0.5 right-0.5 overflow-hidden rounded-lg font-semibold shadow-sm flex items-center gap-2",
+        "transition-opacity hover:opacity-90 text-left",
         paddingClass,
         statusColor(appt.status),
       )}
@@ -129,11 +140,19 @@ function AppointmentBlock({ appt }: { appt: AppointmentView }) {
         {timeInTirane(appt.startsAt)}
       </p>
       <p className={cn(truncateName && "truncate", nameClass)}>{appt.doctorName}</p>
-    </div>
+    </button>
   );
 }
 
-function DayView({ date, appointments }: { date: Date; appointments: AppointmentView[] }) {
+function DayView({
+  date,
+  appointments,
+  onAppointmentClick,
+}: {
+  date: Date;
+  appointments: AppointmentView[];
+  onAppointmentClick?: (appt: AppointmentView, event: React.MouseEvent) => void;
+}) {
   const dayAppts = appointments.filter((a) => isSameDay(localDateOf(a.startsAt), date));
   return (
     <div className="flex overflow-x-auto">
@@ -149,13 +168,27 @@ function DayView({ date, appointments }: { date: Date; appointments: Appointment
             style={{ top: i * PX_PER_15MIN }}
           />
         ))}
-        {dayAppts.map((a) => <AppointmentBlock key={a.id} appt={a} />)}
+        {dayAppts.map((a) => (
+          <AppointmentBlock
+            key={a.id}
+            appt={a}
+            onAppointmentClick={onAppointmentClick}
+          />
+        ))}
       </div>
     </div>
   );
 }
 
-function WeekView({ weekOf, appointments }: { weekOf: Date; appointments: AppointmentView[] }) {
+function WeekView({
+  weekOf,
+  appointments,
+  onAppointmentClick,
+}: {
+  weekOf: Date;
+  appointments: AppointmentView[];
+  onAppointmentClick?: (appt: AppointmentView, event: React.MouseEvent) => void;
+}) {
   const today = new Date();
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekOf, i));
 
@@ -184,7 +217,13 @@ function WeekView({ weekOf, appointments }: { weekOf: Date; appointments: Appoin
                 style={{ top: i * PX_PER_15MIN }}
               />
             ))}
-            {dayAppts.map((a) => <AppointmentBlock key={a.id} appt={a} />)}
+            {dayAppts.map((a) => (
+              <AppointmentBlock
+                key={a.id}
+                appt={a}
+                onAppointmentClick={onAppointmentClick}
+              />
+            ))}
           </div>
         );
       })}
@@ -197,12 +236,14 @@ function MonthView({
   month,
   appointments,
   onDayClick,
+  onAppointmentClick,
   days,
 }: {
   year: number;
   month: number;
   appointments: AppointmentView[];
   onDayClick: (date: Date) => void;
+  onAppointmentClick?: (appt: AppointmentView, event: React.MouseEvent) => void;
   days: string[];
 }) {
   const today = new Date();
@@ -247,15 +288,19 @@ function MonthView({
                 {cell.getDate()}
               </span>
               {shown.map((a) => (
-                <div
+                <button
                   key={a.id}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAppointmentClick?.(a, e);
+                  }}
                   className={cn(
-                    "mb-0.5 truncate rounded px-1 py-0.5 text-xs font-medium",
+                    "mb-0.5 w-full truncate rounded px-1 py-0.5 text-xs font-medium transition-opacity hover:opacity-90 text-left",
                     statusColor(a.status),
                   )}
                 >
                   {timeInTirane(a.startsAt)} {a.doctorName}
-                </div>
+                </button>
               ))}
               {overflow > 0 && (
                 <p className="text-xs text-muted-foreground">+{overflow}</p>
@@ -272,10 +317,12 @@ export function PatientCalendar({
   view,
   dateStr,
   appointments,
+  currentUserId,
 }: {
   view: CalendarView;
   dateStr: string;
   appointments: AppointmentView[];
+  currentUserId: string;
 }) {
   const t = useTranslations();
   const locale = useLocale();
@@ -287,6 +334,12 @@ export function PatientCalendar({
   const date = new Date(dateStr + "T12:00:00");
   const today = new Date();
 
+  // State for quick-actions popover and modals
+  const [selectedAppt, setSelectedAppt] = useState<AppointmentView | null>(null);
+  const [showMessages, setShowMessages] = useState(false);
+  const [showReschedule, setShowReschedule] = useState(false);
+  const [popoverPos, setPopoverPos] = useState<{ top: number; left: number } | null>(null);
+
   const navigate = useCallback(
     (newView: CalendarView, newDate: Date) => {
       const d = formatInTirane(newDate.toISOString(), "yyyy-MM-dd");
@@ -294,6 +347,28 @@ export function PatientCalendar({
     },
     [router, pathname],
   );
+
+  const handleAppointmentClick = useCallback(
+    (appt: AppointmentView, event: React.MouseEvent) => {
+      const target = event.currentTarget as HTMLElement;
+      const rect = target.getBoundingClientRect();
+      setSelectedAppt(appt);
+      setPopoverPos({
+        top: rect.bottom + window.scrollY + 8,
+        left: rect.left + window.scrollX,
+      });
+      setShowMessages(false);
+      setShowReschedule(false);
+    },
+    [],
+  );
+
+  const handleClosePopover = useCallback(() => {
+    setSelectedAppt(null);
+    setPopoverPos(null);
+    setShowMessages(false);
+    setShowReschedule(false);
+  }, []);
 
   function prevDate() {
     if (view === "day") navigate("day", addDays(date, -1));
@@ -378,12 +453,20 @@ export function PatientCalendar({
       <div className="overflow-hidden rounded-xl border border-border bg-card">
         {view === "day" && (
           <div className="overflow-y-auto" style={{ maxHeight: "70vh" }}>
-            <DayView date={date} appointments={appointments} />
+            <DayView
+              date={date}
+              appointments={appointments}
+              onAppointmentClick={handleAppointmentClick}
+            />
           </div>
         )}
         {view === "week" && (
           <div className="overflow-auto" style={{ maxHeight: "70vh" }}>
-            <WeekView weekOf={weekOf} appointments={appointments} />
+            <WeekView
+              weekOf={weekOf}
+              appointments={appointments}
+              onAppointmentClick={handleAppointmentClick}
+            />
           </div>
         )}
         {view === "month" && (
@@ -392,6 +475,7 @@ export function PatientCalendar({
             month={date.getMonth()}
             appointments={appointments}
             onDayClick={(d) => navigate("day", d)}
+            onAppointmentClick={handleAppointmentClick}
             days={weekdayAbbr}
           />
         )}
@@ -401,6 +485,53 @@ export function PatientCalendar({
         <p className="text-center text-sm text-muted-foreground">
           {t("calendar.noAppointments")}
         </p>
+      )}
+
+      {/* Quick Actions Popover */}
+      {selectedAppt && popoverPos && (
+        <AppointmentQuickActions
+          appointment={selectedAppt}
+          isOpen={!showMessages && !showReschedule}
+          position={popoverPos}
+          onClose={handleClosePopover}
+          onSendMessage={() => setShowMessages(true)}
+          onReschedule={() => setShowReschedule(true)}
+        />
+      )}
+
+      {/* Message Modal */}
+      {showMessages && selectedAppt && (
+        <AppointmentMessageModal
+          appointment={selectedAppt}
+          currentUserId={currentUserId}
+          onClose={() => {
+            setShowMessages(false);
+            setSelectedAppt(null);
+            setPopoverPos(null);
+          }}
+        />
+      )}
+
+      {/* Reschedule Modal */}
+      {showReschedule && selectedAppt && (
+        <RescheduleModal
+          appointmentId={selectedAppt.id}
+          doctorId={selectedAppt.doctorId}
+          currentStartsAt={selectedAppt.startsAt}
+          durationMinutes={
+            Math.round(
+              (new Date(selectedAppt.endsAt).getTime() -
+                new Date(selectedAppt.startsAt).getTime()) /
+                (1000 * 60)
+            )
+          }
+          isOpen={true}
+          onClose={() => {
+            setShowReschedule(false);
+            setSelectedAppt(null);
+            setPopoverPos(null);
+          }}
+        />
       )}
     </div>
   );
