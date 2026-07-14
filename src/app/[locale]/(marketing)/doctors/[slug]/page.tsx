@@ -10,7 +10,6 @@ import { getCurrentUser } from "@/lib/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Rating } from "@/components/rating";
-import { Badge } from "@/components/ui/badge";
 import { BookingWizard } from "@/components/booking-wizard";
 import { formatInTirane } from "@/lib/datetime";
 import { MapPin, Languages as LangIcon } from "lucide-react";

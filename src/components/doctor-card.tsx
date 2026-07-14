@@ -1,4 +1,4 @@
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
@@ -32,7 +32,6 @@ function initials(name: string) {
 
 export async function DoctorCard({ doctor }: { doctor: DoctorCardData }) {
   const t = await getTranslations();
-  const locale = await getLocale();
 
   return (
     <Card className="flex flex-col gap-4 p-5 transition-shadow hover:shadow-lift">
