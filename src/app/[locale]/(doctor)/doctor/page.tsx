@@ -21,7 +21,9 @@ export default async function DoctorDashboard({
   const appts = await getMyAppointments("doctor", activeLocale, undefined, undefined, user.id);
 
   const todayStr = dateInTirane(new Date());
-  const today = appts.filter((a) => dateInTirane(a.startsAt) === todayStr);
+  const today = appts.filter(
+    (a) => dateInTirane(a.startsAt) === todayStr && a.status !== "cancelled",
+  );
   const upcoming = appts.filter(
     (a) => new Date(a.startsAt) > new Date() && a.status === "confirmed",
   );
