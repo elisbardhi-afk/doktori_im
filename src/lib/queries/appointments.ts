@@ -7,6 +7,7 @@ export interface AppointmentView {
   endsAt: string;
   status: AppointmentStatus;
   reason: string | null;
+  doctorId: string;
   doctorName: string;
   doctorSlug: string;
   patientName: string;
@@ -33,7 +34,7 @@ export async function getMyAppointments(
     .from("appointments")
     .select(
       `
-      id, starts_at, ends_at, status, reason,
+      id, starts_at, ends_at, status, reason, doctor_id,
       patient:users!appointments_patient_id_fkey(full_name),
       doctor:doctor_profiles!appointments_doctor_id_fkey(
         slug, full_name,
@@ -57,6 +58,7 @@ export async function getMyAppointments(
     ends_at: string;
     status: AppointmentStatus;
     reason: string | null;
+    doctor_id: string;
     patient: { full_name: string | null } | { full_name: string | null }[];
     doctor: {
       slug: string;
@@ -74,6 +76,7 @@ export async function getMyAppointments(
       endsAt: a.ends_at,
       status: a.status,
       reason: a.reason,
+      doctorId: a.doctor_id,
       doctorName: a.doctor?.full_name ?? "—",
       doctorSlug: a.doctor?.slug ?? "",
       patientName: p?.full_name ?? "—",

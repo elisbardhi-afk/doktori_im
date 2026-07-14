@@ -17,7 +17,7 @@ const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
       <div ref={ref} data-state={actualOpen ? "open" : "closed"}>
         {React.Children.map(children, (child) => {
           if (React.isValidElement(child)) {
-            return React.cloneElement(child as React.ReactElement<any>, {
+            return React.cloneElement(child as React.ReactElement<Record<string, unknown>>, {
               onOpenChange: onOpenChange || setIsOpen,
               isOpen: actualOpen,
             });
