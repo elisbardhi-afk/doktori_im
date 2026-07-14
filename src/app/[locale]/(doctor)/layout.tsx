@@ -23,6 +23,7 @@ export default async function DoctorLayout({
     { href: "/doctor/services", label: t("nav.services"), icon: "ClipboardList" },
     { href: "/doctor/calendar", label: t("nav.calendar"), icon: "CalendarDays" },
     { href: "/doctor/appointments", label: t("nav.appointments"), icon: "Calendar" },
+    { href: "/doctor/messages", label: t("nav.messages"), icon: "MessageSquare" },
     { href: "/doctor/profile", label: t("nav.profile"), icon: "UserCog" },
     { href: "/doctor/reviews", label: t("doctor.reviews"), icon: "Star" },
   ];
