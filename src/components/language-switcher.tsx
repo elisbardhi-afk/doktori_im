@@ -28,7 +28,15 @@ export function LanguageSwitcher({ className }: { className?: string }) {
           locale === "sq" ? "bg-primary text-primary-foreground" : "text-muted-foreground",
         )}
       >
-        <span className="text-lg">🇦🇱</span>
+        <svg width="16" height="12" viewBox="0 0 960 600" className="flex-shrink-0">
+          <rect width="960" height="600" fill="#CE2B37"/>
+          <g transform="translate(480, 300)">
+            <path d="M -80,-100 Q -120,-80 -140,-40 Q -150,0 -140,40 Q -120,80 -80,100 L -40,60 Q -60,40 -70,0 Q -60,-40 -40,-60 Z" fill="#000"/>
+            <path d="M 80,-100 Q 120,-80 140,-40 Q 150,0 140,40 Q 120,80 80,100 L 40,60 Q 60,40 70,0 Q 60,-40 40,-60 Z" fill="#000"/>
+            <path d="M -40,-60 L -20,-50 L 0,-45 L 20,-50 L 40,-60 L 30,-75 L 10,-80 L -10,-80 L -30,-75 Z" fill="#000"/>
+            <path d="M -50,50 L -30,70 L 0,75 L 30,70 L 50,50" fill="#000"/>
+          </g>
+        </svg>
         AL
       </button>
       <button
