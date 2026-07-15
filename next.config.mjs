@@ -9,6 +9,13 @@ const nextConfig = {
       { protocol: "https", hostname: "*.supabase.co" },
     ],
   },
+  experimental: {
+    optimizePackageImports: ["@radix-ui", "lucide-react"],
+  },
+  swcMinify: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
+  },
 };
 
 export default withNextIntl(nextConfig);
