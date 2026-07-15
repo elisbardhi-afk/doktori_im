@@ -6,7 +6,7 @@
     "node": ">=21.0.0"
   },
   "scripts": {
-    "dev": "taskkill /F /IM node.exe 2>nul || true && next dev",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
