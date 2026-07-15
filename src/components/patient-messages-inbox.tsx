@@ -3,7 +3,7 @@
 import React, { useState, useCallback } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { toast } from "sonner";
-import { ChevronDown, ChevronUp, Stethoscope, Calendar } from "lucide-react";
+import { ChevronDown, ChevronUp, Stethoscope, Calendar, Briefcase } from "lucide-react";
 import { enUS } from "date-fns/locale";
 import { sq } from "date-fns/locale";
 import { Card } from "@/components/ui/card";
@@ -148,7 +148,10 @@ export function PatientMessagesInbox({ threads, currentUserId }: Props) {
                   )}
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  <div>{thread.serviceName}</div>
+                  <div className="flex items-center gap-1.5">
+                    <Briefcase className="size-3.5 shrink-0" />
+                    <span>{thread.serviceName}</span>
+                  </div>
                   <div className="flex items-center gap-1.5">
                     <Calendar className="size-3.5 shrink-0" />
                     <span>
