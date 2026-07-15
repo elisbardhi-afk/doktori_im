@@ -37,7 +37,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
           <circle cx="380" cy="280" r="20" fill="#FDD20E"/>
           <circle cx="520" cy="280" r="20" fill="#FDD20E"/>
         </svg>
-        SQ
+        AL
       </button>
       <button
         onClick={() => switchTo("en")}
