@@ -342,7 +342,7 @@ export async function getPatientMessageThreads(
   });
 
   // Fetch service names for the service IDs
-  let serviceNameMap = new Map<string, string>();
+  const serviceNameMap = new Map<string, string>();
   if (serviceIds.size > 0) {
     const { data: services } = await supabase
       .from("doctor_services")
