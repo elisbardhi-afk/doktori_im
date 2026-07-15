@@ -38,6 +38,20 @@ export function PatientMessagesInbox({ threads, currentUserId }: Props) {
     setThreadUnreadCounts(counts);
   }, [threads]);
 
+  // Auto-open thread from hash (e.g., from notification click)
+  React.useEffect(() => {
+    const threadIdFromHash = window.location.hash.slice(1);
+    if (threadIdFromHash && threads.some((t) => t.threadId === threadIdFromHash)) {
+      setOpenThreadId(threadIdFromHash);
+      loadThread(threadIdFromHash);
+      // Smooth scroll to the thread
+      setTimeout(() => {
+        const element = document.getElementById(`thread-${threadIdFromHash}`);
+        element?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    }
+  }, []);
+
   const loadThread = useCallback(async (threadId: string) => {
     setLoadingThreadId(threadId);
 
@@ -132,7 +146,7 @@ export function PatientMessagesInbox({ threads, currentUserId }: Props) {
         const messages = threadMessages[thread.threadId] ?? [];
 
         return (
-          <Card key={thread.threadId} className="overflow-hidden p-0">
+          <Card key={thread.threadId} id={`thread-${thread.threadId}`} className="overflow-hidden p-0">
             <button
               onClick={() => handleToggle(thread.threadId)}
               className="flex w-full items-center justify-between gap-4 p-4 text-left transition-colors hover:bg-muted/40"
