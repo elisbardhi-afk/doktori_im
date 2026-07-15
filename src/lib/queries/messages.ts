@@ -297,8 +297,7 @@ export async function getPatientMessageThreads(
     .from("message_threads")
     .select(
       `
-      id, appointment_id,
-      doctor:users!message_threads_doctor_id_fkey(full_name),
+      id, doctor_id, appointment_id,
       appointment:appointments!message_threads_appointment_id_fkey(starts_at),
       messages(id, body, created_at, read_at, sender_id)
     `,
@@ -308,11 +307,25 @@ export async function getPatientMessageThreads(
 
   if (!threadsData || threadsData.length === 0) return [];
 
+  // Fetch doctor profiles for the doctor IDs
+  const doctorIds = Array.from(new Set(threadsData.map((t) => t.doctor_id)));
+  const { data: doctorProfiles } = await supabase
+    .from("doctor_profiles")
+    .select("user_id, full_name")
+    .in("user_id", doctorIds);
+
+  const doctorNameMap = new Map<string, string>();
+  if (doctorProfiles) {
+    doctorProfiles.forEach((profile) => {
+      doctorNameMap.set(profile.user_id, profile.full_name ?? "Unknown");
+    });
+  }
+
   return (
     threadsData as unknown as Array<{
       id: string;
+      doctor_id: string;
       appointment_id: string;
-      doctor: { full_name: string | null } | { full_name: string | null }[];
       appointment:
         | { starts_at: string }
         | { starts_at: string }[]
@@ -327,10 +340,7 @@ export async function getPatientMessageThreads(
     }>
   )
     .map((t) => {
-      const doctorRaw = t.doctor;
-      const doctorName = Array.isArray(doctorRaw)
-        ? (doctorRaw[0]?.full_name ?? "Unknown")
-        : ((doctorRaw as { full_name: string | null })?.full_name ?? "Unknown");
+      const doctorName = doctorNameMap.get(t.doctor_id) ?? "Unknown";
 
       const apptRaw = t.appointment;
       const appointmentStartsAt = Array.isArray(apptRaw)
