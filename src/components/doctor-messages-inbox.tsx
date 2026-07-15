@@ -84,11 +84,6 @@ export function DoctorMessagesInbox({ threads, currentUserId }: Props) {
                     {formatInTirane(thread.appointmentStartsAt, "EEEE, d MMM yyyy — HH:mm")}
                   </span>
                 </div>
-                {thread.lastMessageBody && (
-                  <p className="truncate text-sm text-muted-foreground">
-                    {thread.lastMessageBody}
-                  </p>
-                )}
               </div>
               <div className="shrink-0 text-muted-foreground">
                 {isOpen ? (

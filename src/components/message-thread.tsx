@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { timeInTirane } from "@/lib/datetime";
+import { timeInTirane, formatInTirane } from "@/lib/datetime";
 import { cn } from "@/lib/utils";
 import type { Message } from "@/lib/queries/messages";
 
@@ -40,27 +40,38 @@ export function MessageThread({
       ref={containerRef}
       className="flex h-64 flex-col gap-3 overflow-y-auto rounded-xl border border-border bg-card p-4"
     >
-      {messages.map((msg) => {
+      {messages.map((msg, index) => {
         const isOwn = msg.senderId === currentUserId;
+        const prevMsg = index > 0 ? messages[index - 1] : null;
+        const showDate = !prevMsg || formatInTirane(prevMsg.createdAt, "yyyy-MM-dd") !== formatInTirane(msg.createdAt, "yyyy-MM-dd");
+
         return (
-          <div
-            key={msg.id}
-            className={cn("flex flex-col gap-1", isOwn && "items-end")}
-          >
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span className="font-semibold">{msg.senderName}</span>
-              <span>{timeInTirane(msg.createdAt)}</span>
-              {msg.readAt && <span className="opacity-60">✓</span>}
-            </div>
+          <div key={msg.id}>
+            {showDate && (
+              <div className="flex justify-center py-2">
+                <span className="text-xs font-medium text-muted-foreground">
+                  {formatInTirane(msg.createdAt, "EEEE, d MMM yyyy")}
+                </span>
+              </div>
+            )}
             <div
-              className={cn(
-                "max-w-xs rounded-lg px-3 py-2 text-sm",
-                isOwn
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-foreground",
-              )}
+              className={cn("flex flex-col gap-1", isOwn && "items-end")}
             >
-              {msg.body}
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <span className="font-semibold">{msg.senderName}</span>
+                <span>{timeInTirane(msg.createdAt)}</span>
+                {msg.readAt && <span className="opacity-60">✓</span>}
+              </div>
+              <div
+                className={cn(
+                  "max-w-xs rounded-lg px-3 py-2 text-sm",
+                  isOwn
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-foreground",
+                )}
+              >
+                {msg.body}
+              </div>
             </div>
           </div>
         );
