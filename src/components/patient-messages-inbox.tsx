@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { toast } from "sonner";
 import { ChevronDown, ChevronUp, Stethoscope, Calendar } from "lucide-react";
+import { enUS } from "date-fns/locale";
+import { sq } from "date-fns/locale";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MessageThread } from "@/components/message-thread";
@@ -20,6 +22,8 @@ interface Props {
 
 export function PatientMessagesInbox({ threads, currentUserId }: Props) {
   const t = useTranslations();
+  const locale = useLocale();
+  const dateLocale = locale === "sq" ? sq : enUS;
   const [view, setView] = useState<"active" | "archived">("active");
   const [openThreadId, setOpenThreadId] = useState<string | null>(null);
   const [threadMessages, setThreadMessages] = useState<Record<string, Message[]>>({});
@@ -146,7 +150,7 @@ export function PatientMessagesInbox({ threads, currentUserId }: Props) {
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Calendar className="size-4 shrink-0" />
                   <span>
-                    {thread.serviceName} • {formatInTirane(thread.appointmentStartsAt, "EEEE, d MMM yyyy — HH:mm")}
+                    {thread.serviceName} • {formatInTirane(thread.appointmentStartsAt, "EEEE, d MMM yyyy — HH:mm", dateLocale)}
                   </span>
                 </div>
               </div>
