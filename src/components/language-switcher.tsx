@@ -28,15 +28,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
           locale === "sq" ? "bg-primary text-primary-foreground" : "text-muted-foreground",
         )}
       >
-        <svg width="16" height="12" viewBox="0 0 900 600" className="flex-shrink-0">
-          <rect width="900" height="600" fill="#ED2939"/>
-          <polygon points="450,450 550,250 350,250" fill="#000"/>
-          <circle cx="450" cy="200" r="80" fill="#FDD20E"/>
-          <circle cx="400" cy="220" r="30" fill="#FDD20E"/>
-          <circle cx="500" cy="220" r="30" fill="#FDD20E"/>
-          <circle cx="380" cy="280" r="20" fill="#FDD20E"/>
-          <circle cx="520" cy="280" r="20" fill="#FDD20E"/>
-        </svg>
+        <span className="text-lg">🇦🇱</span>
         AL
       </button>
       <button
