@@ -81,7 +81,7 @@ export function PatientMessagesInbox({ threads, currentUserId }: Props) {
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Calendar className="size-4 shrink-0" />
                   <span>
-                    {formatInTirane(thread.appointmentStartsAt, "EEEE, d MMM yyyy — HH:mm")}
+                    {thread.serviceName} • {formatInTirane(thread.appointmentStartsAt, "EEEE, d MMM yyyy — HH:mm")}
                   </span>
                 </div>
               </div>
