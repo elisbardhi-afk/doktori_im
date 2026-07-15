@@ -305,6 +305,10 @@ export async function markThreadRead(threadId: string): Promise<void> {
       .eq("thread_id", threadId)
       .neq("sender_id", user.id)
       .is("read_at", null);
+
+    // Revalidate message caches
+    revalidatePath("/patient/messages");
+    revalidatePath("/doctor/messages");
   } catch {
     // Silently ignore — marking read is best-effort and must not break UX
   }
