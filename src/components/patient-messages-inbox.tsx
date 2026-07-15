@@ -52,7 +52,7 @@ export function PatientMessagesInbox({ threads, currentUserId }: Props) {
         ...prev,
         [threadId]: result?.messages ?? [],
       }));
-      markThreadRead(threadId);
+      await markThreadRead(threadId);
     } catch {
       toast.error(t("messages.loadError"));
       // Restore the original unread count on error
