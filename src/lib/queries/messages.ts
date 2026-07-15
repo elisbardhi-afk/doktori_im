@@ -277,3 +277,90 @@ export async function getDoctorMessageThreads(
       return b.lastMessageAt.localeCompare(a.lastMessageAt);
     });
 }
+
+export interface PatientThreadSummary {
+  threadId: string;
+  appointmentId: string;
+  appointmentStartsAt: string;
+  doctorName: string;
+  lastMessageBody: string | null;
+  lastMessageAt: string | null;
+  unreadCount: number;
+}
+
+export async function getPatientMessageThreads(
+  patientId: string,
+): Promise<PatientThreadSummary[]> {
+  const supabase = createClient();
+
+  const { data: threadsData } = await supabase
+    .from("message_threads")
+    .select(
+      `
+      id, appointment_id,
+      doctor:users!message_threads_doctor_id_fkey(full_name),
+      appointment:appointments!message_threads_appointment_id_fkey(starts_at),
+      messages(id, body, created_at, read_at, sender_id)
+    `,
+    )
+    .eq("patient_id", patientId)
+    .not("appointment_id", "is", null);
+
+  if (!threadsData || threadsData.length === 0) return [];
+
+  return (
+    threadsData as unknown as Array<{
+      id: string;
+      appointment_id: string;
+      doctor: { full_name: string | null } | { full_name: string | null }[];
+      appointment:
+        | { starts_at: string }
+        | { starts_at: string }[]
+        | null;
+      messages: Array<{
+        id: string;
+        body: string;
+        created_at: string;
+        read_at: string | null;
+        sender_id: string;
+      }>;
+    }>
+  )
+    .map((t) => {
+      const doctorRaw = t.doctor;
+      const doctorName = Array.isArray(doctorRaw)
+        ? (doctorRaw[0]?.full_name ?? "Unknown")
+        : ((doctorRaw as { full_name: string | null })?.full_name ?? "Unknown");
+
+      const apptRaw = t.appointment;
+      const appointmentStartsAt = Array.isArray(apptRaw)
+        ? (apptRaw[0]?.starts_at ?? "")
+        : ((apptRaw as { starts_at: string } | null)?.starts_at ?? "");
+
+      const msgs = t.messages ?? [];
+      const sorted = [...msgs].sort((a, b) =>
+        b.created_at.localeCompare(a.created_at),
+      );
+      const last = sorted[0] ?? null;
+      const unreadCount = msgs.filter(
+        (m) => m.read_at === null && m.sender_id !== patientId,
+      ).length;
+
+      return {
+        threadId: t.id,
+        appointmentId: t.appointment_id,
+        appointmentStartsAt,
+        doctorName,
+        lastMessageBody: last?.body ?? null,
+        lastMessageAt: last?.created_at ?? null,
+        unreadCount,
+      };
+    })
+    .filter((t) => t.appointmentStartsAt !== "")
+    .sort((a, b) => {
+      if (!a.lastMessageAt && !b.lastMessageAt) return 0;
+      if (!a.lastMessageAt) return 1;
+      if (!b.lastMessageAt) return -1;
+      return b.lastMessageAt.localeCompare(a.lastMessageAt);
+    });
+}
