@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { Bell } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { formatInTirane } from "@/lib/datetime";
@@ -13,10 +14,12 @@ interface Notification {
   message: string;
   read_at: string | null;
   created_at: string;
+  data: Record<string, unknown>;
 }
 
 export function NotificationBell({ userId }: { userId: string }) {
   const t = useTranslations();
+  const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
 
@@ -24,7 +27,7 @@ export function NotificationBell({ userId }: { userId: string }) {
     const supabase = createClient();
     const { data } = await supabase
       .from("notifications")
-      .select("id, title, message, read_at, created_at")
+      .select("id, title, message, read_at, created_at, data")
       .eq("user_id", userId)
       .order("created_at", { ascending: false })
       .limit(20);
@@ -79,6 +82,14 @@ export function NotificationBell({ userId }: { userId: string }) {
     setOpen((v) => !v);
   }
 
+  function handleNotificationClick(notification: Notification) {
+    const threadId = notification.data?.thread_id as string | undefined;
+    if (threadId) {
+      setOpen(false);
+      router.push(`/patient/messages#${threadId}`);
+    }
+  }
+
   return (
     <div className="relative">
       <button
@@ -118,10 +129,11 @@ export function NotificationBell({ userId }: { userId: string }) {
                 </p>
               ) : (
                 notifications.map((n) => (
-                  <div
+                  <button
                     key={n.id}
+                    onClick={() => handleNotificationClick(n)}
                     className={cn(
-                      "border-b border-border/60 px-4 py-3 last:border-0",
+                      "w-full border-b border-border/60 px-4 py-3 text-left transition-colors last:border-0 hover:bg-secondary/50",
                       !n.read_at && "bg-primary-tint",
                     )}
                   >
@@ -130,7 +142,7 @@ export function NotificationBell({ userId }: { userId: string }) {
                     <p className="mt-1 text-xs text-muted-foreground/70">
                       {formatInTirane(n.created_at, "d MMM HH:mm")}
                     </p>
-                  </div>
+                  </button>
                 ))
               )}
             </div>

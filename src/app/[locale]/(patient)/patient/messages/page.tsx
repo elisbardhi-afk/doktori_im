@@ -6,8 +6,10 @@ import { EmptyState } from "@/components/empty-state";
 
 export default async function PatientMessagesPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams?: Promise<Record<string, string | string[]>>;
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
