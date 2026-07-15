@@ -113,6 +113,10 @@
   "messages": {
     "title": "Messages",
     "empty": "No messages yet.",
+    "active": "Active",
+    "archived": "Archived",
+    "noActiveThreads": "No active messages",
+    "noArchivedThreads": "No archived messages",
     "inputPlaceholder": "Type a message...",
     "send": "Send",
     "sent": "Message sent",

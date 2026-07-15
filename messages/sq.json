@@ -113,6 +113,10 @@
   "messages": {
     "title": "Mesazhet",
     "empty": "Ende pa mesazhe.",
+    "active": "Aktiv",
+    "archived": "Në arkiv",
+    "noActiveThreads": "Nuk ka mesazhe aktive",
+    "noArchivedThreads": "Nuk ka mesazhe në arkiv",
     "inputPlaceholder": "Shkruani një mesazh...",
     "send": "Dërgo",
     "sent": "Mesazhi u dërgua",
