@@ -147,11 +147,14 @@ export function PatientMessagesInbox({ threads, currentUserId }: Props) {
                     </Badge>
                   )}
                 </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Calendar className="size-4 shrink-0" />
-                  <span>
-                    {thread.serviceName} • {formatInTirane(thread.appointmentStartsAt, "EEEE, d MMM yyyy — HH:mm", dateLocale)}
-                  </span>
+                <div className="text-sm text-muted-foreground">
+                  <div>{thread.serviceName}</div>
+                  <div className="flex items-center gap-1.5">
+                    <Calendar className="size-3.5 shrink-0" />
+                    <span>
+                      {formatInTirane(thread.appointmentStartsAt, "EEEE, d MMM yyyy — HH:mm", dateLocale)}
+                    </span>
+                  </div>
                 </div>
               </div>
               <div className="shrink-0 text-muted-foreground">
