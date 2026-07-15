@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { ChevronDown, ChevronUp, Stethoscope, Calendar } from "lucide-react";
@@ -23,9 +23,28 @@ export function PatientMessagesInbox({ threads, currentUserId }: Props) {
   const [openThreadId, setOpenThreadId] = useState<string | null>(null);
   const [threadMessages, setThreadMessages] = useState<Record<string, Message[]>>({});
   const [loadingThreadId, setLoadingThreadId] = useState<string | null>(null);
+  const [threadUnreadCounts, setThreadUnreadCounts] = useState<Record<string, number>>({});
+
+  React.useEffect(() => {
+    const counts: Record<string, number> = {};
+    threads.forEach((thread) => {
+      counts[thread.threadId] = thread.unreadCount;
+    });
+    setThreadUnreadCounts(counts);
+  }, [threads]);
 
   const loadThread = useCallback(async (threadId: string) => {
     setLoadingThreadId(threadId);
+
+    // Get the original unread count in case we need to restore it
+    const originalUnreadCount = threadUnreadCounts[threadId] ?? 0;
+
+    // Optimistic update: set unreadCount to 0 immediately
+    setThreadUnreadCounts((prev) => ({
+      ...prev,
+      [threadId]: 0,
+    }));
+
     try {
       const result = await fetchMessageThread(threadId);
       setThreadMessages((prev) => ({
@@ -35,10 +54,15 @@ export function PatientMessagesInbox({ threads, currentUserId }: Props) {
       markThreadRead(threadId);
     } catch {
       toast.error(t("messages.loadError"));
+      // Restore the original unread count on error
+      setThreadUnreadCounts((prev) => ({
+        ...prev,
+        [threadId]: originalUnreadCount,
+      }));
     } finally {
       setLoadingThreadId(null);
     }
-  }, [t]);
+  }, [t, threadUnreadCounts]);
 
   async function handleToggle(threadId: string) {
     if (openThreadId === threadId) {
@@ -72,9 +96,9 @@ export function PatientMessagesInbox({ threads, currentUserId }: Props) {
                 <div className="flex items-center gap-2">
                   <Stethoscope className="size-4 shrink-0 text-primary" />
                   <span className="font-bold text-foreground">{thread.doctorName}</span>
-                  {thread.unreadCount > 0 && (
+                  {(threadUnreadCounts[thread.threadId] ?? thread.unreadCount) > 0 && (
                     <Badge variant="default" className="text-xs">
-                      {thread.unreadCount}
+                      {threadUnreadCounts[thread.threadId] ?? thread.unreadCount}
                     </Badge>
                   )}
                 </div>
