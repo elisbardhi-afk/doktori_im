@@ -283,6 +283,7 @@ export interface PatientThreadSummary {
   appointmentId: string;
   appointmentStartsAt: string;
   doctorName: string;
+  serviceName: string;
   lastMessageBody: string | null;
   lastMessageAt: string | null;
   unreadCount: number;
@@ -298,7 +299,7 @@ export async function getPatientMessageThreads(
     .select(
       `
       id, doctor_id, appointment_id,
-      appointment:appointments!message_threads_appointment_id_fkey(starts_at),
+      appointment:appointments!message_threads_appointment_id_fkey(starts_at, service_id),
       messages(id, body, created_at, read_at, sender_id)
     `,
     )
@@ -321,14 +322,48 @@ export async function getPatientMessageThreads(
     });
   }
 
+  // Collect service IDs
+  const serviceIds = new Set<string>();
+  (threadsData as unknown as Array<{
+    appointment:
+      | { starts_at: string; service_id: string | null }
+      | { starts_at: string; service_id: string | null }[]
+      | null;
+  }>).forEach((t) => {
+    const apptRaw = t.appointment;
+    if (apptRaw) {
+      const serviceId = Array.isArray(apptRaw)
+        ? apptRaw[0]?.service_id
+        : ((apptRaw as { service_id: string | null }).service_id);
+      if (serviceId) {
+        serviceIds.add(serviceId);
+      }
+    }
+  });
+
+  // Fetch service names for the service IDs
+  let serviceNameMap = new Map<string, string>();
+  if (serviceIds.size > 0) {
+    const { data: services } = await supabase
+      .from("doctor_services")
+      .select("id, name")
+      .in("id", Array.from(serviceIds));
+
+    if (services) {
+      services.forEach((service) => {
+        serviceNameMap.set(service.id, service.name);
+      });
+    }
+  }
+
   return (
     threadsData as unknown as Array<{
       id: string;
       doctor_id: string;
       appointment_id: string;
       appointment:
-        | { starts_at: string }
-        | { starts_at: string }[]
+        | { starts_at: string; service_id: string | null }
+        | { starts_at: string; service_id: string | null }[]
         | null;
       messages: Array<{
         id: string;
@@ -347,6 +382,11 @@ export async function getPatientMessageThreads(
         ? (apptRaw[0]?.starts_at ?? "")
         : ((apptRaw as { starts_at: string } | null)?.starts_at ?? "");
 
+      const serviceId = Array.isArray(apptRaw)
+        ? apptRaw[0]?.service_id ?? null
+        : ((apptRaw as { service_id: string | null } | null)?.service_id ?? null);
+      const serviceName = serviceId ? serviceNameMap.get(serviceId) ?? "Unknown" : "General";
+
       const msgs = t.messages ?? [];
       const sorted = [...msgs].sort((a, b) =>
         b.created_at.localeCompare(a.created_at),
@@ -361,6 +401,7 @@ export async function getPatientMessageThreads(
         appointmentId: t.appointment_id,
         appointmentStartsAt,
         doctorName,
+        serviceName,
         lastMessageBody: last?.body ?? null,
         lastMessageAt: last?.created_at ?? null,
         unreadCount,
