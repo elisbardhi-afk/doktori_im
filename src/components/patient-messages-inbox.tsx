@@ -20,6 +20,7 @@ interface Props {
 
 export function PatientMessagesInbox({ threads, currentUserId }: Props) {
   const t = useTranslations();
+  const [view, setView] = useState<"active" | "archived">("active");
   const [openThreadId, setOpenThreadId] = useState<string | null>(null);
   const [threadMessages, setThreadMessages] = useState<Record<string, Message[]>>({});
   const [loadingThreadId, setLoadingThreadId] = useState<string | null>(null);
@@ -79,9 +80,49 @@ export function PatientMessagesInbox({ threads, currentUserId }: Props) {
     loadThread(threadId);
   }
 
+  const now = new Date();
+  const activeThreads = threads.filter(
+    (thread) => new Date(thread.appointmentStartsAt) > now
+  );
+  const archivedThreads = threads.filter(
+    (thread) => new Date(thread.appointmentStartsAt) <= now
+  );
+  const displayedThreads = view === "active" ? activeThreads : archivedThreads;
+
   return (
     <div className="flex flex-col gap-3">
-      {threads.map((thread) => {
+      <div className="flex gap-2 border-b border-border">
+        <button
+          onClick={() => setView("active")}
+          className={`px-4 py-2 ${
+            view === "active"
+              ? "border-b-2 border-primary text-foreground"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          {t("messages.active")} ({activeThreads.length})
+        </button>
+        <button
+          onClick={() => setView("archived")}
+          className={`px-4 py-2 ${
+            view === "archived"
+              ? "border-b-2 border-primary text-foreground"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          {t("messages.archived")} ({archivedThreads.length})
+        </button>
+      </div>
+
+      {displayedThreads.length === 0 ? (
+        <div className="py-8 text-center text-muted-foreground">
+          {view === "active"
+            ? t("messages.noActiveThreads")
+            : t("messages.noArchivedThreads")}
+        </div>
+      ) : (
+        <>
+          {displayedThreads.map((thread) => {
         const isOpen = openThreadId === thread.threadId;
         const isLoading = loadingThreadId === thread.threadId;
         const messages = threadMessages[thread.threadId] ?? [];
@@ -134,6 +175,8 @@ export function PatientMessagesInbox({ threads, currentUserId }: Props) {
           </Card>
         );
       })}
+        </>
+      )}
     </div>
   );
 }
