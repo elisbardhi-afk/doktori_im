@@ -40,28 +40,38 @@ export function DoctorAppointmentQuickActions({
 
   const handleConfirm = async () => {
     setLoading(true);
-    const res = await transitionAppointment(appointment.id, "confirm");
-    setLoading(false);
-    if (!res.ok) {
-      toast.error(res.error ?? "Error");
-      return;
+    try {
+      const res = await transitionAppointment(appointment.id, "confirm");
+      if (!res.ok) {
+        toast.error(res.error ?? t("review.error"));
+        return;
+      }
+      toast.success(t("common.saved"));
+      router.refresh();
+      onClose();
+    } catch {
+      toast.error(t("review.error"));
+    } finally {
+      setLoading(false);
     }
-    toast.success(t("common.saved"));
-    router.refresh();
-    onClose();
   };
 
   const handleCancel = async () => {
     setLoading(true);
-    const res = await cancelAppointment({ appointmentId: appointment.id });
-    setLoading(false);
-    if (!res.ok) {
-      toast.error(res.error ?? "Error");
-      return;
+    try {
+      const res = await cancelAppointment({ appointmentId: appointment.id });
+      if (!res.ok) {
+        toast.error(res.error ?? t("review.error"));
+        return;
+      }
+      toast.success(t("appointments.cancelled"));
+      router.refresh();
+      onClose();
+    } catch {
+      toast.error(t("review.error"));
+    } finally {
+      setLoading(false);
     }
-    toast.success(t("appointments.cancelled"));
-    router.refresh();
-    onClose();
   };
 
   return (
