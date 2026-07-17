@@ -1,7 +1,11 @@
 New features / Wishes:
+
 - Clicking the notification button should immediately open the new messages.
 - Create a dedicated archive for all past appointments.
-
+- Allow doctors, when logged in, to fully edit or redo their calendar at any time.
+- Let doctors block specific time slots when they are unavailable.
+- Let doctors block entire days (for example, during vacation or time off).
+- Ensure all calendar changes and availability updates are immediately visible in real time to patients who want to book an appointment.
 
 Bugs:
 - 
