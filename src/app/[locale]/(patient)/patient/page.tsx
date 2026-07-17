@@ -73,7 +73,7 @@ export default async function PatientDashboard({
 
       {past.length > 0 && (
         <PastAppointmentsCollapsible
-          title={`${activeLocale === "en" ? "Past appointments" : "Takime të kaluara"} (${past.length})`}
+          title={activeLocale === "en" ? "Past appointments" : "Takime të kaluara"}
         >
           <div className="flex flex-col gap-3">
             {past.map((a) => (
