@@ -1,9 +1,13 @@
 New features / Wishes:
 - When an appointment is clicked on mobile, open a pop-up window showing the appointment details (what the appointment is for).
-- From the mobile pop-up window, allow the doctor to confirm or cancel the appointment directly.
+- From the mobile pop-up window, allow the doctor to confirm or cancel the appointment directly. The patient already has this feature. Base on that.
 
 Bugs:
 - On the mobile app version, make appointments on the calendar clickable.
+
+In Progress (resume tomorrow):
+- [ALMOST DONE] Doctor calendar appointment popup — implementation complete (branch: main, commits 5beeda5..a811b84).
+  Remaining: run final whole-branch code review (use /code-review or ask Claude to dispatch the final reviewer agent using the diff package at .superpowers/sdd/review-5beeda5..a811b84.diff), then run /verify to test the feature in the browser, then archive the todo items above once confirmed working.
 
 Optimizations:
 -
