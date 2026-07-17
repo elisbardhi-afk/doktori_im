@@ -32,7 +32,7 @@ export function SignUpDropdown({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <Button size="sm" className="flex items-center gap-1">
+      <Button size="sm" className="flex items-center gap-1 select-none" tabIndex={-1} aria-haspopup="true" aria-expanded={open}>
         {registerLabel}
         <ChevronDown
           className={`size-3.5 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
@@ -47,7 +47,7 @@ export function SignUpDropdown({
         }`}
       >
         <Link
-          href="/register"
+          href="/register/patient"
           className="flex items-center px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
         >
           {asPatientLabel}
