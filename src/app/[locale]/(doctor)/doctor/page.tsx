@@ -56,7 +56,7 @@ export default async function DoctorDashboard({
         </Card>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2">
         <StatCard
           label={activeLocale === "en" ? "Today" : "Sot"}
           value={today.length}
@@ -66,11 +66,6 @@ export default async function DoctorDashboard({
           label={t("appointments.upcoming")}
           value={upcoming.length}
           icon="CalendarClock"
-        />
-        <StatCard
-          label={activeLocale === "en" ? "Total" : "Gjithsej"}
-          value={appts.length}
-          icon="Users"
         />
       </div>
 
