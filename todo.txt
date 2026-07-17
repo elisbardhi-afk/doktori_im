@@ -1,8 +1,9 @@
 New features / Wishes:
-
+- When an appointment is clicked on mobile, open a pop-up window showing the appointment details (what the appointment is for).
+- From the mobile pop-up window, allow the doctor to confirm or cancel the appointment directly.
 
 Bugs:
--
+- On the mobile app version, make appointments on the calendar clickable.
 
 Optimizations:
 -
