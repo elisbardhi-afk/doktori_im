@@ -38,7 +38,7 @@ interface Notification {
   data: Record<string, unknown>;
 }
 
-export function NotificationBell({ userId }: { userId: string }) {
+export function NotificationBell({ userId, userRole }: { userId: string; userRole: string }) {
   const t = useTranslations();
   const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -104,10 +104,21 @@ export function NotificationBell({ userId }: { userId: string }) {
   }
 
   function handleNotificationClick(notification: Notification) {
-    const threadId = notification.data?.thread_id as string | undefined;
-    if (threadId) {
-      setOpen(false);
-      router.push(`/patient/messages#${threadId}`);
+    const { type, data } = notification;
+    const threadId = data?.thread_id as string | undefined;
+    const appointmentId = data?.appointment_id as string | undefined;
+    const base = userRole === "doctor" ? "/doctor" : "/patient";
+
+    setOpen(false);
+
+    if (type === "message_received" && threadId) {
+      router.push(`${base}/messages#${threadId}`);
+    } else if (type === "new_booking" && appointmentId) {
+      router.push(`/doctor/appointments`);
+    } else if ((type === "appointment_confirmed" || type === "appointment_cancelled") && appointmentId) {
+      router.push(`/patient/appointments/${appointmentId}`);
+    } else if (type === "review_request" && appointmentId) {
+      router.push(`/patient/appointments/${appointmentId}`);
     }
   }
 

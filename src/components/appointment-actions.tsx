@@ -6,6 +6,7 @@ import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { transitionAppointment } from "@/actions/appointment-status";
+import { cancelAppointment } from "@/actions/booking";
 import type { AppointmentStatus } from "@/lib/database.types";
 
 export function AppointmentActions({
@@ -21,9 +22,7 @@ export function AppointmentActions({
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  const past = new Date(startsAt) < new Date();
-
-  async function act(transition: "confirm" | "complete" | "no_show") {
+  async function act(transition: "confirm" | "complete") {
     setLoading(true);
     const res = await transitionAppointment(appointmentId, transition);
     setLoading(false);
@@ -35,23 +34,38 @@ export function AppointmentActions({
     router.refresh();
   }
 
+  async function onCancel() {
+    setLoading(true);
+    const res = await cancelAppointment({ appointmentId });
+    setLoading(false);
+    if (!res.ok) {
+      toast.error(res.error ?? "Error");
+      return;
+    }
+    toast.success(t("appointments.cancelled"));
+    router.refresh();
+  }
+
   return (
     <div className="flex flex-wrap gap-2">
       {status === "pending" && (
-        <Button size="sm" onClick={() => act("confirm")} disabled={loading}>
-          {t("common.confirm")}
-        </Button>
+        <>
+          <Button size="sm" onClick={() => act("confirm")} disabled={loading}>
+            {t("common.confirm")}
+          </Button>
+          <Button size="sm" variant="destructive" onClick={onCancel} disabled={loading}>
+            {t("appointments.cancel")}
+          </Button>
+        </>
       )}
       {status === "confirmed" && (
         <>
           <Button size="sm" variant="soft" onClick={() => act("complete")} disabled={loading}>
             {t("appointments.status.completed")}
           </Button>
-          {past && (
-            <Button size="sm" variant="ghost" onClick={() => act("no_show")} disabled={loading}>
-              {t("appointments.status.no_show")}
-            </Button>
-          )}
+          <Button size="sm" variant="destructive" onClick={onCancel} disabled={loading}>
+            {t("appointments.cancel")}
+          </Button>
         </>
       )}
     </div>
