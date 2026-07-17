@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { AvailabilityManager } from "@/components/availability-manager";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle } from "lucide-react";
-import type { AvailabilityRuleRow } from "@/lib/database.types";
+import type { AvailabilityRuleRow, AvailabilityExceptionRow } from "@/lib/database.types";
 
 export default async function AvailabilityPage({
   params,
@@ -17,13 +17,19 @@ export default async function AvailabilityPage({
   const { user, status } = await requireDoctor();
 
   const supabase = createClient();
-  const { data } = await supabase
-    .from("availability_rules")
-    .select("*")
-    .eq("doctor_id", user.id)
-    .order("weekday");
+  const [{ data: rulesData }, { data: exceptionsData }] = await Promise.all([
+    supabase.from("availability_rules").select("*").eq("doctor_id", user.id).order("weekday"),
+    supabase
+      .from("availability_exceptions")
+      .select("*")
+      .eq("doctor_id", user.id)
+      .eq("kind", "block")
+      .gte("exception_date", new Date().toISOString().slice(0, 10))
+      .order("exception_date"),
+  ]);
 
-  const rules = (data ?? []) as AvailabilityRuleRow[];
+  const rules = (rulesData ?? []) as AvailabilityRuleRow[];
+  const exceptions = (exceptionsData ?? []) as AvailabilityExceptionRow[];
 
   if (status !== "approved") {
     return (
@@ -47,6 +53,13 @@ export default async function AvailabilityPage({
           weekday: r.weekday,
           startTime: r.start_time.slice(0, 5),
           endTime: r.end_time.slice(0, 5),
+        }))}
+        exceptions={exceptions.map((e) => ({
+          id: e.id,
+          date: e.exception_date,
+          startTime: e.start_time ?? undefined,
+          endTime: e.end_time ?? undefined,
+          reason: e.reason ?? undefined,
         }))}
       />
     </div>

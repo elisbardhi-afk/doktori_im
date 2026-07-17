@@ -32,7 +32,7 @@ export async function SiteHeader() {
 
         <div className="flex items-center gap-3">
           <LanguageSwitcher />
-          {user && <NotificationBell userId={user.id} />}
+          {user && <NotificationBell userId={user.id} userRole={user.role ?? "patient"} />}
           {user ? (
             <UserMenu name={user.full_name ?? user.email} dashboardHref={dashboardHref} />
           ) : (
