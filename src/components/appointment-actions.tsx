@@ -12,11 +12,9 @@ import type { AppointmentStatus } from "@/lib/database.types";
 export function AppointmentActions({
   appointmentId,
   status,
-  startsAt,
 }: {
   appointmentId: string;
   status: AppointmentStatus;
-  startsAt: string;
 }) {
   const t = useTranslations();
   const router = useRouter();

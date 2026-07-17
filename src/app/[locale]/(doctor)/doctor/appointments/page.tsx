@@ -57,7 +57,6 @@ export default async function DoctorAppointmentsPage({
                     <AppointmentActions
                       appointmentId={a.id}
                       status={a.status}
-                      startsAt={a.startsAt}
                     />
                   </div>
                 </Card>
