@@ -155,7 +155,30 @@
     "label": "Njoftimet",
     "title": "Njoftimet",
     "empty": "Nuk keni njoftime.",
-    "markAllRead": "Shënoji të gjitha si të lexuara"
+    "markAllRead": "Shënoji të gjitha si të lexuara",
+    "types": {
+      "appointment_confirmed": {
+        "title": "Takimi u konfirmua",
+        "message": "Takimi juaj u konfirmua."
+      },
+      "appointment_cancelled": {
+        "title": "Takim i anuluar",
+        "message": "Takimi juaj u anulua."
+      },
+      "new_booking": {
+        "title": "Rezervim i ri",
+        "message": "Keni një takim të ri."
+      },
+      "review_request": {
+        "title": "Vlerësoni takimin",
+        "message": "Si ishte takimi juaj? Lini një vlerësim."
+      },
+      "message_received": {
+        "title": "Mesazh i ri nga {senderName}",
+        "titleFallback": "Mesazh i ri",
+        "message": "Keni një mesazh të ri."
+      }
+    }
   },
   "availability": {
     "title": "Oraret",
