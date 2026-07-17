@@ -38,13 +38,13 @@ export function PatientMessagesInbox({ threads, currentUserId }: Props) {
     setThreadUnreadCounts(counts);
   }, [threads]);
 
-  // Auto-open thread from hash (e.g., from notification click)
+  // Auto-open thread from hash (e.g., from notification click) — runs once on mount
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(() => {
     const threadIdFromHash = window.location.hash.slice(1);
     if (threadIdFromHash && threads.some((t) => t.threadId === threadIdFromHash)) {
       setOpenThreadId(threadIdFromHash);
       loadThread(threadIdFromHash);
-      // Smooth scroll to the thread
       setTimeout(() => {
         const element = document.getElementById(`thread-${threadIdFromHash}`);
         element?.scrollIntoView({ behavior: "smooth", block: "start" });
