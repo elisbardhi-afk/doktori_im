@@ -60,7 +60,7 @@ export function SiteHeaderMobileMenu({
               {registerLabel}
             </p>
             <Button asChild variant="outline" className="min-h-[48px] w-full justify-start">
-              <Link href="/register">{asPatientLabel}</Link>
+              <Link href="/register/patient">{asPatientLabel}</Link>
             </Button>
             <Button asChild className="min-h-[48px] w-full justify-start">
               <Link href="/register/doctor">{asDoctorLabel}</Link>
