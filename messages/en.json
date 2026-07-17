@@ -37,7 +37,9 @@
     "findDoctor": "Find Doctor",
     "messages": "Messages",
     "menu": "Menu",
-    "close": "Close"
+    "close": "Close",
+    "asPatient": "As Patient",
+    "asDoctor": "As Doctor"
   },
   "landing": {
     "heroTitle": "Find your doctor",

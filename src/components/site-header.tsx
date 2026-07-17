@@ -7,6 +7,7 @@ import { UserMenu } from "@/components/user-menu";
 import { NotificationBell } from "@/components/notification-bell";
 import { Stethoscope } from "lucide-react";
 import { SiteHeaderMobileMenu } from "@/components/site-header-mobile-menu";
+import { SignUpDropdown } from "@/components/signup-dropdown";
 
 export async function SiteHeader() {
   const t = await getTranslations();
@@ -29,17 +30,6 @@ export async function SiteHeader() {
           <span className="text-lg">{t("common.appName")}</span>
         </Link>
 
-        {!user && (
-          <nav className="hidden items-center gap-6 text-sm font-semibold text-muted-foreground md:flex">
-            <Link href="/doctors" className="transition-colors hover:text-foreground">
-              {t("nav.forPatients")}
-            </Link>
-            <Link href="/register/doctor" className="transition-colors hover:text-foreground">
-              {t("nav.forDoctors")}
-            </Link>
-          </nav>
-        )}
-
         <div className="flex items-center gap-3">
           <LanguageSwitcher />
           {user && <NotificationBell userId={user.id} />}
@@ -50,18 +40,19 @@ export async function SiteHeader() {
               <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
                 <Link href="/login">{t("common.login")}</Link>
               </Button>
-              <Button asChild size="sm" className="hidden sm:inline-flex">
-                <Link href="/register">{t("common.register")}</Link>
-              </Button>
+              <SignUpDropdown
+                registerLabel={t("common.register")}
+                asPatientLabel={t("nav.asPatient")}
+                asDoctorLabel={t("nav.asDoctor")}
+              />
             </>
           )}
-          {/* Mobile hamburger — only shown when user is not logged in (nav links are hidden) */}
           {!user && (
             <SiteHeaderMobileMenu
               menuLabel={t("nav.menu")}
               closeLabel={t("nav.close")}
-              forPatientsLabel={t("nav.forPatients")}
-              forDoctorsLabel={t("nav.forDoctors")}
+              asPatientLabel={t("nav.asPatient")}
+              asDoctorLabel={t("nav.asDoctor")}
               loginLabel={t("common.login")}
               registerLabel={t("common.register")}
               appNameLabel={t("common.appName")}
