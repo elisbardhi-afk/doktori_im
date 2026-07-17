@@ -8,8 +8,29 @@ import { createClient } from "@/lib/supabase/client";
 import { formatInTirane } from "@/lib/datetime";
 import { cn } from "@/lib/utils";
 
+const KNOWN_TYPES = ["appointment_confirmed", "appointment_cancelled", "new_booking", "review_request", "message_received"] as const;
+type NotificationType = (typeof KNOWN_TYPES)[number];
+
+function getNotifText(
+  t: ReturnType<typeof useTranslations>,
+  type: string,
+  field: "title" | "message",
+  fallback: string,
+  data?: Record<string, unknown>,
+): string {
+  if (!(KNOWN_TYPES as readonly string[]).includes(type)) return fallback;
+  const nt = type as NotificationType;
+  if (nt === "message_received" && field === "title") {
+    const senderName = data?.sender_name as string | undefined;
+    if (senderName) return t("notifications.types.message_received.title", { senderName });
+    return t("notifications.types.message_received.titleFallback");
+  }
+  return t(`notifications.types.${nt}.${field}`);
+}
+
 interface Notification {
   id: string;
+  type: string;
   title: string;
   message: string;
   read_at: string | null;
@@ -27,7 +48,7 @@ export function NotificationBell({ userId }: { userId: string }) {
     const supabase = createClient();
     const { data } = await supabase
       .from("notifications")
-      .select("id, title, message, read_at, created_at, data")
+      .select("id, type, title, message, read_at, created_at, data")
       .eq("user_id", userId)
       .order("created_at", { ascending: false })
       .limit(20);
@@ -137,8 +158,12 @@ export function NotificationBell({ userId }: { userId: string }) {
                       !n.read_at && "bg-primary-tint",
                     )}
                   >
-                    <p className="text-sm font-semibold text-foreground">{n.title}</p>
-                    <p className="mt-0.5 text-sm text-muted-foreground">{n.message}</p>
+                    <p className="text-sm font-semibold text-foreground">
+                      {getNotifText(t, n.type, "title", n.title, n.data)}
+                    </p>
+                    <p className="mt-0.5 text-sm text-muted-foreground">
+                      {getNotifText(t, n.type, "message", n.message, n.data)}
+                    </p>
                     <p className="mt-1 text-xs text-muted-foreground/70">
                       {formatInTirane(n.created_at, "d MMM HH:mm")}
                     </p>

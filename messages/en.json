@@ -155,7 +155,30 @@
     "label": "Notifications",
     "title": "Notifications",
     "empty": "No notifications.",
-    "markAllRead": "Mark all as read"
+    "markAllRead": "Mark all as read",
+    "types": {
+      "appointment_confirmed": {
+        "title": "Appointment Confirmed",
+        "message": "Your appointment has been confirmed."
+      },
+      "appointment_cancelled": {
+        "title": "Appointment Cancelled",
+        "message": "Your appointment has been cancelled."
+      },
+      "new_booking": {
+        "title": "New Booking",
+        "message": "You have a new appointment."
+      },
+      "review_request": {
+        "title": "Leave a Review",
+        "message": "How was your appointment? Leave a review."
+      },
+      "message_received": {
+        "title": "New message from {senderName}",
+        "titleFallback": "New message",
+        "message": "You have a new message."
+      }
+    }
   },
   "availability": {
     "title": "Availability",
