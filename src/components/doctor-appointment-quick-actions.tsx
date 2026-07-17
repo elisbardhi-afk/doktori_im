@@ -43,14 +43,14 @@ export function DoctorAppointmentQuickActions({
     try {
       const res = await transitionAppointment(appointment.id, "confirm");
       if (!res.ok) {
-        toast.error(res.error ?? t("review.error"));
+        toast.error(res.error ?? t("reviews.error"));
         return;
       }
       toast.success(t("common.saved"));
       router.refresh();
       onClose();
     } catch {
-      toast.error(t("review.error"));
+      toast.error(t("reviews.error"));
     } finally {
       setLoading(false);
     }
@@ -61,14 +61,14 @@ export function DoctorAppointmentQuickActions({
     try {
       const res = await cancelAppointment({ appointmentId: appointment.id });
       if (!res.ok) {
-        toast.error(res.error ?? t("review.error"));
+        toast.error(res.error ?? t("reviews.error"));
         return;
       }
-      toast.success(t("appointments.cancelled"));
+      toast.success(t("appointments.status.cancelled"));
       router.refresh();
       onClose();
     } catch {
-      toast.error(t("review.error"));
+      toast.error(t("reviews.error"));
     } finally {
       setLoading(false);
     }
