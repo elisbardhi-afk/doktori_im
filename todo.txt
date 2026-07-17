@@ -1,5 +1,7 @@
 New features / Wishes:
-- 
+- Clicking the notification button should immediately open the new messages.
+- Create a dedicated archive for all past appointments.
+
 
 Bugs:
 - 
@@ -9,5 +11,4 @@ Optimizations:
 
 Archieve:
 
-- Clicking the notification button should immediately open the new messages.
-- Create a dedicated archive for all past appointments.
+
