@@ -128,7 +128,7 @@ export function PatientMessagesInbox({ threads, currentUserId }: Props) {
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          {t("messages.archived")} ({archivedThreads.length})
+          {t("messages.archived")}
         </button>
       </div>
 
