@@ -37,7 +37,9 @@
     "findDoctor": "Gjej mjek",
     "messages": "Mesazhet",
     "menu": "Menyja",
-    "close": "Mbyll"
+    "close": "Mbyll",
+    "asPatient": "Si pacient",
+    "asDoctor": "Si mjek"
   },
   "landing": {
     "heroTitle": "Gjeni mjekun tuaj",

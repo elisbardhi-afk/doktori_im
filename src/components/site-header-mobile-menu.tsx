@@ -9,16 +9,16 @@ import { Button } from "@/components/ui/button";
 export function SiteHeaderMobileMenu({
   menuLabel,
   closeLabel,
-  forPatientsLabel,
-  forDoctorsLabel,
+  asPatientLabel,
+  asDoctorLabel,
   loginLabel,
   registerLabel,
   appNameLabel,
 }: {
   menuLabel: string;
   closeLabel: string;
-  forPatientsLabel: string;
-  forDoctorsLabel: string;
+  asPatientLabel: string;
+  asDoctorLabel: string;
   loginLabel: string;
   registerLabel: string;
   appNameLabel: string;
@@ -51,27 +51,19 @@ export function SiteHeaderMobileMenu({
             </SheetTitle>
           </SheetHeader>
 
-          <nav className="flex flex-col gap-2">
-            <Link
-              href="/doctors"
-              className="flex min-h-[48px] items-center rounded-lg px-3 text-sm font-semibold text-muted-foreground hover:bg-secondary hover:text-foreground"
-            >
-              {forPatientsLabel}
-            </Link>
-            <Link
-              href="/register/doctor"
-              className="flex min-h-[48px] items-center rounded-lg px-3 text-sm font-semibold text-muted-foreground hover:bg-secondary hover:text-foreground"
-            >
-              {forDoctorsLabel}
-            </Link>
-          </nav>
-
-          <div className="mt-6 flex flex-col gap-3 border-t border-border/60 pt-6">
+          <div className="flex flex-col gap-3">
             <Button asChild variant="ghost" className="min-h-[48px] w-full justify-start">
               <Link href="/login">{loginLabel}</Link>
             </Button>
-            <Button asChild className="min-h-[48px] w-full">
-              <Link href="/register">{registerLabel}</Link>
+            <div className="h-px bg-border/60" />
+            <p className="px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              {registerLabel}
+            </p>
+            <Button asChild variant="outline" className="min-h-[48px] w-full justify-start">
+              <Link href="/register">{asPatientLabel}</Link>
+            </Button>
+            <Button asChild className="min-h-[48px] w-full justify-start">
+              <Link href="/register/doctor">{asDoctorLabel}</Link>
             </Button>
           </div>
         </SheetContent>
