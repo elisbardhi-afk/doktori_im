@@ -289,6 +289,8 @@ export function DoctorCalendar({
 
   const navigate = useCallback(
     (newView: CalendarView, newDate: Date) => {
+      setSelectedAppt(null);
+      setPopoverPos(null);
       const d = formatInTirane(newDate.toISOString(), "yyyy-MM-dd");
       router.replace(`${pathname}?view=${newView}&date=${d}`);
     },
