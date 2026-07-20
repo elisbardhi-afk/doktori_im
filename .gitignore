@@ -40,3 +40,6 @@ next-env.d.ts
 
 # docs
 docs/
+
+# Claude Code local settings (contains credentials)
+.claude/settings.local.json
