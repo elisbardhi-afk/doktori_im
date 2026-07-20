@@ -38,6 +38,7 @@ export default async function DoctorProfilePage({
             clinicName={p?.clinic_name ?? ""}
             clinicAddress={p?.clinic_address ?? ""}
             city={p?.city ?? ""}
+            languages={p?.languages ?? []}
             photoUrl={p?.photo_url ?? null}
             fullName={user.full_name ?? user.email ?? ""}
           />

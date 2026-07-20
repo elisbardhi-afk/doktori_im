@@ -9,6 +9,7 @@ export async function updateDoctorProfile(input: {
   clinicName: string;
   clinicAddress: string;
   city: string;
+  languages: string[];
 }): Promise<{ ok: boolean; error?: string }> {
   const supabase = createClient();
   const {
@@ -23,6 +24,7 @@ export async function updateDoctorProfile(input: {
       clinic_name: input.clinicName,
       clinic_address: input.clinicAddress,
       city: input.city,
+      languages: input.languages,
     })
     .eq("user_id", user.id);
 
