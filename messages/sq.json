@@ -71,6 +71,27 @@
     "bookAppointment": "Rezervo takim",
     "noReviews": "Ende pa vlerësime."
   },
+  "languages": {
+    "sq": "Shqip",
+    "en": "Anglisht",
+    "de": "Gjermanisht",
+    "fr": "Frëngjisht",
+    "it": "Italisht",
+    "tr": "Turqisht",
+    "ar": "Arabisht",
+    "ru": "Rusisht",
+    "es": "Spanjisht",
+    "pt": "Portugalisht",
+    "zh": "Kinezisht",
+    "ja": "Japonisht",
+    "ko": "Koreanisht",
+    "hi": "Hindisht",
+    "gr": "Greqisht",
+    "sr": "Serbisht",
+    "hr": "Kroatisht",
+    "mk": "Maqedonisht",
+    "el": "Greqisht"
+  },
   "booking": {
     "selectDate": "Zgjidhni datën",
     "selectTime": "Zgjidhni orarin",
@@ -216,6 +237,7 @@
   "profile": {
     "title": "Informata e mia",
     "description": "Përditësoni informacionin tuaj personal",
+    "photo": "Foto e profilit",
     "firstName": "Emri",
     "lastName": "Mbiemri",
     "email": "Email",
