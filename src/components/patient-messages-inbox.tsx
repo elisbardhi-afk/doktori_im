@@ -156,9 +156,7 @@ export function PatientMessagesInbox({ threads, currentUserId }: Props) {
                   <Stethoscope className="size-4 shrink-0 text-primary" />
                   <span className="font-bold text-foreground">{thread.doctorName}</span>
                   {(threadUnreadCounts[thread.threadId] ?? thread.unreadCount) > 0 && (
-                    <Badge variant="default" className="text-xs">
-                      {threadUnreadCounts[thread.threadId] ?? thread.unreadCount}
-                    </Badge>
+                    <span className="size-2 rounded-full bg-primary inline-block" aria-label="unread" />
                   )}
                 </div>
                 <div className="text-sm text-muted-foreground">
@@ -190,10 +188,16 @@ export function PatientMessagesInbox({ threads, currentUserId }: Props) {
                   isLoading={isLoading}
                   currentUserId={currentUserId}
                 />
-                <MessageInput
-                  threadId={thread.threadId}
-                  onSendSuccess={() => handleSendSuccess(thread.threadId)}
-                />
+                {view === "active" ? (
+                  <MessageInput
+                    threadId={thread.threadId}
+                    onSendSuccess={() => handleSendSuccess(thread.threadId)}
+                  />
+                ) : (
+                  <p className="text-xs text-muted-foreground text-center py-2 border border-border rounded-lg bg-muted/30">
+                    {t("messages.archived")} — {locale === "sq" ? "Nuk mund të dërgoni mesazhe për takime të kaluara." : "You cannot send messages for past appointments."}
+                  </p>
+                )}
               </div>
             )}
           </Card>

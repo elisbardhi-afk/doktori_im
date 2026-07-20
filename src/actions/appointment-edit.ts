@@ -205,19 +205,26 @@ export async function getOrCreateMessageThread(
 
 /**
  * Fetch available slots for a doctor on a given date range.
+ * When durationMinutes is provided (e.g. for a specific service), the RPC
+ * only returns slots where the full service duration fits before the window ends.
  * Server action wrapper around getDoctorSlots query (cannot be called from client).
  */
 export async function fetchDoctorSlots(
   doctorId: string,
   fromDate: string,
-  toDate: string
+  toDate: string,
+  durationMinutes?: number
 ): Promise<AvailableSlot[]> {
   const supabase = createClient();
-  const { data } = await supabase.rpc("get_available_slots", {
+  const params: Record<string, unknown> = {
     p_doctor_id: doctorId,
     p_from: fromDate,
     p_to: toDate,
-  });
+  };
+  if (durationMinutes && durationMinutes > 15) {
+    params.p_duration_minutes = durationMinutes;
+  }
+  const { data } = await supabase.rpc("get_available_slots", params);
   const slots = (data ?? []) as AvailableSlot[];
   return slots.sort((a, b) => a.slot_start.localeCompare(b.slot_start));
 }
