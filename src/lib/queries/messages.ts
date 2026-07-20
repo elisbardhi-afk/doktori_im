@@ -277,3 +277,141 @@ export async function getDoctorMessageThreads(
       return b.lastMessageAt.localeCompare(a.lastMessageAt);
     });
 }
+
+export interface PatientThreadSummary {
+  threadId: string;
+  appointmentId: string;
+  appointmentStartsAt: string;
+  doctorName: string;
+  serviceName: string;
+  lastMessageBody: string | null;
+  lastMessageAt: string | null;
+  unreadCount: number;
+}
+
+export async function getPatientMessageThreads(
+  patientId: string,
+): Promise<PatientThreadSummary[]> {
+  const supabase = createClient();
+
+  const { data: threadsData } = await supabase
+    .from("message_threads")
+    .select(
+      `
+      id, doctor_id, appointment_id,
+      appointment:appointments!message_threads_appointment_id_fkey(starts_at, service_id),
+      messages(id, body, created_at, read_at, sender_id)
+    `,
+    )
+    .eq("patient_id", patientId)
+    .not("appointment_id", "is", null);
+
+  if (!threadsData || threadsData.length === 0) return [];
+
+  // Fetch doctor profiles for the doctor IDs
+  const doctorIds = Array.from(new Set(threadsData.map((t) => t.doctor_id)));
+  const { data: doctorProfiles } = await supabase
+    .from("doctor_profiles")
+    .select("user_id, full_name")
+    .in("user_id", doctorIds);
+
+  const doctorNameMap = new Map<string, string>();
+  if (doctorProfiles) {
+    doctorProfiles.forEach((profile) => {
+      doctorNameMap.set(profile.user_id, profile.full_name ?? "Unknown");
+    });
+  }
+
+  // Collect service IDs
+  const serviceIds = new Set<string>();
+  (threadsData as unknown as Array<{
+    appointment:
+      | { starts_at: string; service_id: string | null }
+      | { starts_at: string; service_id: string | null }[]
+      | null;
+  }>).forEach((t) => {
+    const apptRaw = t.appointment;
+    if (apptRaw) {
+      const serviceId = Array.isArray(apptRaw)
+        ? apptRaw[0]?.service_id
+        : ((apptRaw as { service_id: string | null }).service_id);
+      if (serviceId) {
+        serviceIds.add(serviceId);
+      }
+    }
+  });
+
+  // Fetch service names for the service IDs
+  const serviceNameMap = new Map<string, string>();
+  if (serviceIds.size > 0) {
+    const { data: services } = await supabase
+      .from("doctor_services")
+      .select("id, name")
+      .in("id", Array.from(serviceIds));
+
+    if (services) {
+      services.forEach((service) => {
+        serviceNameMap.set(service.id, service.name);
+      });
+    }
+  }
+
+  return (
+    threadsData as unknown as Array<{
+      id: string;
+      doctor_id: string;
+      appointment_id: string;
+      appointment:
+        | { starts_at: string; service_id: string | null }
+        | { starts_at: string; service_id: string | null }[]
+        | null;
+      messages: Array<{
+        id: string;
+        body: string;
+        created_at: string;
+        read_at: string | null;
+        sender_id: string;
+      }>;
+    }>
+  )
+    .map((t) => {
+      const doctorName = doctorNameMap.get(t.doctor_id) ?? "Unknown";
+
+      const apptRaw = t.appointment;
+      const appointmentStartsAt = Array.isArray(apptRaw)
+        ? (apptRaw[0]?.starts_at ?? "")
+        : ((apptRaw as { starts_at: string } | null)?.starts_at ?? "");
+
+      const serviceId = Array.isArray(apptRaw)
+        ? apptRaw[0]?.service_id ?? null
+        : ((apptRaw as { service_id: string | null } | null)?.service_id ?? null);
+      const serviceName = serviceId ? serviceNameMap.get(serviceId) ?? "Unknown" : "General";
+
+      const msgs = t.messages ?? [];
+      const sorted = [...msgs].sort((a, b) =>
+        b.created_at.localeCompare(a.created_at),
+      );
+      const last = sorted[0] ?? null;
+      const unreadCount = msgs.filter(
+        (m) => m.read_at === null && m.sender_id !== patientId,
+      ).length;
+
+      return {
+        threadId: t.id,
+        appointmentId: t.appointment_id,
+        appointmentStartsAt,
+        doctorName,
+        serviceName,
+        lastMessageBody: last?.body ?? null,
+        lastMessageAt: last?.created_at ?? null,
+        unreadCount,
+      };
+    })
+    .filter((t) => t.appointmentStartsAt !== "")
+    .sort((a, b) => {
+      if (!a.lastMessageAt && !b.lastMessageAt) return 0;
+      if (!a.lastMessageAt) return 1;
+      if (!b.lastMessageAt) return -1;
+      return b.lastMessageAt.localeCompare(a.lastMessageAt);
+    });
+}

@@ -2,21 +2,45 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { Bell } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { formatInTirane } from "@/lib/datetime";
 import { cn } from "@/lib/utils";
 
+const KNOWN_TYPES = ["appointment_confirmed", "appointment_cancelled", "new_booking", "review_request", "message_received"] as const;
+type NotificationType = (typeof KNOWN_TYPES)[number];
+
+function getNotifText(
+  t: ReturnType<typeof useTranslations>,
+  type: string,
+  field: "title" | "message",
+  fallback: string,
+  data?: Record<string, unknown>,
+): string {
+  if (!(KNOWN_TYPES as readonly string[]).includes(type)) return fallback;
+  const nt = type as NotificationType;
+  if (nt === "message_received" && field === "title") {
+    const senderName = data?.sender_name as string | undefined;
+    if (senderName) return t("notifications.types.message_received.title", { senderName });
+    return t("notifications.types.message_received.titleFallback");
+  }
+  return t(`notifications.types.${nt}.${field}`);
+}
+
 interface Notification {
   id: string;
+  type: string;
   title: string;
   message: string;
   read_at: string | null;
   created_at: string;
+  data: Record<string, unknown>;
 }
 
-export function NotificationBell({ userId }: { userId: string }) {
+export function NotificationBell({ userId, userRole }: { userId: string; userRole: string }) {
   const t = useTranslations();
+  const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
 
@@ -24,7 +48,7 @@ export function NotificationBell({ userId }: { userId: string }) {
     const supabase = createClient();
     const { data } = await supabase
       .from("notifications")
-      .select("id, title, message, read_at, created_at")
+      .select("id, type, title, message, read_at, created_at, data")
       .eq("user_id", userId)
       .order("created_at", { ascending: false })
       .limit(20);
@@ -79,6 +103,25 @@ export function NotificationBell({ userId }: { userId: string }) {
     setOpen((v) => !v);
   }
 
+  function handleNotificationClick(notification: Notification) {
+    const { type, data } = notification;
+    const threadId = data?.thread_id as string | undefined;
+    const appointmentId = data?.appointment_id as string | undefined;
+    const base = userRole === "doctor" ? "/doctor" : "/patient";
+
+    setOpen(false);
+
+    if (type === "message_received" && threadId) {
+      router.push(`${base}/messages#${threadId}`);
+    } else if (type === "new_booking" && appointmentId) {
+      router.push(`/doctor/appointments`);
+    } else if ((type === "appointment_confirmed" || type === "appointment_cancelled") && appointmentId) {
+      router.push(`/patient/appointments/${appointmentId}`);
+    } else if (type === "review_request" && appointmentId) {
+      router.push(`/patient/appointments/${appointmentId}`);
+    }
+  }
+
   return (
     <div className="relative">
       <button
@@ -118,19 +161,24 @@ export function NotificationBell({ userId }: { userId: string }) {
                 </p>
               ) : (
                 notifications.map((n) => (
-                  <div
+                  <button
                     key={n.id}
+                    onClick={() => handleNotificationClick(n)}
                     className={cn(
-                      "border-b border-border/60 px-4 py-3 last:border-0",
+                      "w-full border-b border-border/60 px-4 py-3 text-left transition-colors last:border-0 hover:bg-secondary/50",
                       !n.read_at && "bg-primary-tint",
                     )}
                   >
-                    <p className="text-sm font-semibold text-foreground">{n.title}</p>
-                    <p className="mt-0.5 text-sm text-muted-foreground">{n.message}</p>
+                    <p className="text-sm font-semibold text-foreground">
+                      {getNotifText(t, n.type, "title", n.title, n.data)}
+                    </p>
+                    <p className="mt-0.5 text-sm text-muted-foreground">
+                      {getNotifText(t, n.type, "message", n.message, n.data)}
+                    </p>
                     <p className="mt-1 text-xs text-muted-foreground/70">
                       {formatInTirane(n.created_at, "d MMM HH:mm")}
                     </p>
-                  </div>
+                  </button>
                 ))
               )}
             </div>

@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AvatarUploader } from "@/components/avatar-uploader";
 import { UserRow } from "@/lib/database.types";
 import { updateUserProfile } from "@/actions/user-profile";
 
@@ -72,6 +74,7 @@ export function PatientProfileForm({ initialData }: PatientProfileFormProps) {
   const t = useTranslations("profile");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(initialData.avatar_url ?? null);
 
   // Parse full_name into firstName and lastName
   const parsedName = initialData.full_name
@@ -195,8 +198,33 @@ export function PatientProfileForm({ initialData }: PatientProfileFormProps) {
     }
   };
 
+  const initials = (name: string) =>
+    name
+      .split(" ")
+      .filter(Boolean)
+      .map((w) => w[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase() || "?";
+
   return (
-    <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
+    <div className="max-w-2xl space-y-6">
+      {/* Profile photo */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">{t("photo")}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <AvatarUploader
+            currentUrl={avatarUrl}
+            fallbackText={initials(initialData.full_name ?? "")}
+            role="patient"
+            onUploaded={(url) => setAvatarUrl(url)}
+          />
+        </CardContent>
+      </Card>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
       {/* First Name */}
       <div className="space-y-2">
         <Label htmlFor="firstName">
@@ -340,6 +368,7 @@ export function PatientProfileForm({ initialData }: PatientProfileFormProps) {
       >
         {isSubmitting ? t("saving") : t("save")}
       </Button>
-    </form>
+      </form>
+    </div>
   );
 }

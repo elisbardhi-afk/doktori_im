@@ -23,6 +23,7 @@ export async function addAvailabilityRule(input: {
   });
   if (error) return { ok: false, error: error.message };
   revalidatePath("/doctor/availability");
+  revalidatePath("/doctors", "layout");
   return { ok: true };
 }
 
@@ -34,6 +35,19 @@ export async function deleteAvailabilityRule(
   const { error } = await supabase.from("availability_rules").delete().eq("id", id);
   if (error) return { ok: false, error: error.message };
   revalidatePath("/doctor/availability");
+  revalidatePath("/doctors", "layout");
+  return { ok: true };
+}
+
+/** Delete a block exception owned by the signed-in doctor. */
+export async function deleteBlockException(
+  id: string,
+): Promise<{ ok: boolean; error?: string }> {
+  const supabase = createClient();
+  const { error } = await supabase.from("availability_exceptions").delete().eq("id", id);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/doctor/availability");
+  revalidatePath("/doctors", "layout");
   return { ok: true };
 }
 
@@ -60,5 +74,6 @@ export async function addBlockException(input: {
   });
   if (error) return { ok: false, error: error.message };
   revalidatePath("/doctor/availability");
+  revalidatePath("/doctors", "layout");
   return { ok: true };
 }

@@ -292,7 +292,8 @@ export async function fetchDoctorMessageThreads(): Promise<DoctorThreadSummary[]
 /**
  * Mark all messages in a thread as read for the current user.
  * Only marks messages where the current user is NOT the sender and read_at is null.
- * Fire-and-forget — errors are caught silently to avoid breaking UX.
+ * Relies on optimistic UI update in the component — do not revalidate cache
+ * to avoid interfering with local state during active session.
  */
 export async function markThreadRead(threadId: string): Promise<void> {
   try {

@@ -77,7 +77,11 @@ export default async function DoctorProfilePage({
                 {doctor.languages.length > 0 && (
                   <span className="flex items-center gap-1.5">
                     <LangIcon className="size-4" />
-                    {doctor.languages.map((l) => l.toUpperCase()).join(", ")}
+                    {t("doctor.languages")}: {doctor.languages.map((l) => {
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      const name = t(`languages.${l}` as any);
+                      return name || l.toUpperCase();
+                    }).join(", ")}
                   </span>
                 )}
               </div>

@@ -33,6 +33,10 @@ export default async function PatientDashboard({
     (a) => new Date(a.startsAt) >= tomorrow && ["confirmed", "pending"].includes(a.status),
   ).sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime());
 
+  const past = appts.filter(
+    (a) => ["completed", "cancelled", "no_show"].includes(a.status),
+  );
+
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -67,7 +71,19 @@ export default async function PatientDashboard({
         </PastAppointmentsCollapsible>
       )}
 
-      {todayAppts.length === 0 && upcoming.length === 0 && (
+      {past.length > 0 && (
+        <PastAppointmentsCollapsible
+          title={activeLocale === "en" ? "Past appointments" : "Takime të kaluara"}
+        >
+          <div className="flex flex-col gap-3">
+            {past.map((a) => (
+              <AppointmentCard key={a.id} appt={a} perspective="patient" />
+            ))}
+          </div>
+        </PastAppointmentsCollapsible>
+      )}
+
+      {todayAppts.length === 0 && upcoming.length === 0 && past.length === 0 && (
         <EmptyState title={t("appointments.empty")} icon="CalendarX" />
       )}
     </div>

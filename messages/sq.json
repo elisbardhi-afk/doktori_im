@@ -37,7 +37,9 @@
     "findDoctor": "Gjej mjek",
     "messages": "Mesazhet",
     "menu": "Menyja",
-    "close": "Mbyll"
+    "close": "Mbyll",
+    "asPatient": "Si pacient",
+    "asDoctor": "Si mjek"
   },
   "landing": {
     "heroTitle": "Gjeni mjekun tuaj",
@@ -68,6 +70,27 @@
     "languages": "Gjuhët",
     "bookAppointment": "Rezervo takim",
     "noReviews": "Ende pa vlerësime."
+  },
+  "languages": {
+    "sq": "Shqip",
+    "en": "Anglisht",
+    "de": "Gjermanisht",
+    "fr": "Frëngjisht",
+    "it": "Italisht",
+    "tr": "Turqisht",
+    "ar": "Arabisht",
+    "ru": "Rusisht",
+    "es": "Spanjisht",
+    "pt": "Portugalisht",
+    "zh": "Kinezisht",
+    "ja": "Japonisht",
+    "ko": "Koreanisht",
+    "hi": "Hindisht",
+    "gr": "Greqisht",
+    "sr": "Serbisht",
+    "hr": "Kroatisht",
+    "mk": "Maqedonisht",
+    "el": "Greqisht"
   },
   "booking": {
     "selectDate": "Zgjidhni datën",
@@ -113,6 +136,10 @@
   "messages": {
     "title": "Mesazhet",
     "empty": "Ende pa mesazhe.",
+    "active": "Aktiv",
+    "archived": "Në arkiv",
+    "noActiveThreads": "Nuk ka mesazhe aktive",
+    "noArchivedThreads": "Nuk ka mesazhe në arkiv",
     "inputPlaceholder": "Shkruani një mesazh...",
     "send": "Dërgo",
     "sent": "Mesazhi u dërgua",
@@ -151,7 +178,30 @@
     "label": "Njoftimet",
     "title": "Njoftimet",
     "empty": "Nuk keni njoftime.",
-    "markAllRead": "Shënoji të gjitha si të lexuara"
+    "markAllRead": "Shënoji të gjitha si të lexuara",
+    "types": {
+      "appointment_confirmed": {
+        "title": "Takimi u konfirmua",
+        "message": "Takimi juaj u konfirmua."
+      },
+      "appointment_cancelled": {
+        "title": "Takim i anuluar",
+        "message": "Takimi juaj u anulua."
+      },
+      "new_booking": {
+        "title": "Rezervim i ri",
+        "message": "Keni një takim të ri."
+      },
+      "review_request": {
+        "title": "Vlerësoni takimin",
+        "message": "Si ishte takimi juaj? Lini një vlerësim."
+      },
+      "message_received": {
+        "title": "Mesazh i ri nga {senderName}",
+        "titleFallback": "Mesazh i ri",
+        "message": "Keni një mesazh të ri."
+      }
+    }
   },
   "availability": {
     "title": "Oraret",
@@ -187,6 +237,7 @@
   "profile": {
     "title": "Informata e mia",
     "description": "Përditësoni informacionin tuaj personal",
+    "photo": "Foto e profilit",
     "firstName": "Emri",
     "lastName": "Mbiemri",
     "email": "Email",

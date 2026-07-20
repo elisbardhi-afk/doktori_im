@@ -14,32 +14,30 @@ export function RegisterForm({ role }: { role: "patient" | "doctor" }) {
   const tc = useTranslations("common");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [consentHealth, setConsentHealth] = useState(false);
+  const [consentTerms, setConsentTerms] = useState(false);
+
+  const canSubmit = consentHealth && consentTerms && !loading;
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const form = new FormData(e.currentTarget);
+    if (!consentHealth || !consentTerms) return;
 
-    if (!form.get("consent_health") || !form.get("consent_terms")) {
-      toast.error(
-        t("auth.consentHealth") + " / " + t("auth.consentTerms"),
-      );
-      return;
-    }
-
+    const fd = new FormData(e.currentTarget);
     setLoading(true);
     const data: Record<string, string> = {
-      full_name: String(form.get("full_name") ?? ""),
-      phone: String(form.get("phone") ?? ""),
+      full_name: String(fd.get("full_name") ?? ""),
+      phone: String(fd.get("phone") ?? ""),
       role,
     };
     if (role === "doctor") {
-      data.license_number = String(form.get("license_number") ?? "");
+      data.license_number = String(fd.get("license_number") ?? "");
     }
 
     const supabase = createClient();
     const { error } = await supabase.auth.signUp({
-      email: String(form.get("email")),
-      password: String(form.get("password")),
+      email: String(fd.get("email")),
+      password: String(fd.get("password")),
       options: { data },
     });
 
@@ -87,15 +85,29 @@ export function RegisterForm({ role }: { role: "patient" | "doctor" }) {
       </div>
 
       <label className="flex items-start gap-2 text-sm text-muted-foreground">
-        <input type="checkbox" name="consent_health" className="mt-1 accent-primary" />
+        <input
+          type="checkbox"
+          name="consent_health"
+          required
+          checked={consentHealth}
+          onChange={(e) => setConsentHealth(e.target.checked)}
+          className="mt-1 accent-primary"
+        />
         <span>{t("auth.consentHealth")}</span>
       </label>
       <label className="flex items-start gap-2 text-sm text-muted-foreground">
-        <input type="checkbox" name="consent_terms" className="mt-1 accent-primary" />
+        <input
+          type="checkbox"
+          name="consent_terms"
+          required
+          checked={consentTerms}
+          onChange={(e) => setConsentTerms(e.target.checked)}
+          className="mt-1 accent-primary"
+        />
         <span>{t("auth.consentTerms")}</span>
       </label>
 
-      <Button type="submit" size="lg" disabled={loading}>
+      <Button type="submit" size="lg" disabled={!canSubmit}>
         {loading ? tc("loading") : tc("register")}
       </Button>
     </form>

@@ -21,14 +21,14 @@ export default async function DoctorAppointmentsPage({
   const { user } = await requireDoctor();
   const appts = await getMyAppointments("doctor", activeLocale, undefined, undefined, user.id);
 
-  const active = appts.filter((a) => a.status !== "cancelled");
-  const cancelled = appts.filter((a) => a.status === "cancelled");
+  const active = appts.filter((a) => ["pending", "confirmed"].includes(a.status));
+  const past = appts.filter((a) => ["completed", "no_show", "cancelled"].includes(a.status));
 
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-bold text-foreground">{t("nav.myAppointments")}</h1>
 
-      {active.length === 0 && cancelled.length === 0 ? (
+      {active.length === 0 && past.length === 0 ? (
         <EmptyState title={t("appointments.empty")} icon="CalendarX" />
       ) : (
         <>
@@ -57,7 +57,6 @@ export default async function DoctorAppointmentsPage({
                     <AppointmentActions
                       appointmentId={a.id}
                       status={a.status}
-                      startsAt={a.startsAt}
                     />
                   </div>
                 </Card>
@@ -65,12 +64,12 @@ export default async function DoctorAppointmentsPage({
             </div>
           )}
 
-          {cancelled.length > 0 && (
+          {past.length > 0 && (
             <PastAppointmentsCollapsible
-              title={`${activeLocale === "en" ? "Cancelled" : "Anuluar"} (${cancelled.length})`}
+              title={`${activeLocale === "en" ? "Past" : "Të kaluara"} (${past.length})`}
             >
               <div className="flex flex-col gap-3">
-                {cancelled.map((a) => (
+                {past.map((a) => (
                   <Card
                     key={a.id}
                     className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"
@@ -90,11 +89,6 @@ export default async function DoctorAppointmentsPage({
                     </div>
                     <div className="flex items-center gap-3">
                       <StatusBadge status={a.status} />
-                      <AppointmentActions
-                        appointmentId={a.id}
-                        status={a.status}
-                        startsAt={a.startsAt}
-                      />
                     </div>
                   </Card>
                 ))}

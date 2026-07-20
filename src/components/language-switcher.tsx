@@ -28,16 +28,16 @@ export function LanguageSwitcher({ className }: { className?: string }) {
           locale === "sq" ? "bg-primary text-primary-foreground" : "text-muted-foreground",
         )}
       >
-        <svg width="16" height="12" viewBox="0 0 900 600" className="flex-shrink-0">
-          <rect width="900" height="600" fill="#ED2939"/>
-          <polygon points="450,450 550,250 350,250" fill="#000"/>
-          <circle cx="450" cy="200" r="80" fill="#FDD20E"/>
-          <circle cx="400" cy="220" r="30" fill="#FDD20E"/>
-          <circle cx="500" cy="220" r="30" fill="#FDD20E"/>
-          <circle cx="380" cy="280" r="20" fill="#FDD20E"/>
-          <circle cx="520" cy="280" r="20" fill="#FDD20E"/>
+        <svg width="16" height="12" viewBox="0 0 960 600" className="flex-shrink-0">
+          <rect width="960" height="600" fill="#CE2B37"/>
+          <g transform="translate(480, 300)">
+            <path d="M -80,-100 Q -120,-80 -140,-40 Q -150,0 -140,40 Q -120,80 -80,100 L -40,60 Q -60,40 -70,0 Q -60,-40 -40,-60 Z" fill="#000"/>
+            <path d="M 80,-100 Q 120,-80 140,-40 Q 150,0 140,40 Q 120,80 80,100 L 40,60 Q 60,40 70,0 Q 60,-40 40,-60 Z" fill="#000"/>
+            <path d="M -40,-60 L -20,-50 L 0,-45 L 20,-50 L 40,-60 L 30,-75 L 10,-80 L -10,-80 L -30,-75 Z" fill="#000"/>
+            <path d="M -50,50 L -30,70 L 0,75 L 30,70 L 50,50" fill="#000"/>
+          </g>
         </svg>
-        SQ
+        AL
       </button>
       <button
         onClick={() => switchTo("en")}

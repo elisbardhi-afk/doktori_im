@@ -1,11 +1,22 @@
 New features / Wishes:
-- 
 
 Bugs:
-- 
+
+In Progress:
 
 Optimizations:
-- 
-
-Archieve:
 -
+
+Archive:
+
+- Doctor calendar: appointments are now clickable, opening a popover with View Details, Confirm, Cancel actions. Doctor appointment detail page added.
+- Clicking the notification button should immediately open the new messages.
+- Create a dedicated archive for all past appointments.
+- Allow doctors, when logged in, to fully edit or redo their calendar at any time.
+- Let doctors block specific time slots when they are unavailable.
+- Let doctors block entire days (for example, during vacation or time off).
+- Ensure all calendar changes and availability updates are immediately visible in real time to patients who want to book an appointment.
+- Allow doctors to cancel an appointment if they cannot attend it.
+- Add a clear Cancel Appointment button to every appointment in the doctor's view.
+- Remove the "No Show" button from the doctor's page (doctors should no longer have the option to mark a patient as No Show).
+- Make Sign up unclickable until both consent checkboxes are checked.

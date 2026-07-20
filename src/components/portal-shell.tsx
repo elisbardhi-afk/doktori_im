@@ -42,7 +42,7 @@ export async function PortalShell({
           </Link>
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
-            <NotificationBell userId={userId} />
+            <NotificationBell userId={userId} userRole={variant} />
             <UserMenu name={userName} dashboardHref={dashboardHref} />
           </div>
         </div>
