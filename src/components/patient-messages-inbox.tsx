@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { toast } from "sonner";
 import { ChevronDown, ChevronUp, Stethoscope, Calendar, Briefcase } from "lucide-react";
 import { enUS } from "date-fns/locale";
 import { sq } from "date-fns/locale";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+
 import { MessageThread } from "@/components/message-thread";
 import { MessageInput } from "@/components/message-input";
 import { fetchMessageThread, markThreadRead } from "@/actions/appointment-edit";
@@ -38,19 +38,7 @@ export function PatientMessagesInbox({ threads, currentUserId }: Props) {
     setThreadUnreadCounts(counts);
   }, [threads]);
 
-  // Auto-open thread from hash (e.g., from notification click) — runs once on mount
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  React.useEffect(() => {
-    const threadIdFromHash = window.location.hash.slice(1);
-    if (threadIdFromHash && threads.some((t) => t.threadId === threadIdFromHash)) {
-      setOpenThreadId(threadIdFromHash);
-      loadThread(threadIdFromHash);
-      setTimeout(() => {
-        const element = document.getElementById(`thread-${threadIdFromHash}`);
-        element?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 100);
-    }
-  }, []);
+  const loadThreadRef = useRef<(threadId: string) => Promise<void>>(async () => {});
 
   const loadThread = useCallback(async (threadId: string) => {
     setLoadingThreadId(threadId);
@@ -82,6 +70,22 @@ export function PatientMessagesInbox({ threads, currentUserId }: Props) {
       setLoadingThreadId(null);
     }
   }, [t, threadUnreadCounts]);
+
+  loadThreadRef.current = loadThread;
+
+  // Auto-open thread from hash (e.g., from notification click) — runs once on mount
+  React.useEffect(() => {
+    const threadIdFromHash = window.location.hash.slice(1);
+    if (threadIdFromHash && threads.some((thr) => thr.threadId === threadIdFromHash)) {
+      setOpenThreadId(threadIdFromHash);
+      loadThreadRef.current(threadIdFromHash);
+      setTimeout(() => {
+        const element = document.getElementById(`thread-${threadIdFromHash}`);
+        element?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleToggle(threadId: string) {
     if (openThreadId === threadId) {
