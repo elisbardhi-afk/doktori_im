@@ -105,10 +105,12 @@ function AppointmentBlock({
       )}
       style={{ top, height }}
     >
-      <p className="truncate">{appt.patientName}</p>
-      <p className="truncate opacity-80">
-        {timeInTirane(appt.startsAt)}–{timeInTirane(appt.endsAt)}
-      </p>
+      <p className="truncate leading-tight">{appt.patientName}</p>
+      {height >= 32 && (
+        <p className="truncate leading-tight opacity-80">
+          {timeInTirane(appt.startsAt)}–{timeInTirane(appt.endsAt)}
+        </p>
+      )}
     </button>
   );
 }

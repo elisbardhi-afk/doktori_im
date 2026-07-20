@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { formatInTirane } from "@/lib/datetime";
+import { formatInTirane, timeInTirane } from "@/lib/datetime";
 import { Eye, CheckCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { transitionAppointment } from "@/actions/appointment-status";
@@ -91,7 +91,7 @@ export function DoctorAppointmentQuickActions({
             {appointment.patientName}
           </div>
           <div className="text-xs text-muted-foreground">
-            {formatInTirane(appointment.startsAt, "d MMM, HH:mm")}
+            {formatInTirane(appointment.startsAt, "d MMM")} · {timeInTirane(appointment.startsAt)}–{timeInTirane(appointment.endsAt)}
           </div>
         </div>
 
