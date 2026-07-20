@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { createBooking, type BookErrorCode } from "@/actions/booking";
+import { fetchDoctorSlots } from "@/actions/appointment-edit";
 import { timeInTirane, formatInTirane } from "@/lib/datetime";
 import { cn } from "@/lib/utils";
 import { CalendarCheck, Clock } from "lucide-react";
@@ -34,15 +35,19 @@ function periodOf(localTime: string): "morning" | "afternoon" | "evening" {
 export function BookingWizard({
   doctorId,
   doctorName,
-  slots,
+  slots: initialSlots,
   isAuthed,
   services = [],
+  fromDate,
+  toDate,
 }: {
   doctorId: string;
   doctorName: string;
   slots: AvailableSlot[];
   isAuthed: boolean;
   services?: DoctorServiceRow[];
+  fromDate?: string;
+  toDate?: string;
 }) {
   const t = useTranslations();
   const router = useRouter();
@@ -52,9 +57,27 @@ export function BookingWizard({
   const [selected, setSelected] = useState<AvailableSlot | null>(null);
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
+  const [slots, setSlots] = useState<AvailableSlot[]>(initialSlots);
+  const [, startTransition] = useTransition();
 
-  // All slots are 15-min grid points. Service duration is passed to book_appointment
-  // which blocks the right number of consecutive slots — no client-side filtering needed.
+  // When a service is selected, re-fetch slots filtered to the service duration so
+  // slots near end-of-day that would overflow are excluded (KAN-11 fix).
+  useEffect(() => {
+    if (!selectedService || !fromDate || !toDate) {
+      setSlots(initialSlots);
+      return;
+    }
+    const duration = selectedService.duration_minutes;
+    if (!duration || duration <= 15) {
+      setSlots(initialSlots);
+      return;
+    }
+    startTransition(async () => {
+      const durationSlots = await fetchDoctorSlots(doctorId, fromDate, toDate, duration);
+      setSlots(durationSlots);
+    });
+  }, [selectedService, doctorId, fromDate, toDate, initialSlots]);
+
   const filteredSlots = slots;
 
   const byDate = useMemo(() => {
@@ -69,6 +92,13 @@ export function BookingWizard({
 
   const dates = Array.from(byDate.keys()).sort();
   const [activeDate, setActiveDate] = useState<string | null>(dates[0] ?? null);
+
+  // Reset active date when the slot list changes (e.g. after selecting a service)
+  useEffect(() => {
+    setActiveDate(dates[0] ?? null);
+    setSelected(null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slots]);
 
   const daySlots = activeDate ? (byDate.get(activeDate) ?? []).sort((a, b) => a.slot_start.localeCompare(b.slot_start)) : [];
   const periods = {

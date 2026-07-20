@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { ChevronDown, ChevronUp, User, Calendar } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { MessageThread } from "@/components/message-thread";
 import { MessageInput } from "@/components/message-input";
 import { fetchMessageThread, markThreadRead } from "@/actions/appointment-edit";
@@ -23,22 +22,37 @@ export function DoctorMessagesInbox({ threads, currentUserId }: Props) {
   const [openThreadId, setOpenThreadId] = useState<string | null>(null);
   const [threadMessages, setThreadMessages] = useState<Record<string, Message[]>>({});
   const [loadingThreadId, setLoadingThreadId] = useState<string | null>(null);
+  const [threadUnreadCounts, setThreadUnreadCounts] = useState<Record<string, number>>(() => {
+    const counts: Record<string, number> = {};
+    threads.forEach((thread) => {
+      counts[thread.threadId] = thread.unreadCount;
+    });
+    return counts;
+  });
 
   const loadThread = useCallback(async (threadId: string) => {
     setLoadingThreadId(threadId);
+
+    const originalUnreadCount = threadUnreadCounts[threadId] ?? 0;
+
+    // Optimistic update: clear unread indicator immediately
+    setThreadUnreadCounts((prev) => ({ ...prev, [threadId]: 0 }));
+
     try {
       const result = await fetchMessageThread(threadId);
       setThreadMessages((prev) => ({
         ...prev,
         [threadId]: result?.messages ?? [],
       }));
-      markThreadRead(threadId);
+      await markThreadRead(threadId);
     } catch {
       toast.error(t("messages.loadError"));
+      // Restore original count on error
+      setThreadUnreadCounts((prev) => ({ ...prev, [threadId]: originalUnreadCount }));
     } finally {
       setLoadingThreadId(null);
     }
-  }, [t]);
+  }, [t, threadUnreadCounts]);
 
   async function handleToggle(threadId: string) {
     if (openThreadId === threadId) {
@@ -61,6 +75,7 @@ export function DoctorMessagesInbox({ threads, currentUserId }: Props) {
         const isOpen = openThreadId === thread.threadId;
         const isLoading = loadingThreadId === thread.threadId;
         const messages = threadMessages[thread.threadId] ?? [];
+        const unread = threadUnreadCounts[thread.threadId] ?? thread.unreadCount;
 
         return (
           <Card key={thread.threadId} className="overflow-hidden p-0">
@@ -72,10 +87,8 @@ export function DoctorMessagesInbox({ threads, currentUserId }: Props) {
                 <div className="flex items-center gap-2">
                   <User className="size-4 shrink-0 text-primary" />
                   <span className="font-bold text-foreground">{thread.patientName}</span>
-                  {thread.unreadCount > 0 && (
-                    <Badge variant="default" className="text-xs">
-                      {thread.unreadCount}
-                    </Badge>
+                  {unread > 0 && (
+                    <span className="size-2 rounded-full bg-primary inline-block" aria-label="unread" />
                   )}
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -101,10 +114,16 @@ export function DoctorMessagesInbox({ threads, currentUserId }: Props) {
                   isLoading={isLoading}
                   currentUserId={currentUserId}
                 />
-                <MessageInput
-                  threadId={thread.threadId}
-                  onSendSuccess={() => handleSendSuccess(thread.threadId)}
-                />
+                {new Date(thread.appointmentStartsAt) > new Date() ? (
+                  <MessageInput
+                    threadId={thread.threadId}
+                    onSendSuccess={() => handleSendSuccess(thread.threadId)}
+                  />
+                ) : (
+                  <p className="text-xs text-muted-foreground text-center py-2 border border-border rounded-lg bg-muted/30">
+                    Read-only — messages cannot be sent for past appointments.
+                  </p>
+                )}
               </div>
             )}
           </Card>
