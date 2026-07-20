@@ -39,6 +39,7 @@ export interface UserRow {
   address: string | null;
   city: string | null;
   postal_code: string | null;
+  avatar_url: string | null;
   preferred_locale: string;
   notify_email: boolean;
   notify_sms: boolean;

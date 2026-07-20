@@ -58,6 +58,11 @@ export function AppointmentCard({
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Calendar className="size-4" />
           {formatInTirane(appt.startsAt, "EEEE, d MMM yyyy — HH:mm")}
+          {appt.endsAt && (
+            <span className="text-xs text-muted-foreground/70">
+              ({Math.round((new Date(appt.endsAt).getTime() - new Date(appt.startsAt).getTime()) / 60000)} min)
+            </span>
+          )}
         </div>
         {appt.reason && (
           <p className="text-sm text-muted-foreground">“{appt.reason}”</p>

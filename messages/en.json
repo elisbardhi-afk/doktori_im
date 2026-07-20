@@ -216,6 +216,7 @@
   "profile": {
     "title": "My Information",
     "description": "Update your personal information",
+    "photo": "Profile photo",
     "firstName": "First name",
     "lastName": "Last name",
     "email": "Email",
