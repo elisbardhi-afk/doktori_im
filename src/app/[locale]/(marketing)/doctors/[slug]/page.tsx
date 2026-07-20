@@ -144,6 +144,8 @@ export default async function DoctorProfilePage({
               slots={slots}
               isAuthed={!!user}
               services={services}
+              fromDate={from}
+              toDate={to}
             />
           </CardContent>
         </Card>
