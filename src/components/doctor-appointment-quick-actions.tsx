@@ -57,6 +57,7 @@ export function DoctorAppointmentQuickActions({
   };
 
   const handleCancel = async () => {
+    if (!window.confirm(t("appointments.cancelConfirm"))) return;
     setLoading(true);
     try {
       const res = await cancelAppointment({ appointmentId: appointment.id });
