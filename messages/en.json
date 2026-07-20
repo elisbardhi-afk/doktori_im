@@ -71,6 +71,27 @@
     "bookAppointment": "Book appointment",
     "noReviews": "No reviews yet."
   },
+  "languages": {
+    "sq": "Albanian",
+    "en": "English",
+    "de": "German",
+    "fr": "French",
+    "it": "Italian",
+    "tr": "Turkish",
+    "ar": "Arabic",
+    "ru": "Russian",
+    "es": "Spanish",
+    "pt": "Portuguese",
+    "zh": "Chinese",
+    "ja": "Japanese",
+    "ko": "Korean",
+    "hi": "Hindi",
+    "gr": "Greek",
+    "sr": "Serbian",
+    "hr": "Croatian",
+    "mk": "Macedonian",
+    "el": "Greek"
+  },
   "booking": {
     "selectDate": "Select a date",
     "selectTime": "Select a time",

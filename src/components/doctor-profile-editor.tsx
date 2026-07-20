@@ -12,11 +12,30 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AvatarUploader } from "@/components/avatar-uploader";
 import { updateDoctorProfile } from "@/actions/doctor-profile";
 
+// All supported language codes + their English label (used for the picker UI).
+// Display names come from the translations namespace in the actual locale.
+const SUPPORTED_LANGUAGES: { code: string; label: string }[] = [
+  { code: "sq", label: "Albanian" },
+  { code: "en", label: "English" },
+  { code: "de", label: "German" },
+  { code: "fr", label: "French" },
+  { code: "it", label: "Italian" },
+  { code: "tr", label: "Turkish" },
+  { code: "ar", label: "Arabic" },
+  { code: "ru", label: "Russian" },
+  { code: "es", label: "Spanish" },
+  { code: "el", label: "Greek" },
+  { code: "sr", label: "Serbian" },
+  { code: "hr", label: "Croatian" },
+  { code: "mk", label: "Macedonian" },
+];
+
 interface Props {
   bio: string;
   clinicName: string;
   clinicAddress: string;
   city: string;
+  languages: string[];
   photoUrl: string | null;
   fullName: string;
 }
@@ -38,6 +57,26 @@ export function DoctorProfileEditor(initial: Props) {
       .join("")
       .toUpperCase() || "Dr";
 
+  function toggleLanguage(code: string) {
+    setForm((f) => ({
+      ...f,
+      languages: f.languages.includes(code)
+        ? f.languages.filter((l) => l !== code)
+        : [...f.languages, code],
+    }));
+  }
+
+  // Resolve display name for a language code using translations when available.
+  function langLabel(code: string) {
+    const key = `languages.${code}` as Parameters<typeof t>[0];
+    try {
+      const translated = t(key);
+      return translated || SUPPORTED_LANGUAGES.find((l) => l.code === code)?.label || code;
+    } catch {
+      return SUPPORTED_LANGUAGES.find((l) => l.code === code)?.label || code;
+    }
+  }
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -46,6 +85,7 @@ export function DoctorProfileEditor(initial: Props) {
       clinicName: form.clinicName,
       clinicAddress: form.clinicAddress,
       city: form.city,
+      languages: form.languages,
     });
     setLoading(false);
     if (!res.ok) {
@@ -110,6 +150,36 @@ export function DoctorProfileEditor(initial: Props) {
             onChange={(e) => setForm({ ...form, clinicAddress: e.target.value })}
           />
         </div>
+
+        {/* Languages */}
+        <div className="flex flex-col gap-2">
+          <Label>{t("doctor.languages")}</Label>
+          <div className="flex flex-wrap gap-2">
+            {SUPPORTED_LANGUAGES.map(({ code }) => {
+              const selected = form.languages.includes(code);
+              return (
+                <button
+                  key={code}
+                  type="button"
+                  onClick={() => toggleLanguage(code)}
+                  className={`rounded-full border px-3 py-1 text-sm transition-colors ${
+                    selected
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-background text-muted-foreground hover:border-primary hover:text-foreground"
+                  }`}
+                >
+                  {langLabel(code)}
+                </button>
+              );
+            })}
+          </div>
+          {form.languages.length === 0 && (
+            <p className="text-xs text-muted-foreground">
+              {L("Select the languages you speak", "Zgjidhni gjuhët që flisni")}
+            </p>
+          )}
+        </div>
+
         <Button type="submit" disabled={loading} className="self-start">
           {loading ? "..." : L("Save", "Ruaj")}
         </Button>
