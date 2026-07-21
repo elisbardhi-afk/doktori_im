@@ -157,12 +157,6 @@ export function AvailabilityManager({ rules, exceptions }: { rules: Rule[]; exce
     router.refresh();
   }
 
-  async function onDeleteBlock(id: string) {
-    const res = await deleteBlockException(id);
-    if (!res.ok) { toast.error(res.error ?? "Error"); return; }
-    router.refresh();
-  }
-
   async function onDeleteBlockGroup(ids: string[]) {
     const results = await Promise.all(ids.map((id) => deleteBlockException(id)));
     const failed = results.filter((r) => !r.ok);
