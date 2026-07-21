@@ -5,6 +5,7 @@ export interface Message {
   id: string;
   senderId: string;
   senderName: string;
+  senderAvatarUrl: string | null;
   body: string;
   createdAt: string;
   readAt: string | null;
@@ -51,7 +52,7 @@ export async function getMessageThread(
     .select(
       `
       id, sender_id, body, created_at, read_at,
-      sender:users!messages_sender_id_fkey(full_name)
+      sender:users!messages_sender_id_fkey(full_name, avatar_url)
     `,
     )
     .eq("thread_id", threadId)
@@ -75,18 +76,18 @@ export async function getMessageThread(
       body: string;
       created_at: string;
       read_at: string | null;
-      sender: { full_name: string | null } | { full_name: string | null }[];
+      sender: { full_name: string | null; avatar_url: string | null } | { full_name: string | null; avatar_url: string | null }[];
     }>
   ).map((m) => {
-    const senderName =
-      Array.isArray(m.sender) && m.sender.length > 0
-        ? m.sender[0].full_name ?? "Unknown"
-        : (m.sender as { full_name: string | null }).full_name ?? "Unknown";
+    const senderRaw = Array.isArray(m.sender) ? m.sender[0] : m.sender as { full_name: string | null; avatar_url: string | null };
+    const senderName = senderRaw?.full_name ?? "Unknown";
+    const senderAvatarUrl = senderRaw?.avatar_url ?? null;
 
     return {
       id: m.id,
       senderId: m.sender_id,
       senderName,
+      senderAvatarUrl,
       body: m.body,
       createdAt: m.created_at,
       readAt: m.read_at,
@@ -132,7 +133,7 @@ export async function getAppointmentMessageThreads(
     .select(
       `
       id, thread_id, sender_id, body, created_at, read_at,
-      sender:users!messages_sender_id_fkey(full_name)
+      sender:users!messages_sender_id_fkey(full_name, avatar_url)
     `,
     )
     .in(
@@ -152,18 +153,18 @@ export async function getAppointmentMessageThreads(
         body: string;
         created_at: string;
         read_at: string | null;
-        sender: { full_name: string | null } | { full_name: string | null }[];
+        sender: { full_name: string | null; avatar_url: string | null } | { full_name: string | null; avatar_url: string | null }[];
       }>
     ).forEach((m) => {
-      const senderName =
-        Array.isArray(m.sender) && m.sender.length > 0
-          ? m.sender[0].full_name ?? "Unknown"
-          : (m.sender as { full_name: string | null }).full_name ?? "Unknown";
+      const senderRaw = Array.isArray(m.sender) ? m.sender[0] : m.sender as { full_name: string | null; avatar_url: string | null };
+      const senderName = senderRaw?.full_name ?? "Unknown";
+      const senderAvatarUrl = senderRaw?.avatar_url ?? null;
 
       const message: Message = {
         id: m.id,
         senderId: m.sender_id,
         senderName,
+        senderAvatarUrl,
         body: m.body,
         createdAt: m.created_at,
         readAt: m.read_at,
@@ -191,6 +192,7 @@ export interface DoctorThreadSummary {
   appointmentId: string;
   appointmentStartsAt: string;
   patientName: string;
+  patientAvatarUrl: string | null;
   lastMessageBody: string | null;
   lastMessageAt: string | null;
   unreadCount: number;
@@ -211,7 +213,7 @@ export async function getDoctorMessageThreads(
     .select(
       `
       id, appointment_id,
-      patient:users!message_threads_patient_id_fkey(full_name),
+      patient:users!message_threads_patient_id_fkey(full_name, avatar_url),
       appointment:appointments!message_threads_appointment_id_fkey(starts_at),
       messages(id, body, created_at, read_at, sender_id)
     `,
@@ -225,7 +227,7 @@ export async function getDoctorMessageThreads(
     threadsData as unknown as Array<{
       id: string;
       appointment_id: string;
-      patient: { full_name: string | null } | { full_name: string | null }[];
+      patient: { full_name: string | null; avatar_url: string | null } | { full_name: string | null; avatar_url: string | null }[];
       appointment:
         | { starts_at: string }
         | { starts_at: string }[]
@@ -244,6 +246,9 @@ export async function getDoctorMessageThreads(
       const patientName = Array.isArray(patientRaw)
         ? (patientRaw[0]?.full_name ?? "Unknown")
         : ((patientRaw as { full_name: string | null })?.full_name ?? "Unknown");
+      const patientAvatarUrl = Array.isArray(patientRaw)
+        ? (patientRaw[0]?.avatar_url ?? null)
+        : ((patientRaw as { avatar_url: string | null })?.avatar_url ?? null);
 
       const apptRaw = t.appointment;
       const appointmentStartsAt = Array.isArray(apptRaw)
@@ -264,6 +269,7 @@ export async function getDoctorMessageThreads(
         appointmentId: t.appointment_id,
         appointmentStartsAt,
         patientName,
+        patientAvatarUrl,
         lastMessageBody: last?.body ?? null,
         lastMessageAt: last?.created_at ?? null,
         unreadCount,

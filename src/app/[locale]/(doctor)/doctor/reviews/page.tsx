@@ -4,6 +4,7 @@ import { getDoctorReviews } from "@/lib/queries/doctor-profile";
 import { Rating } from "@/components/rating";
 import { EmptyState } from "@/components/empty-state";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { formatInTirane } from "@/lib/datetime";
 
 export default async function DoctorReviewsPage({
@@ -28,8 +29,13 @@ export default async function DoctorReviewsPage({
           {reviews.map((r) => (
             <Card key={r.id}>
               <CardContent className="flex flex-col gap-1.5 p-4">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-foreground">{r.patientName}</span>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="font-semibold text-foreground">{r.patientName}</span>
+                    {r.serviceName && (
+                      <Badge variant="secondary" className="shrink-0">{r.serviceName}</Badge>
+                    )}
+                  </div>
                   <Rating value={r.rating} />
                 </div>
                 {r.comment && (

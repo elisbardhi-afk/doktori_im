@@ -23,6 +23,8 @@ export interface DoctorReview {
   comment: string | null;
   createdAt: string;
   patientName: string;
+  serviceId: string | null;
+  serviceName: string | null;
 }
 
 /** Full public profile for one doctor by slug (RLS: approved only). */
@@ -90,7 +92,7 @@ export async function getDoctorReviews(doctorId: string): Promise<DoctorReview[]
   const supabase = createClient();
   const { data } = await supabase
     .from("reviews")
-    .select("id, rating, comment, created_at, patient_name")
+    .select("id, rating, comment, created_at, patient_name, service_id, service:doctor_services(name)")
     .eq("doctor_id", doctorId)
     .order("created_at", { ascending: false })
     .limit(20);
@@ -102,13 +104,25 @@ export async function getDoctorReviews(doctorId: string): Promise<DoctorReview[]
     comment: string | null;
     created_at: string;
     patient_name: string | null;
-  }>).map((r) => ({
-    id: r.id,
-    rating: r.rating,
-    comment: r.comment,
-    createdAt: r.created_at,
-    patientName: r.patient_name ?? "Anonim",
-  }));
+    service_id: string | null;
+    service: { name: string } | { name: string }[] | null;
+  }>).map((r) => {
+    const serviceRaw = r.service;
+    const serviceName = serviceRaw
+      ? Array.isArray(serviceRaw)
+        ? serviceRaw[0]?.name ?? null
+        : (serviceRaw as { name: string }).name
+      : null;
+    return {
+      id: r.id,
+      rating: r.rating,
+      comment: r.comment,
+      createdAt: r.created_at,
+      patientName: r.patient_name ?? "Anonim",
+      serviceId: r.service_id,
+      serviceName,
+    };
+  });
 }
 
 /** Available slots for a doctor over a date range. */

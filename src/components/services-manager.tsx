@@ -9,11 +9,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { addDoctorService, deleteDoctorService } from "@/actions/services";
-import { Trash2, Plus } from "lucide-react";
+import { addDoctorService, updateDoctorService, deleteDoctorService } from "@/actions/services";
+import { Trash2, Plus, Pencil, Check, X, Star } from "lucide-react";
 import type { DoctorServiceRow } from "@/lib/database.types";
 
 const DURATION_OPTIONS = [15, 30, 45, 60, 75, 90, 120];
+
+interface EditState {
+  name: string;
+  duration: number;
+  price: string;
+}
 
 export function ServicesManager({ services }: { services: DoctorServiceRow[] }) {
   const t = useTranslations();
@@ -22,6 +28,8 @@ export function ServicesManager({ services }: { services: DoctorServiceRow[] }) 
   const [name, setName] = useState("");
   const [duration, setDuration] = useState(30);
   const [price, setPrice] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editState, setEditState] = useState<EditState>({ name: "", duration: 30, price: "" });
 
   async function onAdd(e: React.FormEvent) {
     e.preventDefault();
@@ -40,6 +48,36 @@ export function ServicesManager({ services }: { services: DoctorServiceRow[] }) 
     setName("");
     setPrice("");
     setDuration(30);
+    router.refresh();
+  }
+
+  function startEdit(s: DoctorServiceRow) {
+    setEditingId(s.id);
+    setEditState({
+      name: s.name,
+      duration: s.duration_minutes,
+      price: s.price != null ? String(s.price) : "",
+    });
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+  }
+
+  async function onSaveEdit(id: string) {
+    setLoading(true);
+    const res = await updateDoctorService(id, {
+      name: editState.name,
+      durationMinutes: editState.duration,
+      price: editState.price !== "" ? Number(editState.price) : undefined,
+    });
+    setLoading(false);
+    if (!res.ok) {
+      toast.error(res.error ?? "Error");
+      return;
+    }
+    toast.success(t("common.saved"));
+    setEditingId(null);
     router.refresh();
   }
 
@@ -64,32 +102,91 @@ export function ServicesManager({ services }: { services: DoctorServiceRow[] }) 
           {services.length === 0 ? (
             <p className="text-sm text-muted-foreground">{t("services.noServices")}</p>
           ) : (
-            services.map((s) => (
-              <div
-                key={s.id}
-                className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-2.5"
-              >
-                <div className="flex flex-col gap-1">
-                  <p className="font-semibold text-foreground">{s.name}</p>
+            services.map((s) =>
+              editingId === s.id ? (
+                <div
+                  key={s.id}
+                  className="flex flex-col gap-2 rounded-xl border border-primary bg-card px-4 py-3"
+                >
+                  <Input
+                    value={editState.name}
+                    onChange={(e) => setEditState((prev) => ({ ...prev, name: e.target.value }))}
+                    placeholder={t("services.name")}
+                    required
+                  />
+                  <select
+                    value={editState.duration}
+                    onChange={(e) => setEditState((prev) => ({ ...prev, duration: Number(e.target.value) }))}
+                    className="h-10 rounded-xl border border-input bg-background px-4 text-sm shadow-soft focus-visible:border-primary focus-visible:outline-none"
+                  >
+                    {DURATION_OPTIONS.map((m) => (
+                      <option key={m} value={m}>
+                        {m} {t("services.min")}
+                      </option>
+                    ))}
+                  </select>
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={editState.price}
+                    onChange={(e) => setEditState((prev) => ({ ...prev, price: e.target.value }))}
+                    placeholder={t("services.free")}
+                  />
                   <div className="flex items-center gap-2">
-                    <Badge variant="secondary">
-                      {s.duration_minutes} {t("services.min")}
-                    </Badge>
-                    <span className="text-sm text-muted-foreground">
-                      {s.price != null ? `${s.price} ALL` : t("services.free")}
-                    </span>
+                    <Button size="sm" onClick={() => onSaveEdit(s.id)} disabled={loading || !editState.name.trim()}>
+                      <Check className="size-4" />
+                      {t("common.save")}
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={cancelEdit}>
+                      <X className="size-4" />
+                      {t("common.cancel")}
+                    </Button>
                   </div>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onDelete(s.id)}
-                  aria-label={t("common.delete")}
+              ) : (
+                <div
+                  key={s.id}
+                  className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-2.5"
                 >
-                  <Trash2 className="size-4 text-destructive" />
-                </Button>
-              </div>
-            ))
+                  <div className="flex flex-col gap-1">
+                    <p className="font-semibold text-foreground">{s.name}</p>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <Badge variant="secondary">
+                        {s.duration_minutes} {t("services.min")}
+                      </Badge>
+                      <span className="text-sm text-muted-foreground">
+                        {s.price != null ? `${s.price} ALL` : t("services.free")}
+                      </span>
+                      {s.review_count > 0 && (
+                        <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <Star className="size-3 fill-amber-400 text-amber-400" />
+                          {s.avg_rating} ({s.review_count})
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => startEdit(s)}
+                      aria-label="Edit"
+                    >
+                      <Pencil className="size-4 text-muted-foreground" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onDelete(s.id)}
+                      aria-label={t("common.delete")}
+                    >
+                      <Trash2 className="size-4 text-destructive" />
+                    </Button>
+                  </div>
+                </div>
+              )
+            )
           )}
         </CardContent>
       </Card>

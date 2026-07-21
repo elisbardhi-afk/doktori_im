@@ -11,6 +11,11 @@ export interface AppointmentView {
   doctorName: string;
   doctorSlug: string;
   patientName: string;
+  patientAvatarUrl: string | null;
+  patientPhone: string | null;
+  patientAddress: string | null;
+  patientCity: string | null;
+  patientPostalCode: string | null;
   specialty: string | null;
 }
 
@@ -35,7 +40,7 @@ export async function getMyAppointments(
     .select(
       `
       id, starts_at, ends_at, status, reason, doctor_id,
-      patient:users!appointments_patient_id_fkey(full_name),
+      patient:users!appointments_patient_id_fkey(full_name, avatar_url, phone, address, city, postal_code),
       doctor:doctor_profiles!appointments_doctor_id_fkey(
         slug, full_name,
         doctor_specialties(specialties(name_sq, name_en))
@@ -59,7 +64,7 @@ export async function getMyAppointments(
     status: AppointmentStatus;
     reason: string | null;
     doctor_id: string;
-    patient: { full_name: string | null } | { full_name: string | null }[];
+    patient: { full_name: string | null; avatar_url: string | null; phone: string | null; address: string | null; city: string | null; postal_code: string | null } | { full_name: string | null; avatar_url: string | null; phone: string | null; address: string | null; city: string | null; postal_code: string | null }[];
     doctor: {
       slug: string;
       full_name: string | null;
@@ -80,6 +85,11 @@ export async function getMyAppointments(
       doctorName: a.doctor?.full_name ?? "—",
       doctorSlug: a.doctor?.slug ?? "",
       patientName: p?.full_name ?? "—",
+      patientAvatarUrl: p?.avatar_url ?? null,
+      patientPhone: p?.phone ?? null,
+      patientAddress: p?.address ?? null,
+      patientCity: p?.city ?? null,
+      patientPostalCode: p?.postal_code ?? null,
       specialty: spec ? (locale === "en" ? spec.name_en : spec.name_sq) : null,
     };
   });

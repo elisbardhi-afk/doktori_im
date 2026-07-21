@@ -23,6 +23,28 @@ export async function addDoctorService(input: {
   return { ok: true };
 }
 
+export async function updateDoctorService(
+  id: string,
+  input: { name: string; durationMinutes: number; price?: number },
+): Promise<{ ok: boolean; error?: string }> {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "AUTH_REQUIRED" };
+
+  const { error } = await supabase
+    .from("doctor_services")
+    .update({
+      name: input.name,
+      duration_minutes: input.durationMinutes,
+      price: input.price ?? null,
+    })
+    .eq("id", id)
+    .eq("doctor_id", user.id);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/doctor/services");
+  return { ok: true };
+}
+
 export async function deleteDoctorService(
   id: string,
 ): Promise<{ ok: boolean; error?: string }> {

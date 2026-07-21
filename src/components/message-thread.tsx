@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { timeInTirane, formatInTirane } from "@/lib/datetime";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import type { Message } from "@/lib/queries/messages";
 
 export function MessageThread({
@@ -44,6 +45,12 @@ export function MessageThread({
         const isOwn = msg.senderId === currentUserId;
         const prevMsg = index > 0 ? messages[index - 1] : null;
         const showDate = !prevMsg || formatInTirane(prevMsg.createdAt, "yyyy-MM-dd") !== formatInTirane(msg.createdAt, "yyyy-MM-dd");
+        const initials = msg.senderName
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .toUpperCase()
+          .slice(0, 2);
 
         return (
           <div key={msg.id}>
@@ -55,22 +62,30 @@ export function MessageThread({
               </div>
             )}
             <div
-              className={cn("flex flex-col gap-1", isOwn && "items-end")}
+              className={cn("flex items-end gap-2", isOwn && "flex-row-reverse")}
             >
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span className="font-semibold">{msg.senderName}</span>
-                <span>{timeInTirane(msg.createdAt)}</span>
-                {msg.readAt && <span className="opacity-60">✓</span>}
-              </div>
-              <div
-                className={cn(
-                  "max-w-xs rounded-lg px-3 py-2 text-sm",
-                  isOwn
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-foreground",
+              <Avatar className="size-7 shrink-0 rounded-full">
+                {msg.senderAvatarUrl && (
+                  <AvatarImage src={msg.senderAvatarUrl} alt={msg.senderName} />
                 )}
-              >
-                {msg.body}
+                <AvatarFallback className="rounded-full text-xs">{initials}</AvatarFallback>
+              </Avatar>
+              <div className={cn("flex flex-col gap-1", isOwn && "items-end")}>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span className="font-semibold">{msg.senderName}</span>
+                  <span>{timeInTirane(msg.createdAt)}</span>
+                  {msg.readAt && <span className="opacity-60">✓</span>}
+                </div>
+                <div
+                  className={cn(
+                    "max-w-xs rounded-lg px-3 py-2 text-sm",
+                    isOwn
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-foreground",
+                  )}
+                >
+                  {msg.body}
+                </div>
               </div>
             </div>
           </div>

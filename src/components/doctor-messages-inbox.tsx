@@ -3,8 +3,9 @@
 import React, { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { ChevronDown, ChevronUp, User, Calendar } from "lucide-react";
+import { ChevronDown, ChevronUp, Calendar } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { MessageThread } from "@/components/message-thread";
 import { MessageInput } from "@/components/message-input";
 import { fetchMessageThread, markThreadRead } from "@/actions/appointment-edit";
@@ -83,19 +84,28 @@ export function DoctorMessagesInbox({ threads, currentUserId }: Props) {
               onClick={() => handleToggle(thread.threadId)}
               className="flex w-full items-center justify-between gap-4 p-4 text-left transition-colors hover:bg-muted/40"
             >
-              <div className="flex min-w-0 flex-col gap-1">
-                <div className="flex items-center gap-2">
-                  <User className="size-4 shrink-0 text-primary" />
-                  <span className="font-bold text-foreground">{thread.patientName}</span>
-                  {unread > 0 && (
-                    <span className="size-2 rounded-full bg-primary inline-block" aria-label="unread" />
+              <div className="flex items-center gap-3 min-w-0">
+                <Avatar className="size-10 shrink-0 rounded-full">
+                  {thread.patientAvatarUrl && (
+                    <AvatarImage src={thread.patientAvatarUrl} alt={thread.patientName} />
                   )}
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Calendar className="size-4 shrink-0" />
-                  <span>
-                    {formatInTirane(thread.appointmentStartsAt, "EEEE, d MMM yyyy — HH:mm")}
-                  </span>
+                  <AvatarFallback className="rounded-full text-sm">
+                    {thread.patientName.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex min-w-0 flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-foreground">{thread.patientName}</span>
+                    {unread > 0 && (
+                      <span className="size-2 rounded-full bg-primary inline-block" aria-label="unread" />
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Calendar className="size-4 shrink-0" />
+                    <span>
+                      {formatInTirane(thread.appointmentStartsAt, "EEEE, d MMM yyyy — HH:mm")}
+                    </span>
+                  </div>
                 </div>
               </div>
               <div className="shrink-0 text-muted-foreground">
@@ -121,7 +131,7 @@ export function DoctorMessagesInbox({ threads, currentUserId }: Props) {
                   />
                 ) : (
                   <p className="text-xs text-muted-foreground text-center py-2 border border-border rounded-lg bg-muted/30">
-                    Read-only — messages cannot be sent for past appointments.
+                    {t("messages.readOnly")}
                   </p>
                 )}
               </div>

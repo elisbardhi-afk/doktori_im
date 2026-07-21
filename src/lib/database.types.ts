@@ -119,6 +119,8 @@ export interface DoctorServiceRow {
   price: number | null;
   is_active: boolean;
   sort_order: number;
+  avg_rating: number;
+  review_count: number;
   created_at: string;
 }
 
@@ -146,6 +148,7 @@ export interface ReviewRow {
   appointment_id: string;
   patient_id: string;
   doctor_id: string;
+  service_id: string | null;
   rating: number;
   comment: string | null;
   created_at: string;
