@@ -26,6 +26,59 @@ interface BlockException {
   reason?: string;
 }
 
+interface BlockGroup {
+  ids: string[];
+  startDate: string;
+  endDate: string;
+  startTime?: string;
+  endTime?: string;
+  reason?: string;
+}
+
+function isNextDay(date: string, next: string): boolean {
+  const d = new Date(date + "T00:00:00");
+  d.setDate(d.getDate() + 1);
+  return d.toISOString().slice(0, 10) === next;
+}
+
+function groupExceptions(exceptions: BlockException[]): BlockGroup[] {
+  const groups: BlockGroup[] = [];
+  for (const ex of exceptions) {
+    const last = groups[groups.length - 1];
+    const canMerge =
+      last !== undefined &&
+      isNextDay(last.endDate, ex.date) &&
+      last.startTime === ex.startTime &&
+      last.endTime === ex.endTime &&
+      (last.reason ?? null) === (ex.reason ?? null);
+    if (canMerge) {
+      last.ids.push(ex.id);
+      last.endDate = ex.date;
+    } else {
+      groups.push({
+        ids: [ex.id],
+        startDate: ex.date,
+        endDate: ex.date,
+        startTime: ex.startTime,
+        endTime: ex.endTime,
+        reason: ex.reason,
+      });
+    }
+  }
+  return groups;
+}
+
+function formatDateLabel(startDate: string, endDate: string, locale: string): string {
+  const fmt = (d: string) =>
+    new Date(d + "T00:00:00").toLocaleDateString(
+      locale === "sq" ? "sq-AL" : "en-US",
+      { month: "short", day: "numeric" }
+    );
+  return startDate === endDate
+    ? fmt(startDate)
+    : `${fmt(startDate)} – ${fmt(endDate)}`;
+}
+
 const WEEKDAYS_SQ = ["", "E hënë", "E martë", "E mërkurë", "E enjte", "E premte", "E shtunë", "E diel"];
 const WEEKDAYS_EN = ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const ALL_WEEKDAYS = [1, 2, 3, 4, 5, 6, 7];
@@ -44,6 +97,8 @@ export function AvailabilityManager({ rules, exceptions }: { rules: Rule[]; exce
   const [blockStart, setBlockStart] = useState("09:00");
   const [blockEnd, setBlockEnd] = useState("17:00");
   const [blockReason, setBlockReason] = useState("");
+  const [blockEndDate, setBlockEndDate] = useState("");
+  const [blockDateError, setBlockDateError] = useState("");
 
   const days = locale === "en" ? WEEKDAYS_EN : WEEKDAYS_SQ;
 
@@ -76,9 +131,19 @@ export function AvailabilityManager({ rules, exceptions }: { rules: Rule[]; exce
 
   async function onAddBlock(e: React.FormEvent) {
     e.preventDefault();
+    if (blockEndDate && blockEndDate < blockDate) {
+      setBlockDateError(
+        locale === "en"
+          ? "End date must be on or after start date"
+          : "Data e mbarimit duhet të jetë pas datës së fillimit"
+      );
+      return;
+    }
+    setBlockDateError("");
     setBlockLoading(true);
     const res = await addBlockException({
       date: blockDate,
+      endDate: blockEndDate || undefined,
       startTime: blockAllDay ? undefined : blockStart,
       endTime: blockAllDay ? undefined : blockEnd,
       reason: blockReason || undefined,
@@ -87,6 +152,7 @@ export function AvailabilityManager({ rules, exceptions }: { rules: Rule[]; exce
     if (!res.ok) { toast.error(res.error ?? "Error"); return; }
     toast.success(t("common.saved"));
     setBlockDate("");
+    setBlockEndDate("");
     setBlockReason("");
     router.refresh();
   }
@@ -94,6 +160,13 @@ export function AvailabilityManager({ rules, exceptions }: { rules: Rule[]; exce
   async function onDeleteBlock(id: string) {
     const res = await deleteBlockException(id);
     if (!res.ok) { toast.error(res.error ?? "Error"); return; }
+    router.refresh();
+  }
+
+  async function onDeleteBlockGroup(ids: string[]) {
+    const results = await Promise.all(ids.map((id) => deleteBlockException(id)));
+    const failed = results.filter((r) => !r.ok);
+    if (failed.length > 0) { toast.error(failed[0].error ?? "Error"); }
     router.refresh();
   }
 
@@ -197,21 +270,28 @@ export function AvailabilityManager({ rules, exceptions }: { rules: Rule[]; exce
                 {locale === "en" ? "No blocked dates." : "Nuk ka ditë të bllokuara."}
               </p>
             ) : (
-              exceptions.map((ex) => (
+              groupExceptions(exceptions).map((group) => (
                 <div
-                  key={ex.id}
+                  key={group.ids[0]}
                   className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-2.5"
                 >
                   <div>
-                    <p className="font-semibold text-foreground">{ex.date}</p>
+                    <p className="font-semibold text-foreground">
+                      {formatDateLabel(group.startDate, group.endDate, locale)}
+                    </p>
                     <p className="text-sm text-muted-foreground">
-                      {ex.startTime && ex.endTime
-                        ? `${ex.startTime}–${ex.endTime}`
+                      {group.startTime && group.endTime
+                        ? `${group.startTime}–${group.endTime}`
                         : locale === "en" ? "All day" : "E gjithë dita"}
-                      {ex.reason ? ` · ${ex.reason}` : ""}
+                      {group.reason ? ` · ${group.reason}` : ""}
                     </p>
                   </div>
-                  <Button variant="ghost" size="icon" onClick={() => onDeleteBlock(ex.id)} aria-label={t("common.delete")}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onDeleteBlockGroup(group.ids)}
+                    aria-label={t("common.delete")}
+                  >
                     <Trash2 className="size-4 text-destructive" />
                   </Button>
                 </div>
@@ -230,16 +310,31 @@ export function AvailabilityManager({ rules, exceptions }: { rules: Rule[]; exce
             <form onSubmit={onAddBlock} className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="block-date">
-                  {locale === "en" ? "Date" : "Data"}
+                  {locale === "en" ? "Start date" : "Data e fillimit"}
                 </Label>
                 <Input
                   id="block-date"
                   type="date"
                   value={blockDate}
                   min={new Date().toISOString().slice(0, 10)}
-                  onChange={(e) => setBlockDate(e.target.value)}
+                  onChange={(e) => { setBlockDate(e.target.value); setBlockDateError(""); }}
                   required
                 />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="block-end-date">
+                  {locale === "en" ? "End date (optional)" : "Data e mbarimit (opsionale)"}
+                </Label>
+                <Input
+                  id="block-end-date"
+                  type="date"
+                  value={blockEndDate}
+                  min={blockDate || new Date().toISOString().slice(0, 10)}
+                  onChange={(e) => { setBlockEndDate(e.target.value); setBlockDateError(""); }}
+                />
+                {blockDateError && (
+                  <p className="text-xs text-destructive">{blockDateError}</p>
+                )}
               </div>
               <div className="flex items-center gap-2">
                 <input
