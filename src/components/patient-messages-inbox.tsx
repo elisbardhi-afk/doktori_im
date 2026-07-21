@@ -199,7 +199,7 @@ export function PatientMessagesInbox({ threads, currentUserId }: Props) {
                   />
                 ) : (
                   <p className="text-xs text-muted-foreground text-center py-2 border border-border rounded-lg bg-muted/30">
-                    {t("messages.archived")} — {locale === "sq" ? "Nuk mund të dërgoni mesazhe për takime të kaluara." : "You cannot send messages for past appointments."}
+                    {t("messages.readOnly")}
                   </p>
                 )}
               </div>

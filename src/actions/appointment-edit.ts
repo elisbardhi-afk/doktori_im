@@ -264,7 +264,7 @@ export async function fetchMessageThread(
     .select(
       `
       id, sender_id, body, created_at, read_at,
-      sender:users(full_name)
+      sender:users(full_name, avatar_url)
     `
     )
     .eq("thread_id", threadId)
@@ -279,6 +279,7 @@ export async function fetchMessageThread(
         id: m.id as string,
         senderId: m.sender_id as string,
         senderName: ((m.sender as Record<string, unknown> | null)?.full_name as string) ?? "Unknown",
+        senderAvatarUrl: ((m.sender as Record<string, unknown> | null)?.avatar_url as string | null) ?? null,
         body: m.body as string,
         createdAt: m.created_at as string,
         readAt: (m.read_at as string | null) ?? null,

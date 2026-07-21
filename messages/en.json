@@ -147,7 +147,8 @@
     "changeTime": "Change Time",
     "edit": "Edit Appointment",
     "cancel": "Cancel Appointment",
-    "cancelled": "Cannot reschedule a cancelled appointment"
+    "cancelled": "Cannot reschedule a cancelled appointment",
+    "reason": "Reason for visit"
   },
   "messages": {
     "title": "Messages",
@@ -160,7 +161,8 @@
     "send": "Send",
     "sent": "Message sent",
     "emptyError": "Message cannot be empty",
-    "loadError": "Failed to load messages"
+    "loadError": "Failed to load messages",
+    "readOnly": "This message is read only"
   },
   "auth": {
     "loginTitle": "Welcome back",

@@ -148,7 +148,8 @@
     "changeTime": "Ndrysho orarin",
     "edit": "Ndrysho takimin",
     "cancel": "Anulo takimin",
-    "cancelled": "Nuk mund të riplanifikoni një takim të anuluar"
+    "cancelled": "Nuk mund të riplanifikoni një takim të anuluar",
+    "reason": "Arsyeja e vizitës"
   },
   "messages": {
     "title": "Mesazhet",
@@ -161,7 +162,8 @@
     "send": "Dërgo",
     "sent": "Mesazhi u dërgua",
     "emptyError": "Mesazhi nuk mund të jetë bosh",
-    "loadError": "Nuk u ngarkuan dot mesazhet"
+    "loadError": "Nuk u ngarkuan dot mesazhet",
+    "readOnly": "Ky mesazh është vetëm për lexim"
   },
   "auth": {
     "loginTitle": "Mirë se erdhët",

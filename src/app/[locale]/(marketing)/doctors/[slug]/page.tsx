@@ -112,10 +112,17 @@ export default async function DoctorProfilePage({
             ) : (
               reviews.map((r) => (
                 <div key={r.id} className="border-b border-border/60 pb-3 last:border-0">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-semibold text-foreground">
-                      {r.patientName}
-                    </span>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="text-sm font-semibold text-foreground">
+                        {r.patientName}
+                      </span>
+                      {r.serviceName && (
+                        <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground shrink-0">
+                          {r.serviceName}
+                        </span>
+                      )}
+                    </div>
                     <Rating value={r.rating} />
                   </div>
                   {r.comment && (

@@ -6,9 +6,10 @@ import { getTranslations } from "next-intl/server";
 import { BackButton } from "@/components/back-button";
 import { StatusBadge } from "@/components/status-badge";
 import { AppointmentActions } from "@/components/appointment-actions";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { formatInTirane, timeInTirane } from "@/lib/datetime";
-import { User, Calendar, Clock } from "lucide-react";
+import { Calendar, Clock, Phone, MapPin } from "lucide-react";
 
 export default async function DoctorAppointmentDetailPage({
   params,
@@ -31,6 +32,13 @@ export default async function DoctorAppointmentDetailPage({
     redirect("/doctor/appointments");
   }
 
+  const patientInitials = appointment.patientName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-4">
@@ -43,11 +51,23 @@ export default async function DoctorAppointmentDetailPage({
       <Card className="flex flex-col gap-4 p-6">
         <div className="flex items-start justify-between">
           <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2">
-              <User className="size-5 text-primary" />
-              <span className="text-lg font-bold text-foreground">
-                {appointment.patientName}
-              </span>
+            {/* Patient info */}
+            <div className="flex items-center gap-3">
+              <Avatar className="size-12 rounded-full">
+                {appointment.patientAvatarUrl && (
+                  <AvatarImage src={appointment.patientAvatarUrl} alt={appointment.patientName} />
+                )}
+                <AvatarFallback className="rounded-full">{patientInitials}</AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="text-lg font-bold text-foreground">{appointment.patientName}</p>
+                {appointment.patientPhone && (
+                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                    <Phone className="size-3.5" />
+                    <span>{appointment.patientPhone}</span>
+                  </div>
+                )}
+              </div>
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="size-4" />
@@ -57,6 +77,16 @@ export default async function DoctorAppointmentDetailPage({
               <Clock className="size-4" />
               {timeInTirane(appointment.startsAt)} – {timeInTirane(appointment.endsAt)}
             </div>
+            {(appointment.patientAddress || appointment.patientCity) && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <MapPin className="size-4" />
+                <span>
+                  {[appointment.patientAddress, appointment.patientCity, appointment.patientPostalCode]
+                    .filter(Boolean)
+                    .join(", ")}
+                </span>
+              </div>
+            )}
           </div>
           <StatusBadge status={appointment.status} />
         </div>
