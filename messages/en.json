@@ -28,7 +28,23 @@
     "profile": "Profile",
     "services": "Services",
     "calendar": "Calendar",
-    "waitlist": "Waitlist",
+    "waitlist": {
+      "joinPrompt": "Notify me if an earlier slot opens up",
+      "joinDescription": "We'll let you know if a slot becomes available before your appointment.",
+      "join": "Join Waitlist",
+      "joined": "You're on the waitlist",
+      "offers": "Pending Offers",
+      "watching": "Watching for Earlier Slots",
+      "accept": "Accept",
+      "decline": "Decline",
+      "remove": "Remove",
+      "expiresIn": "Expires in {hours}h {minutes}m",
+      "empty": "You're not on any waitlists.",
+      "errClaimExpired": "The claim window has expired. The slot is no longer reserved for you.",
+      "errSlotTaken": "That slot was just taken. Please try again or decline.",
+      "errUnknown": "Something went wrong. Please try again.",
+      "acceptSuccess": "Appointment moved to the earlier slot!"
+    },
     "approvals": "Approvals",
     "doctors": "Doctors",
     "users": "Users",
@@ -200,6 +216,10 @@
         "title": "New message from {senderName}",
         "titleFallback": "New message",
         "message": "You have a new message."
+      },
+      "waitlist_available": {
+        "title": "Earlier slot available",
+        "message": "An earlier appointment slot opened up. You have 2 hours to accept."
       }
     }
   },

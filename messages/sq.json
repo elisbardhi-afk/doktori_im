@@ -114,6 +114,23 @@
     "errUnknown": "Ndodhi një gabim. Ju lutem provoni sërish.",
     "noSlots": "Nuk ka orare të lira për këtë datë."
   },
+  "waitlist": {
+    "joinPrompt": "Më njoftoni nëse hapet një orar më i hershëm",
+    "joinDescription": "Do t'ju njoftojmë nëse lirohet një orar para takimit tuaj.",
+    "join": "Bashkohu në listën e pritjes",
+    "joined": "Jeni në listën e pritjes",
+    "offers": "Ofertat në pritje",
+    "watching": "Duke pritur për orar më të hershëm",
+    "accept": "Prano",
+    "decline": "Refuzo",
+    "remove": "Hiq",
+    "expiresIn": "Skadon në {hours}h {minutes}m",
+    "empty": "Nuk jeni në asnjë listë pritjeje.",
+    "errClaimExpired": "Dritarja e pretendimit ka skaduar. Orari nuk është më rezervuar për ju.",
+    "errSlotTaken": "Ky orar sapo u zu. Ju lutem provoni sërish ose refuzoni.",
+    "errUnknown": "Ndodhi një gabim. Ju lutem provoni sërish.",
+    "acceptSuccess": "Takimi u zhvendos në orarin më të hershëm!"
+  },
   "appointments": {
     "upcoming": "Të ardhshme",
     "past": "Të kaluara",
@@ -200,6 +217,10 @@
         "title": "Mesazh i ri nga {senderName}",
         "titleFallback": "Mesazh i ri",
         "message": "Keni një mesazh të ri."
+      },
+      "waitlist_available": {
+        "title": "Orar më i hershëm i disponueshëm",
+        "message": "U lirua një orar më i hershëm. Keni 2 orë për të pranuar."
       }
     }
   },
