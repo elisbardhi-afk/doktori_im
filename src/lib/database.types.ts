@@ -190,6 +190,18 @@ export interface AvailableSlot {
   duration_minutes: number;
 }
 
+export interface WaitlistEntryRow {
+  id: string;
+  patient_id: string;
+  doctor_id: string;
+  preferred_range: string; // Postgres daterange serialized as "[YYYY-MM-DD,YYYY-MM-DD)"
+  status: WaitlistStatus;
+  notified_at: string | null;
+  claim_expires_at: string | null;
+  source_appointment_id: string | null;
+  created_at: string;
+}
+
 // Minimal shape used by the typed client. Regeneration will expand this.
 // Each table entry carries a `Relationships` key to satisfy supabase-js's
 // GenericTable constraint (we leave it empty — joins are still usable).
@@ -210,6 +222,7 @@ export interface Database {
       notifications: Table<NotificationRow>;
       message_threads: Table<MessageThreadRow>;
       messages: Table<MessageRow>;
+      waitlist_entries: Table<WaitlistEntryRow>;
     };
     Views: Record<string, never>;
     Enums: {
@@ -290,6 +303,22 @@ export interface Database {
           message_id: string;
           created_at: string;
         }>;
+      };
+      join_waitlist: {
+        Args: {
+          p_doctor_id: string;
+          p_appointment_id: string;
+          p_preferred_range: string;
+        };
+        Returns: void;
+      };
+      cancel_waitlist_entry: {
+        Args: { p_entry_id: string };
+        Returns: void;
+      };
+      claim_waitlist_slot: {
+        Args: { p_entry_id: string; p_new_starts_at: string };
+        Returns: Array<{ ok: boolean; appointment_id: string | null; error_code: string | null }>;
       };
     };
   };
