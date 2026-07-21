@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import { formatInTirane } from "@/lib/datetime";
 import { cn } from "@/lib/utils";
 
-const KNOWN_TYPES = ["appointment_confirmed", "appointment_cancelled", "new_booking", "review_request", "message_received"] as const;
+const KNOWN_TYPES = ["appointment_confirmed", "appointment_cancelled", "new_booking", "review_request", "message_received", "waitlist_available"] as const;
 type NotificationType = (typeof KNOWN_TYPES)[number];
 
 function getNotifText(
@@ -119,6 +119,8 @@ export function NotificationBell({ userId, userRole }: { userId: string; userRol
       router.push(`/patient/appointments/${appointmentId}`);
     } else if (type === "review_request" && appointmentId) {
       router.push(`/patient/appointments/${appointmentId}`);
+    } else if (type === "waitlist_available") {
+      router.push(`/patient/waitlist`);
     }
   }
 
