@@ -9,9 +9,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { createBooking, type BookErrorCode } from "@/actions/booking";
 import { fetchDoctorSlots } from "@/actions/appointment-edit";
+import { joinWaitlist } from "@/actions/waitlist";
 import { timeInTirane, formatInTirane } from "@/lib/datetime";
 import { cn } from "@/lib/utils";
-import { CalendarCheck, Clock } from "lucide-react";
+import { CalendarCheck, CheckCircle2, Clock } from "lucide-react";
 import type { AvailableSlot, DoctorServiceRow } from "@/lib/database.types";
 
 const errorMsg: Record<BookErrorCode, string> = {
@@ -58,6 +59,11 @@ export function BookingWizard({
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
   const [slots, setSlots] = useState<AvailableSlot[]>(initialSlots);
+  const [bookedAppointmentId, setBookedAppointmentId] = useState<string | null>(null);
+  const [bookedStartsAt, setBookedStartsAt] = useState<string | null>(null);
+  const [waitlistOptIn, setWaitlistOptIn] = useState(false);
+  const [waitlistJoined, setWaitlistJoined] = useState(false);
+  const [waitlistLoading, setWaitlistLoading] = useState(false);
   const [, startTransition] = useTransition();
 
   // When a service is selected, re-fetch slots filtered to the service duration so
@@ -128,9 +134,22 @@ export function BookingWizard({
       setSelected(null);
       return;
     }
-    toast.success(t("booking.success"));
-    router.push("/patient/appointments");
+    // Show opt-in instead of immediately redirecting
+    setBookedAppointmentId(res.appointmentId ?? null);
+    setBookedStartsAt(selected.slot_start);
     router.refresh();
+  }
+
+  async function handleJoinWaitlist() {
+    if (!bookedAppointmentId || !bookedStartsAt) return;
+    setWaitlistLoading(true);
+    const res = await joinWaitlist(doctorId, bookedAppointmentId, bookedStartsAt);
+    setWaitlistLoading(false);
+    if (!res.ok) {
+      toast.error(res.error ?? t("waitlist.errUnknown"));
+      return;
+    }
+    setWaitlistJoined(true);
   }
 
   if (hasServices && !selectedService) {
@@ -160,6 +179,55 @@ export function BookingWizard({
             </button>
           ))}
         </div>
+      </div>
+    );
+  }
+
+  if (bookedAppointmentId) {
+    return (
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+          <CheckCircle2 className="size-5 text-primary" />
+          {t("booking.success")}
+        </div>
+        <div className="rounded-xl border border-border bg-card p-4">
+          {waitlistJoined ? (
+            <p className="flex items-center gap-2 text-sm font-semibold text-primary">
+              <CheckCircle2 className="size-4" />
+              {t("waitlist.joined")}
+            </p>
+          ) : (
+            <div className="flex flex-col gap-3">
+              <div className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  id="waitlist-optin"
+                  checked={waitlistOptIn}
+                  onChange={(e) => setWaitlistOptIn(e.target.checked)}
+                  className="mt-0.5 size-4 cursor-pointer accent-primary"
+                />
+                <div className="flex flex-col gap-0.5">
+                  <label htmlFor="waitlist-optin" className="cursor-pointer text-sm font-semibold text-foreground">
+                    {t("waitlist.joinPrompt")}
+                  </label>
+                  <p className="text-xs text-muted-foreground">{t("waitlist.joinDescription")}</p>
+                </div>
+              </div>
+              {waitlistOptIn && (
+                <Button
+                  size="sm"
+                  onClick={handleJoinWaitlist}
+                  disabled={waitlistLoading}
+                >
+                  {waitlistLoading ? t("common.loading") : t("waitlist.join")}
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
+        <Button variant="outline" size="sm" onClick={() => router.push("/patient/appointments")}>
+          {t("nav.myAppointments")}
+        </Button>
       </div>
     );
   }
