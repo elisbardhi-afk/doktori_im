@@ -7,6 +7,9 @@ import type { WaitlistEntryRow, WaitlistStatus } from "@/lib/database.types";
 
 export interface WaitlistEntry extends WaitlistEntryRow {
   doctorName: string;
+  appointmentStartsAt: string | null;
+  appointmentEndsAt: string | null;
+  appointmentReason: string | null;
 }
 
 /** Join the waitlist after successfully booking an appointment. */
@@ -101,7 +104,8 @@ export async function getWaitlistEntries(): Promise<WaitlistEntry[]> {
       `
       id, patient_id, doctor_id, preferred_range, status,
       notified_at, claim_expires_at, source_appointment_id, created_at,
-      doctor:doctor_profiles!waitlist_entries_doctor_id_fkey(full_name)
+      doctor:doctor_profiles!waitlist_entries_doctor_id_fkey(full_name),
+      appointment:appointments!waitlist_entries_source_appointment_id_fkey(starts_at, ends_at, reason)
     `,
     )
     .eq("patient_id", user.id)
@@ -110,8 +114,14 @@ export async function getWaitlistEntries(): Promise<WaitlistEntry[]> {
 
   if (!data) return [];
 
-  return (data as unknown as Array<WaitlistEntryRow & { doctor: { full_name: string | null } | null }>).map((row) => ({
+  return (data as unknown as Array<WaitlistEntryRow & {
+    doctor: { full_name: string | null } | null;
+    appointment: { starts_at: string; ends_at: string; reason: string | null } | null;
+  }>).map((row) => ({
     ...row,
     doctorName: row.doctor?.full_name ?? "Unknown doctor",
+    appointmentStartsAt: row.appointment?.starts_at ?? null,
+    appointmentEndsAt: row.appointment?.ends_at ?? null,
+    appointmentReason: row.appointment?.reason ?? null,
   }));
 }

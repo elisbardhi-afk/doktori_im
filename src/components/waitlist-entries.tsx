@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cancelWaitlistEntry, claimWaitlistSlot } from "@/actions/waitlist";
 import type { WaitlistEntry } from "@/actions/waitlist";
+import { formatInTirane } from "@/lib/datetime";
 
 function formatExpiry(claimExpiresAt: string): { hours: string; minutes: string } {
   const diff = new Date(claimExpiresAt).getTime() - Date.now();
@@ -19,12 +20,6 @@ function formatExpiry(claimExpiresAt: string): { hours: string; minutes: string 
   return { hours: String(hours), minutes: String(minutes) };
 }
 
-function formatDateRange(preferredRange: string): string {
-  // Postgres daterange format: "[YYYY-MM-DD,YYYY-MM-DD)"
-  const match = preferredRange.match(/[\[(](\d{4}-\d{2}-\d{2}),(\d{4}-\d{2}-\d{2})[\])]/);
-  if (!match) return preferredRange;
-  return `${match[1]} – ${match[2]}`;
-}
 
 export function WaitlistEntries({ entries }: { entries: WaitlistEntry[] }) {
   const t = useTranslations();
@@ -102,9 +97,17 @@ export function WaitlistEntries({ entries }: { entries: WaitlistEntry[] }) {
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex flex-col gap-1">
                     <p className="font-semibold text-foreground">{entry.doctorName}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {formatDateRange(entry.preferred_range)}
-                    </p>
+                    {entry.appointmentStartsAt && (
+                      <p className="text-sm text-muted-foreground">
+                        {formatInTirane(entry.appointmentStartsAt)}
+                        {entry.appointmentEndsAt && (
+                          <> – {formatInTirane(entry.appointmentEndsAt, "HH:mm")}</>
+                        )}
+                      </p>
+                    )}
+                    {entry.appointmentReason && (
+                      <p className="text-sm text-muted-foreground">{entry.appointmentReason}</p>
+                    )}
                   </div>
                   {entry.claim_expires_at && (
                     <Badge variant="outline" className="shrink-0 text-xs">
@@ -143,9 +146,17 @@ export function WaitlistEntries({ entries }: { entries: WaitlistEntry[] }) {
               <CardContent className="flex items-center justify-between gap-2 p-4">
                 <div className="flex flex-col gap-1">
                   <p className="font-semibold text-foreground">{entry.doctorName}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {formatDateRange(entry.preferred_range)}
-                  </p>
+                  {entry.appointmentStartsAt && (
+                    <p className="text-sm text-muted-foreground">
+                      {formatInTirane(entry.appointmentStartsAt)}
+                      {entry.appointmentEndsAt && (
+                        <> – {formatInTirane(entry.appointmentEndsAt, "HH:mm")}</>
+                      )}
+                    </p>
+                  )}
+                  {entry.appointmentReason && (
+                    <p className="text-sm text-muted-foreground">{entry.appointmentReason}</p>
+                  )}
                 </div>
                 <Button
                   size="sm"
