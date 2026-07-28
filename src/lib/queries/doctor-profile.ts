@@ -90,13 +90,14 @@ export async function getDoctorBySlug(
 /** Reviews for a doctor (public read). */
 export async function getDoctorReviews(doctorId: string): Promise<DoctorReview[]> {
   const supabase = createClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("reviews")
     .select("id, rating, comment, created_at, patient_name, service_id, service:doctor_services(name)")
     .eq("doctor_id", doctorId)
     .order("created_at", { ascending: false })
     .limit(20);
 
+  if (error) console.error("[getDoctorReviews]", error);
   if (!data) return [];
   return (data as unknown as Array<{
     id: string;
