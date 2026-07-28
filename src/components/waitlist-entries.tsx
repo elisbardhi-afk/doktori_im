@@ -32,11 +32,10 @@ export function WaitlistEntries({ entries }: { entries: WaitlistEntry[] }) {
   const watching = visible.filter((e) => e.status === "active");
 
   async function handleAccept(entry: WaitlistEntry) {
-    // For v1, we pass notified_at as the timestamp hint to the RPC.
-    // The actual new appointment time is determined by the DB (it uses p_new_starts_at
-    // as the desired slot — patient would ideally pick from available slots in a future iteration).
-    const newStartsAt = entry.notified_at
-      ? new Date(entry.notified_at).toISOString()
+    // offered_starts_at is the exact freed slot time (set by the trigger since migration 0020).
+    // Fall back to notified_at for entries notified before that migration.
+    const newStartsAt = (entry.offered_starts_at ?? entry.notified_at)
+      ? new Date((entry.offered_starts_at ?? entry.notified_at)!).toISOString()
       : new Date().toISOString();
 
     setLoadingId(entry.id);
