@@ -97,19 +97,28 @@ export function WaitlistEntries({ entries }: { entries: WaitlistEntry[] }) {
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex flex-col gap-1">
                     <p className="font-semibold text-foreground">{entry.doctorName}</p>
-                    {entry.appointmentStartsAt && (
-                      <p className="text-sm text-muted-foreground line-through">
+                    {entry.offered_starts_at ? (
+                      <>
+                        {entry.appointmentStartsAt && (
+                          <p className="text-sm text-muted-foreground line-through">
+                            {formatInTirane(entry.appointmentStartsAt)}
+                            {entry.appointmentEndsAt && (
+                              <> – {formatInTirane(entry.appointmentEndsAt, "HH:mm")}</>
+                            )}
+                          </p>
+                        )}
+                        <p className="text-sm font-semibold text-foreground">
+                          {formatInTirane(entry.offered_starts_at)}
+                          {entry.offered_ends_at && (
+                            <> – {formatInTirane(entry.offered_ends_at, "HH:mm")}</>
+                          )}
+                        </p>
+                      </>
+                    ) : entry.appointmentStartsAt && (
+                      <p className="text-sm text-muted-foreground">
                         {formatInTirane(entry.appointmentStartsAt)}
                         {entry.appointmentEndsAt && (
                           <> – {formatInTirane(entry.appointmentEndsAt, "HH:mm")}</>
-                        )}
-                      </p>
-                    )}
-                    {entry.offered_starts_at && (
-                      <p className="text-sm font-semibold text-foreground">
-                        {formatInTirane(entry.offered_starts_at)}
-                        {entry.offered_ends_at && (
-                          <> – {formatInTirane(entry.offered_ends_at, "HH:mm")}</>
                         )}
                       </p>
                     )}
