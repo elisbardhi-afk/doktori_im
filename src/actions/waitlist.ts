@@ -10,6 +10,7 @@ export interface WaitlistEntry extends WaitlistEntryRow {
   appointmentStartsAt: string | null;
   appointmentEndsAt: string | null;
   appointmentReason: string | null;
+  // offered_starts_at / offered_ends_at come through WaitlistEntryRow
 }
 
 /** Join the waitlist after successfully booking an appointment. */
@@ -103,7 +104,8 @@ export async function getWaitlistEntries(): Promise<WaitlistEntry[]> {
     .select(
       `
       id, patient_id, doctor_id, preferred_range, status,
-      notified_at, claim_expires_at, source_appointment_id, created_at,
+      notified_at, claim_expires_at, source_appointment_id,
+      offered_starts_at, offered_ends_at, created_at,
       doctor:doctor_profiles!waitlist_entries_doctor_id_fkey(full_name),
       appointment:appointments!waitlist_entries_source_appointment_id_fkey(starts_at, ends_at, reason)
     `,

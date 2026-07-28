@@ -202,6 +202,8 @@ export interface WaitlistEntryRow {
   notified_at: string | null;
   claim_expires_at: string | null;
   source_appointment_id: string | null;
+  offered_starts_at: string | null;
+  offered_ends_at: string | null;
   created_at: string;
 }
 
