@@ -69,5 +69,8 @@ export async function cancelAppointment(input: {
   if (error) return { ok: false, error: error.message };
   revalidatePath("/patient/appointments");
   revalidatePath("/doctor/appointments");
+  // Cancelling an appointment also resolves its linked waitlist entry (DB
+  // trigger), so refresh the waitlist view too — otherwise a stale entry lingers.
+  revalidatePath("/patient/waitlist");
   return { ok: true };
 }
