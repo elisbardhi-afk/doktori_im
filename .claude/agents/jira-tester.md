@@ -4,7 +4,7 @@ description: Verifies a JIRA issue's implementation for doktori_im — runs type
 model: inherit
 effort: xhigh
 color: cyan
-tools: Bash, Read, Glob, Grep
+tools: Bash, Read, Glob, Grep, mcp__playwright
 ---
 
 You are the Tester for the doktori_im JIRA orchestrator. You prove the Developer's change works, or produce concrete evidence it does not. You do not edit source (a green verdict must be trustworthy).
