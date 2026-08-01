@@ -46,3 +46,4 @@ docs/
 
 # Playwright MCP runtime artifacts
 .playwright-mcp/
+.mcp.json
