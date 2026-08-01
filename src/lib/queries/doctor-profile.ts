@@ -23,8 +23,9 @@ export interface DoctorReview {
   comment: string | null;
   createdAt: string;
   patientName: string;
-  serviceId: string | null;
-  serviceName: string | null;
+  /** Optional: only populated when the service_id column exists in the remote DB */
+  serviceId?: string | null;
+  serviceName?: string | null;
 }
 
 /** Full public profile for one doctor by slug (RLS: approved only). */
@@ -91,12 +92,12 @@ export async function getDoctorBySlug(
 export async function getDoctorReviews(doctorId: string): Promise<DoctorReview[]> {
   const supabase = createClient();
 
-  // Fetch reviews without an embedded join so the query never fails due to a
-  // missing FK relationship in the PostgREST schema cache (the service_id FK was
-  // added in migration 0018 and may not yet be reflected in the cache).
+  // NOTE: service_id is intentionally excluded from the select — migration 0018
+  // (which adds that column) has not been applied to the remote production DB.
+  // Selecting a non-existent column causes a HTTP 400 error from PostgREST.
   const { data, error } = await supabase
     .from("reviews")
-    .select("id, rating, comment, created_at, patient_name, service_id")
+    .select("id, rating, comment, created_at, patient_name")
     .eq("doctor_id", doctorId)
     .order("created_at", { ascending: false })
     .limit(20);
@@ -110,24 +111,7 @@ export async function getDoctorReviews(doctorId: string): Promise<DoctorReview[]
     comment: string | null;
     created_at: string;
     patient_name: string | null;
-    service_id: string | null;
   }>;
-
-  // Collect unique service IDs so we can look up names in a single round-trip.
-  const serviceIds = Array.from(new Set(rows.map((r) => r.service_id).filter(Boolean))) as string[];
-  const serviceNameMap = new Map<string, string>();
-
-  if (serviceIds.length > 0) {
-    const { data: services } = await supabase
-      .from("doctor_services")
-      .select("id, name")
-      .in("id", serviceIds);
-    if (services) {
-      for (const s of services as Array<{ id: string; name: string }>) {
-        serviceNameMap.set(s.id, s.name);
-      }
-    }
-  }
 
   return rows.map((r) => ({
     id: r.id,
@@ -135,8 +119,6 @@ export async function getDoctorReviews(doctorId: string): Promise<DoctorReview[]
     comment: r.comment,
     createdAt: r.created_at,
     patientName: r.patient_name ?? "Anonim",
-    serviceId: r.service_id,
-    serviceName: r.service_id ? (serviceNameMap.get(r.service_id) ?? null) : null,
   }));
 }
 
