@@ -90,40 +90,54 @@ export async function getDoctorBySlug(
 /** Reviews for a doctor (public read). */
 export async function getDoctorReviews(doctorId: string): Promise<DoctorReview[]> {
   const supabase = createClient();
+
+  // Fetch reviews without an embedded join so the query never fails due to a
+  // missing FK relationship in the PostgREST schema cache (the service_id FK was
+  // added in migration 0018 and may not yet be reflected in the cache).
   const { data, error } = await supabase
     .from("reviews")
-    .select("id, rating, comment, created_at, patient_name, service_id, service:doctor_services(name)")
+    .select("id, rating, comment, created_at, patient_name, service_id")
     .eq("doctor_id", doctorId)
     .order("created_at", { ascending: false })
     .limit(20);
 
   if (error) console.error("[getDoctorReviews]", error);
   if (!data) return [];
-  return (data as unknown as Array<{
+
+  const rows = data as unknown as Array<{
     id: string;
     rating: number;
     comment: string | null;
     created_at: string;
     patient_name: string | null;
     service_id: string | null;
-    service: { name: string } | { name: string }[] | null;
-  }>).map((r) => {
-    const serviceRaw = r.service;
-    const serviceName = serviceRaw
-      ? Array.isArray(serviceRaw)
-        ? serviceRaw[0]?.name ?? null
-        : (serviceRaw as { name: string }).name
-      : null;
-    return {
-      id: r.id,
-      rating: r.rating,
-      comment: r.comment,
-      createdAt: r.created_at,
-      patientName: r.patient_name ?? "Anonim",
-      serviceId: r.service_id,
-      serviceName,
-    };
-  });
+  }>;
+
+  // Collect unique service IDs so we can look up names in a single round-trip.
+  const serviceIds = Array.from(new Set(rows.map((r) => r.service_id).filter(Boolean))) as string[];
+  const serviceNameMap = new Map<string, string>();
+
+  if (serviceIds.length > 0) {
+    const { data: services } = await supabase
+      .from("doctor_services")
+      .select("id, name")
+      .in("id", serviceIds);
+    if (services) {
+      for (const s of services as Array<{ id: string; name: string }>) {
+        serviceNameMap.set(s.id, s.name);
+      }
+    }
+  }
+
+  return rows.map((r) => ({
+    id: r.id,
+    rating: r.rating,
+    comment: r.comment,
+    createdAt: r.created_at,
+    patientName: r.patient_name ?? "Anonim",
+    serviceId: r.service_id,
+    serviceName: r.service_id ? (serviceNameMap.get(r.service_id) ?? null) : null,
+  }));
 }
 
 /** Available slots for a doctor over a date range. */
