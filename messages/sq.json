@@ -149,7 +149,8 @@
     "edit": "Ndrysho takimin",
     "cancel": "Anulo takimin",
     "cancelled": "Nuk mund të riplanifikoni një takim të anuluar",
-    "reason": "Arsyeja e vizitës"
+    "reason": "Arsyeja e vizitës",
+    "service": "Shërbimi"
   },
   "messages": {
     "title": "Mesazhet",

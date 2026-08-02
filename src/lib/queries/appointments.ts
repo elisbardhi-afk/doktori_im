@@ -17,6 +17,7 @@ export interface AppointmentView {
   patientCity: string | null;
   patientPostalCode: string | null;
   specialty: string | null;
+  serviceName: string | null;
   hasReview: boolean;
 }
 
@@ -45,7 +46,8 @@ export async function getMyAppointments(
       doctor:doctor_profiles!appointments_doctor_id_fkey(
         slug, full_name,
         doctor_specialties(specialties(name_sq, name_en))
-      )
+      ),
+      service:doctor_services(name)
     `,
     )
     .eq(column, id)
@@ -88,9 +90,11 @@ export async function getMyAppointments(
         specialties: { name_sq: string; name_en: string } | null;
       }>;
     };
+    service: { name: string } | null;
   }>).map((a) => {
     const p = Array.isArray(a.patient) ? a.patient[0] : a.patient;
     const spec = a.doctor?.doctor_specialties?.[0]?.specialties ?? null;
+    const svc = Array.isArray(a.service) ? (a.service[0] ?? null) : a.service;
     return {
       id: a.id,
       startsAt: a.starts_at,
@@ -107,6 +111,7 @@ export async function getMyAppointments(
       patientCity: p?.city ?? null,
       patientPostalCode: p?.postal_code ?? null,
       specialty: spec ? (locale === "en" ? spec.name_en : spec.name_sq) : null,
+      serviceName: svc?.name ?? null,
       hasReview: reviewedAppointmentIds.has(a.id),
     };
   });

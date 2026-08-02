@@ -120,6 +120,16 @@ export function AppointmentEditClient({
                 {appointment.specialty}
               </span>
             )}
+            {appointment.serviceName && (
+              <div className="flex flex-col gap-0.5">
+                <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  {t("appointments.service")}
+                </span>
+                <span className="text-sm text-foreground">
+                  {appointment.serviceName}
+                </span>
+              </div>
+            )}
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="size-4" />
               {formatInTirane(appointment.startsAt, "EEEE, d MMM yyyy")}

@@ -132,7 +132,8 @@
     "edit": "Edit Appointment",
     "cancel": "Cancel Appointment",
     "cancelled": "Cannot reschedule a cancelled appointment",
-    "reason": "Reason for visit"
+    "reason": "Reason for visit",
+    "service": "Service"
   },
   "messages": {
     "title": "Messages",
