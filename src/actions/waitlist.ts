@@ -10,6 +10,7 @@ export interface WaitlistEntry extends WaitlistEntryRow {
   appointmentStartsAt: string | null;
   appointmentEndsAt: string | null;
   appointmentReason: string | null;
+  serviceName: string | null;
   // offered_starts_at / offered_ends_at come through WaitlistEntryRow
 }
 
@@ -107,7 +108,7 @@ export async function getWaitlistEntries(): Promise<WaitlistEntry[]> {
       notified_at, claim_expires_at, source_appointment_id,
       offered_starts_at, offered_ends_at, created_at,
       doctor:doctor_profiles!waitlist_entries_doctor_id_fkey(full_name),
-      appointment:appointments!waitlist_entries_source_appointment_id_fkey(starts_at, ends_at, reason)
+      appointment:appointments!waitlist_entries_source_appointment_id_fkey(starts_at, ends_at, reason, service:doctor_services(name))
     `,
     )
     .eq("patient_id", user.id)
@@ -118,12 +119,13 @@ export async function getWaitlistEntries(): Promise<WaitlistEntry[]> {
 
   return (data as unknown as Array<WaitlistEntryRow & {
     doctor: { full_name: string | null } | null;
-    appointment: { starts_at: string; ends_at: string; reason: string | null } | null;
+    appointment: { starts_at: string; ends_at: string; reason: string | null; service: { name: string } | null } | null;
   }>).map((row) => ({
     ...row,
     doctorName: row.doctor?.full_name ?? "Unknown doctor",
     appointmentStartsAt: row.appointment?.starts_at ?? null,
     appointmentEndsAt: row.appointment?.ends_at ?? null,
     appointmentReason: row.appointment?.reason ?? null,
+    serviceName: row.appointment?.service?.name ?? null,
   }));
 }
