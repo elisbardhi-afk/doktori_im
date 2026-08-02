@@ -91,6 +91,11 @@ export function AvailabilityManager({ rules, exceptions }: { rules: Rule[]; exce
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("13:00");
   const [savingDay, setSavingDay] = useState<number | null>(null);
+  const [conflictInfo, setConflictInfo] = useState<{
+    existingRule: Rule;
+    mergedStart: string;
+    mergedEnd: string;
+  } | null>(null);
   const [blockLoading, setBlockLoading] = useState(false);
   const [blockDate, setBlockDate] = useState("");
   const [blockAllDay, setBlockAllDay] = useState(true);
@@ -111,15 +116,55 @@ export function AvailabilityManager({ rules, exceptions }: { rules: Rule[]; exce
     setAddingFor(weekday);
     setStartTime("09:00");
     setEndTime("13:00");
+    setConflictInfo(null);
   }
 
   async function onAdd(weekday: number) {
+    // Client-side overlap check before hitting the server.
+    const dayRules = rulesByDay[weekday];
+    for (const rule of dayRules) {
+      if (startTime < rule.endTime && endTime > rule.startTime) {
+        const mergedStart = startTime < rule.startTime ? startTime : rule.startTime;
+        const mergedEnd = endTime > rule.endTime ? endTime : rule.endTime;
+        setConflictInfo({ existingRule: rule, mergedStart, mergedEnd });
+        return;
+      }
+    }
+
     setSavingDay(weekday);
     const res = await addAvailabilityRule({ weekday, startTime, endTime });
     setSavingDay(null);
     if (!res.ok) { toast.error(res.error ?? "Error"); return; }
     toast.success(t("common.saved"));
     setAddingFor(null);
+    setConflictInfo(null);
+    router.refresh();
+  }
+
+  async function onAcceptMerge(weekday: number) {
+    if (!conflictInfo) return;
+    setSavingDay(weekday);
+    // Insert the merged rule first (excluding the rule being replaced from the
+    // overlap scan). If the merged range collides with a SECOND existing slot
+    // the server returns an error here and the old rule is left intact.
+    const addRes = await addAvailabilityRule({
+      weekday,
+      startTime: conflictInfo.mergedStart,
+      endTime: conflictInfo.mergedEnd,
+      excludeId: conflictInfo.existingRule.id,
+    });
+    if (!addRes.ok) {
+      setSavingDay(null);
+      toast.error(addRes.error ?? "Error");
+      return;
+    }
+    // Insert succeeded — now safe to remove the superseded rule.
+    const delRes = await deleteAvailabilityRule(conflictInfo.existingRule.id);
+    setSavingDay(null);
+    if (!delRes.ok) { toast.error(delRes.error ?? "Error"); return; }
+    toast.success(t("common.saved"));
+    setAddingFor(null);
+    setConflictInfo(null);
     router.refresh();
   }
 
@@ -214,33 +259,64 @@ export function AvailabilityManager({ rules, exceptions }: { rules: Rule[]; exce
                   )}
                 </div>
                 {isAdding && (
-                  <div className="ml-28 flex flex-wrap items-end gap-2 rounded-xl border border-primary bg-muted/20 p-3">
-                    <div className="flex flex-col gap-1">
-                      <Label className="text-xs">{t("availability.from")}</Label>
-                      <Input
-                        type="time"
-                        value={startTime}
-                        onChange={(e) => setStartTime(e.target.value)}
-                        className="h-8 w-28 text-sm"
-                        required
-                      />
+                  <div className="ml-28 flex flex-col gap-2 rounded-xl border border-primary bg-muted/20 p-3">
+                    <div className="flex flex-wrap items-end gap-2">
+                      <div className="flex flex-col gap-1">
+                        <Label className="text-xs">{t("availability.from")}</Label>
+                        <Input
+                          type="time"
+                          value={startTime}
+                          onChange={(e) => { setStartTime(e.target.value); setConflictInfo(null); }}
+                          className="h-8 w-28 text-sm"
+                          required
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <Label className="text-xs">{t("availability.to")}</Label>
+                        <Input
+                          type="time"
+                          value={endTime}
+                          onChange={(e) => { setEndTime(e.target.value); setConflictInfo(null); }}
+                          className="h-8 w-28 text-sm"
+                          required
+                        />
+                      </div>
+                      <Button size="sm" onClick={() => onAdd(d)} disabled={isSaving}>
+                        {isSaving ? t("common.loading") : t("availability.add")}
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => { setAddingFor(null); setConflictInfo(null); }}>
+                        {t("common.cancel")}
+                      </Button>
                     </div>
-                    <div className="flex flex-col gap-1">
-                      <Label className="text-xs">{t("availability.to")}</Label>
-                      <Input
-                        type="time"
-                        value={endTime}
-                        onChange={(e) => setEndTime(e.target.value)}
-                        className="h-8 w-28 text-sm"
-                        required
-                      />
-                    </div>
-                    <Button size="sm" onClick={() => onAdd(d)} disabled={isSaving}>
-                      {isSaving ? t("common.loading") : t("availability.add")}
-                    </Button>
-                    <Button size="sm" variant="ghost" onClick={() => setAddingFor(null)}>
-                      {t("common.cancel")}
-                    </Button>
+                    {conflictInfo && (
+                      <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                        <p>
+                          {locale === "en"
+                            ? `New slot ${startTime}–${endTime} overlaps with ${conflictInfo.existingRule.startTime}–${conflictInfo.existingRule.endTime}. Merge to ${conflictInfo.mergedStart}–${conflictInfo.mergedEnd}?`
+                            : `Orari i ri ${startTime}–${endTime} mbivendoset me ${conflictInfo.existingRule.startTime}–${conflictInfo.existingRule.endTime}. Bashko në ${conflictInfo.mergedStart}–${conflictInfo.mergedEnd}?`}
+                        </p>
+                        <div className="mt-2 flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="border-destructive/50 text-destructive hover:bg-destructive/10"
+                            onClick={() => onAcceptMerge(d)}
+                            disabled={isSaving}
+                          >
+                            {locale === "en"
+                              ? `Use ${conflictInfo.mergedStart}–${conflictInfo.mergedEnd}`
+                              : `Përdor ${conflictInfo.mergedStart}–${conflictInfo.mergedEnd}`}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setConflictInfo(null)}
+                          >
+                            {t("common.cancel")}
+                          </Button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
