@@ -23,8 +23,9 @@ export interface DoctorReview {
   comment: string | null;
   createdAt: string;
   patientName: string;
-  serviceId: string | null;
-  serviceName: string | null;
+  /** Optional: only populated when the service_id column exists in the remote DB */
+  serviceId?: string | null;
+  serviceName?: string | null;
 }
 
 /** Full public profile for one doctor by slug (RLS: approved only). */
@@ -90,40 +91,35 @@ export async function getDoctorBySlug(
 /** Reviews for a doctor (public read). */
 export async function getDoctorReviews(doctorId: string): Promise<DoctorReview[]> {
   const supabase = createClient();
+
+  // NOTE: service_id is intentionally excluded from the select — migration 0018
+  // (which adds that column) has not been applied to the remote production DB.
+  // Selecting a non-existent column causes a HTTP 400 error from PostgREST.
   const { data, error } = await supabase
     .from("reviews")
-    .select("id, rating, comment, created_at, patient_name, service_id, service:doctor_services(name)")
+    .select("id, rating, comment, created_at, patient_name")
     .eq("doctor_id", doctorId)
     .order("created_at", { ascending: false })
     .limit(20);
 
   if (error) console.error("[getDoctorReviews]", error);
   if (!data) return [];
-  return (data as unknown as Array<{
+
+  const rows = data as unknown as Array<{
     id: string;
     rating: number;
     comment: string | null;
     created_at: string;
     patient_name: string | null;
-    service_id: string | null;
-    service: { name: string } | { name: string }[] | null;
-  }>).map((r) => {
-    const serviceRaw = r.service;
-    const serviceName = serviceRaw
-      ? Array.isArray(serviceRaw)
-        ? serviceRaw[0]?.name ?? null
-        : (serviceRaw as { name: string }).name
-      : null;
-    return {
-      id: r.id,
-      rating: r.rating,
-      comment: r.comment,
-      createdAt: r.created_at,
-      patientName: r.patient_name ?? "Anonim",
-      serviceId: r.service_id,
-      serviceName,
-    };
-  });
+  }>;
+
+  return rows.map((r) => ({
+    id: r.id,
+    rating: r.rating,
+    comment: r.comment,
+    createdAt: r.created_at,
+    patientName: r.patient_name ?? "Anonim",
+  }));
 }
 
 /** Available slots for a doctor over a date range. */
