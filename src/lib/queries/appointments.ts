@@ -17,6 +17,7 @@ export interface AppointmentView {
   patientCity: string | null;
   patientPostalCode: string | null;
   specialty: string | null;
+  hasReview: boolean;
 }
 
 type Side = "patient" | "doctor";
@@ -57,6 +58,21 @@ export async function getMyAppointments(
 
   if (!data) return [];
 
+  // Fetch the set of appointment IDs that already have a review from this user.
+  // Only relevant for the patient side; doctors never see the review button.
+  let reviewedAppointmentIds = new Set<string>();
+  if (side === "patient") {
+    const { data: reviewRows } = await supabase
+      .from("reviews")
+      .select("appointment_id")
+      .eq("patient_id", id);
+    if (reviewRows) {
+      reviewedAppointmentIds = new Set(
+        (reviewRows as Array<{ appointment_id: string }>).map((r) => r.appointment_id),
+      );
+    }
+  }
+
   return (data as unknown as Array<{
     id: string;
     starts_at: string;
@@ -91,6 +107,7 @@ export async function getMyAppointments(
       patientCity: p?.city ?? null,
       patientPostalCode: p?.postal_code ?? null,
       specialty: spec ? (locale === "en" ? spec.name_en : spec.name_sq) : null,
+      hasReview: reviewedAppointmentIds.has(a.id),
     };
   });
 }

@@ -175,7 +175,8 @@
     "submitted": "Review submitted successfully!",
     "alreadyReviewed": "You have already reviewed this appointment.",
     "error": "An error occurred. Please try again.",
-    "leaveReview": "Leave a review"
+    "leaveReview": "Leave a review",
+    "reviewed": "Reviewed"
   },
   "notifications": {
     "label": "Notifications",

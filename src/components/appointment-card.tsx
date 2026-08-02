@@ -10,7 +10,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { ReviewForm } from "@/components/review-form";
 import { cancelAppointment } from "@/actions/booking";
 import { formatInTirane } from "@/lib/datetime";
-import { Calendar, User, Stethoscope, Eye } from "lucide-react";
+import { Calendar, User, Stethoscope, Eye, CheckCircle2 } from "lucide-react";
 import type { AppointmentView } from "@/lib/queries/appointments";
 
 export function AppointmentCard({
@@ -84,7 +84,14 @@ export function AppointmentCard({
           </Button>
         )}
         {perspective === "patient" && appt.status === "completed" && (
-          <ReviewForm appointmentId={appt.id} doctorName={appt.doctorName} />
+          appt.hasReview ? (
+            <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+              <CheckCircle2 className="size-4 text-green-500" />
+              {t("reviews.reviewed")}
+            </span>
+          ) : (
+            <ReviewForm appointmentId={appt.id} doctorName={appt.doctorName} />
+          )
         )}
       </div>
     </Card>

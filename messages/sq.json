@@ -192,7 +192,8 @@
     "submitted": "Vlerësimi u dërgua me sukses!",
     "alreadyReviewed": "Keni vlerësuar tashmë këtë takim.",
     "error": "Ndodhi një gabim. Ju lutem provoni sërish.",
-    "leaveReview": "Lini vlerësim"
+    "leaveReview": "Lini vlerësim",
+    "reviewed": "Vlerësuar"
   },
   "notifications": {
     "label": "Njoftimet",
