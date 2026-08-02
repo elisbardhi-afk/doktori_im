@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 import type { AppointmentStatus } from "@/lib/database.types";
 
 export interface AppointmentView {
@@ -23,6 +24,30 @@ export interface AppointmentView {
 
 type Side = "patient" | "doctor";
 
+/**
+ * Auto-complete any past appointments that are still pending or confirmed.
+ * Uses the service-role client so it can UPDATE regardless of RLS policy.
+ * Runs an idempotent bulk UPDATE: sets status = 'completed' where ends_at is
+ * in the past AND status is pending or confirmed.
+ *
+ * Scoped to the given user column so we only touch the rows we are about to
+ * display — this keeps the write small and avoids a full-table scan.
+ */
+async function autoCompletePastAppointments(
+  column: "patient_id" | "doctor_id",
+  userId: string,
+): Promise<void> {
+  const service = createServiceClient();
+  await service
+    .from("appointments")
+    .update({ status: "completed" })
+    .eq(column, userId)
+    .in("status", ["pending", "confirmed"])
+    .lt("ends_at", new Date().toISOString());
+  // Errors are intentionally swallowed: if this fails the page still renders
+  // with the correct data; the status just won't be updated yet.
+}
+
 /** Appointments for the current user, newest first. */
 export async function getMyAppointments(
   side: Side,
@@ -36,6 +61,10 @@ export async function getMyAppointments(
   if (!id) return [];
 
   const column = side === "patient" ? "patient_id" : "doctor_id";
+
+  // Auto-complete past appointments before fetching so the returned list
+  // already reflects the updated statuses on every page load.
+  await autoCompletePastAppointments(column, id);
 
   let query = supabase
     .from("appointments")
