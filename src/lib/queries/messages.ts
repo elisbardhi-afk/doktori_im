@@ -280,7 +280,7 @@ export async function getDoctorMessageThreads(
         unreadCount,
       };
     })
-    .filter((t) => t.appointmentStartsAt !== "")
+    .filter((t) => t.appointmentStartsAt !== "" && t.lastMessageAt !== null)
     .sort((a, b) => {
       if (!a.lastMessageAt && !b.lastMessageAt) return 0;
       if (!a.lastMessageAt) return 1;
@@ -423,7 +423,7 @@ export async function getPatientMessageThreads(
         unreadCount,
       };
     })
-    .filter((t) => t.appointmentStartsAt !== "")
+    .filter((t) => t.appointmentStartsAt !== "" && t.lastMessageAt !== null)
     .sort((a, b) => {
       if (!a.lastMessageAt && !b.lastMessageAt) return 0;
       if (!a.lastMessageAt) return 1;
