@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import type { MessageThreadRow } from "@/lib/database.types";
+import type { MessageThreadRow, AppointmentStatus } from "@/lib/database.types";
 
 export interface Message {
   id: string;
@@ -191,6 +191,7 @@ export interface DoctorThreadSummary {
   threadId: string;
   appointmentId: string;
   appointmentStartsAt: string;
+  appointmentStatus: AppointmentStatus;
   patientName: string;
   patientAvatarUrl: string | null;
   lastMessageBody: string | null;
@@ -214,7 +215,7 @@ export async function getDoctorMessageThreads(
       `
       id, appointment_id,
       patient:users!message_threads_patient_id_fkey(full_name, avatar_url),
-      appointment:appointments!message_threads_appointment_id_fkey(starts_at),
+      appointment:appointments!message_threads_appointment_id_fkey(starts_at, status),
       messages(id, body, created_at, read_at, sender_id)
     `,
     )
@@ -229,8 +230,8 @@ export async function getDoctorMessageThreads(
       appointment_id: string;
       patient: { full_name: string | null; avatar_url: string | null } | { full_name: string | null; avatar_url: string | null }[];
       appointment:
-        | { starts_at: string }
-        | { starts_at: string }[]
+        | { starts_at: string; status: AppointmentStatus }
+        | { starts_at: string; status: AppointmentStatus }[]
         | null;
       messages: Array<{
         id: string;
@@ -253,7 +254,10 @@ export async function getDoctorMessageThreads(
       const apptRaw = t.appointment;
       const appointmentStartsAt = Array.isArray(apptRaw)
         ? (apptRaw[0]?.starts_at ?? "")
-        : ((apptRaw as { starts_at: string } | null)?.starts_at ?? "");
+        : ((apptRaw as { starts_at: string; status: AppointmentStatus } | null)?.starts_at ?? "");
+      const appointmentStatus: AppointmentStatus = Array.isArray(apptRaw)
+        ? (apptRaw[0]?.status ?? "confirmed")
+        : ((apptRaw as { starts_at: string; status: AppointmentStatus } | null)?.status ?? "confirmed");
 
       const msgs = t.messages ?? [];
       const sorted = [...msgs].sort((a, b) =>
@@ -268,6 +272,7 @@ export async function getDoctorMessageThreads(
         threadId: t.id,
         appointmentId: t.appointment_id,
         appointmentStartsAt,
+        appointmentStatus,
         patientName,
         patientAvatarUrl,
         lastMessageBody: last?.body ?? null,
@@ -288,6 +293,7 @@ export interface PatientThreadSummary {
   threadId: string;
   appointmentId: string;
   appointmentStartsAt: string;
+  appointmentStatus: AppointmentStatus;
   doctorName: string;
   serviceName: string;
   lastMessageBody: string | null;
@@ -305,7 +311,7 @@ export async function getPatientMessageThreads(
     .select(
       `
       id, doctor_id, appointment_id,
-      appointment:appointments!message_threads_appointment_id_fkey(starts_at, service_id),
+      appointment:appointments!message_threads_appointment_id_fkey(starts_at, status, service_id),
       messages(id, body, created_at, read_at, sender_id)
     `,
     )
@@ -332,8 +338,8 @@ export async function getPatientMessageThreads(
   const serviceIds = new Set<string>();
   (threadsData as unknown as Array<{
     appointment:
-      | { starts_at: string; service_id: string | null }
-      | { starts_at: string; service_id: string | null }[]
+      | { starts_at: string; status: AppointmentStatus; service_id: string | null }
+      | { starts_at: string; status: AppointmentStatus; service_id: string | null }[]
       | null;
   }>).forEach((t) => {
     const apptRaw = t.appointment;
@@ -368,8 +374,8 @@ export async function getPatientMessageThreads(
       doctor_id: string;
       appointment_id: string;
       appointment:
-        | { starts_at: string; service_id: string | null }
-        | { starts_at: string; service_id: string | null }[]
+        | { starts_at: string; status: AppointmentStatus; service_id: string | null }
+        | { starts_at: string; status: AppointmentStatus; service_id: string | null }[]
         | null;
       messages: Array<{
         id: string;
@@ -386,7 +392,10 @@ export async function getPatientMessageThreads(
       const apptRaw = t.appointment;
       const appointmentStartsAt = Array.isArray(apptRaw)
         ? (apptRaw[0]?.starts_at ?? "")
-        : ((apptRaw as { starts_at: string } | null)?.starts_at ?? "");
+        : ((apptRaw as { starts_at: string; status: AppointmentStatus; service_id: string | null } | null)?.starts_at ?? "");
+      const appointmentStatus: AppointmentStatus = Array.isArray(apptRaw)
+        ? (apptRaw[0]?.status ?? "confirmed")
+        : ((apptRaw as { starts_at: string; status: AppointmentStatus; service_id: string | null } | null)?.status ?? "confirmed");
 
       const serviceId = Array.isArray(apptRaw)
         ? apptRaw[0]?.service_id ?? null
@@ -406,6 +415,7 @@ export async function getPatientMessageThreads(
         threadId: t.id,
         appointmentId: t.appointment_id,
         appointmentStartsAt,
+        appointmentStatus,
         doctorName,
         serviceName,
         lastMessageBody: last?.body ?? null,

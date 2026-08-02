@@ -146,7 +146,8 @@
     "sent": "Message sent",
     "emptyError": "Message cannot be empty",
     "loadError": "Failed to load messages",
-    "readOnly": "This message is read only"
+    "readOnly": "This message is read only",
+    "cancelledNotice": "This conversation is closed because the appointment was cancelled"
   },
   "auth": {
     "loginTitle": "Welcome back",

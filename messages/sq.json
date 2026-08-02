@@ -163,7 +163,8 @@
     "sent": "Mesazhi u dërgua",
     "emptyError": "Mesazhi nuk mund të jetë bosh",
     "loadError": "Nuk u ngarkuan dot mesazhet",
-    "readOnly": "Ky mesazh është vetëm për lexim"
+    "readOnly": "Ky mesazh është vetëm për lexim",
+    "cancelledNotice": "Ky bisedim është mbyllur sepse takimi u anulua"
   },
   "auth": {
     "loginTitle": "Mirë se erdhët",
