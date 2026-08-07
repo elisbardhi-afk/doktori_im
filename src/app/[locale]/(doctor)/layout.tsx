@@ -35,6 +35,7 @@ export default async function DoctorLayout({
       dashboardHref="/doctor"
       userId={user.id}
       variant="doctor"
+      avatarUrl={user.avatar_url}
     >
       {children}
     </PortalShell>

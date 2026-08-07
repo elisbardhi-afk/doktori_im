@@ -33,6 +33,7 @@ export default async function AdminLayout({
       dashboardHref="/admin"
       userId={user.id}
       variant="admin"
+      avatarUrl={user.avatar_url}
     >
       {children}
     </PortalShell>
