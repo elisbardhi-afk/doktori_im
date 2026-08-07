@@ -124,7 +124,11 @@ export function DoctorMessagesInbox({ threads, currentUserId }: Props) {
                   isLoading={isLoading}
                   currentUserId={currentUserId}
                 />
-                {new Date(thread.appointmentStartsAt) > new Date() ? (
+                {thread.appointmentStatus === "cancelled" ? (
+                  <p className="text-xs text-muted-foreground text-center py-2 border border-border rounded-lg bg-muted/30">
+                    {t("messages.cancelledNotice")}
+                  </p>
+                ) : new Date(thread.appointmentStartsAt) > new Date() ? (
                   <MessageInput
                     threadId={thread.threadId}
                     onSendSuccess={() => handleSendSuccess(thread.threadId)}

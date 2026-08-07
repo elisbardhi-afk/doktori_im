@@ -132,7 +132,8 @@
     "edit": "Edit Appointment",
     "cancel": "Cancel Appointment",
     "cancelled": "Cannot reschedule a cancelled appointment",
-    "reason": "Reason for visit"
+    "reason": "Reason for visit",
+    "service": "Service"
   },
   "messages": {
     "title": "Messages",
@@ -146,7 +147,8 @@
     "sent": "Message sent",
     "emptyError": "Message cannot be empty",
     "loadError": "Failed to load messages",
-    "readOnly": "This message is read only"
+    "readOnly": "This message is read only",
+    "cancelledNotice": "This conversation is closed because the appointment was cancelled"
   },
   "auth": {
     "loginTitle": "Welcome back",
@@ -174,7 +176,8 @@
     "submitted": "Review submitted successfully!",
     "alreadyReviewed": "You have already reviewed this appointment.",
     "error": "An error occurred. Please try again.",
-    "leaveReview": "Leave a review"
+    "leaveReview": "Leave a review",
+    "reviewed": "Reviewed"
   },
   "notifications": {
     "label": "Notifications",

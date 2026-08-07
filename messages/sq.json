@@ -149,7 +149,8 @@
     "edit": "Ndrysho takimin",
     "cancel": "Anulo takimin",
     "cancelled": "Nuk mund të riplanifikoni një takim të anuluar",
-    "reason": "Arsyeja e vizitës"
+    "reason": "Arsyeja e vizitës",
+    "service": "Shërbimi"
   },
   "messages": {
     "title": "Mesazhet",
@@ -163,7 +164,8 @@
     "sent": "Mesazhi u dërgua",
     "emptyError": "Mesazhi nuk mund të jetë bosh",
     "loadError": "Nuk u ngarkuan dot mesazhet",
-    "readOnly": "Ky mesazh është vetëm për lexim"
+    "readOnly": "Ky mesazh është vetëm për lexim",
+    "cancelledNotice": "Ky bisedim është mbyllur sepse takimi u anulua"
   },
   "auth": {
     "loginTitle": "Mirë se erdhët",
@@ -191,7 +193,8 @@
     "submitted": "Vlerësimi u dërgua me sukses!",
     "alreadyReviewed": "Keni vlerësuar tashmë këtë takim.",
     "error": "Ndodhi një gabim. Ju lutem provoni sërish.",
-    "leaveReview": "Lini vlerësim"
+    "leaveReview": "Lini vlerësim",
+    "reviewed": "Vlerësuar"
   },
   "notifications": {
     "label": "Njoftimet",

@@ -3,17 +3,45 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
-/** Add a recurring weekly availability rule for the signed-in doctor. */
+/** Add a recurring weekly availability rule for the signed-in doctor.
+ *  Pass `excludeId` when replacing an existing rule (merge flow) so that rule
+ *  is not counted as an overlap during the server-side guard check. */
 export async function addAvailabilityRule(input: {
   weekday: number;
   startTime: string;
   endTime: string;
+  excludeId?: string;
 }): Promise<{ ok: boolean; error?: string }> {
   const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "AUTH_REQUIRED" };
+
+  // Guard: reject inserts that overlap an existing rule on the same weekday.
+  let query = supabase
+    .from("availability_rules")
+    .select("start_time, end_time")
+    .eq("doctor_id", user.id)
+    .eq("weekday", input.weekday);
+
+  // Exclude the rule being replaced so the merged range doesn't self-conflict.
+  if (input.excludeId) {
+    query = query.neq("id", input.excludeId);
+  }
+
+  const { data: existing } = await query;
+
+  if (existing) {
+    for (const rule of existing) {
+      if (input.startTime < rule.end_time && input.endTime > rule.start_time) {
+        return {
+          ok: false,
+          error: `OVERLAP:${rule.start_time}-${rule.end_time}`,
+        };
+      }
+    }
+  }
 
   const { error } = await supabase.from("availability_rules").insert({
     doctor_id: user.id,

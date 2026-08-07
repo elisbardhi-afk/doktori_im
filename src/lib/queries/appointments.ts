@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 import type { AppointmentStatus } from "@/lib/database.types";
 
 export interface AppointmentView {
@@ -17,9 +18,35 @@ export interface AppointmentView {
   patientCity: string | null;
   patientPostalCode: string | null;
   specialty: string | null;
+  serviceName: string | null;
+  hasReview: boolean;
 }
 
 type Side = "patient" | "doctor";
+
+/**
+ * Auto-complete any past appointments that are still pending or confirmed.
+ * Uses the service-role client so it can UPDATE regardless of RLS policy.
+ * Runs an idempotent bulk UPDATE: sets status = 'completed' where ends_at is
+ * in the past AND status is pending or confirmed.
+ *
+ * Scoped to the given user column so we only touch the rows we are about to
+ * display — this keeps the write small and avoids a full-table scan.
+ */
+async function autoCompletePastAppointments(
+  column: "patient_id" | "doctor_id",
+  userId: string,
+): Promise<void> {
+  const service = createServiceClient();
+  await service
+    .from("appointments")
+    .update({ status: "completed" })
+    .eq(column, userId)
+    .in("status", ["pending", "confirmed"])
+    .lt("ends_at", new Date().toISOString());
+  // Errors are intentionally swallowed: if this fails the page still renders
+  // with the correct data; the status just won't be updated yet.
+}
 
 /** Appointments for the current user, newest first. */
 export async function getMyAppointments(
@@ -35,6 +62,10 @@ export async function getMyAppointments(
 
   const column = side === "patient" ? "patient_id" : "doctor_id";
 
+  // Auto-complete past appointments before fetching so the returned list
+  // already reflects the updated statuses on every page load.
+  await autoCompletePastAppointments(column, id);
+
   let query = supabase
     .from("appointments")
     .select(
@@ -44,7 +75,8 @@ export async function getMyAppointments(
       doctor:doctor_profiles!appointments_doctor_id_fkey(
         slug, full_name,
         doctor_specialties(specialties(name_sq, name_en))
-      )
+      ),
+      service:doctor_services(name)
     `,
     )
     .eq(column, id)
@@ -56,6 +88,21 @@ export async function getMyAppointments(
   const { data } = await query;
 
   if (!data) return [];
+
+  // Fetch the set of appointment IDs that already have a review from this user.
+  // Only relevant for the patient side; doctors never see the review button.
+  let reviewedAppointmentIds = new Set<string>();
+  if (side === "patient") {
+    const { data: reviewRows } = await supabase
+      .from("reviews")
+      .select("appointment_id")
+      .eq("patient_id", id);
+    if (reviewRows) {
+      reviewedAppointmentIds = new Set(
+        (reviewRows as Array<{ appointment_id: string }>).map((r) => r.appointment_id),
+      );
+    }
+  }
 
   return (data as unknown as Array<{
     id: string;
@@ -72,9 +119,11 @@ export async function getMyAppointments(
         specialties: { name_sq: string; name_en: string } | null;
       }>;
     };
+    service: { name: string } | null;
   }>).map((a) => {
     const p = Array.isArray(a.patient) ? a.patient[0] : a.patient;
     const spec = a.doctor?.doctor_specialties?.[0]?.specialties ?? null;
+    const svc = Array.isArray(a.service) ? (a.service[0] ?? null) : a.service;
     return {
       id: a.id,
       startsAt: a.starts_at,
@@ -91,6 +140,8 @@ export async function getMyAppointments(
       patientCity: p?.city ?? null,
       patientPostalCode: p?.postal_code ?? null,
       specialty: spec ? (locale === "en" ? spec.name_en : spec.name_sq) : null,
+      serviceName: svc?.name ?? null,
+      hasReview: reviewedAppointmentIds.has(a.id),
     };
   });
 }

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "@/i18n/navigation";
+import { useRouter, Link } from "@/i18n/navigation";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { ReviewForm } from "@/components/review-form";
 import { cancelAppointment } from "@/actions/booking";
 import { formatInTirane } from "@/lib/datetime";
-import { Calendar, User, Stethoscope } from "lucide-react";
+import { Calendar, User, Stethoscope, Eye, CheckCircle2 } from "lucide-react";
 import type { AppointmentView } from "@/lib/queries/appointments";
 
 export function AppointmentCard({
@@ -70,13 +70,28 @@ export function AppointmentCard({
       </div>
       <div className="flex items-center gap-3">
         <StatusBadge status={appt.status} />
+        {perspective === "patient" && (
+          <Button variant="outline" size="sm" asChild>
+            <Link href={`/patient/appointments/${appt.id}`}>
+              <Eye className="mr-1.5 size-3.5" />
+              {t("appointments.viewDetails")}
+            </Link>
+          </Button>
+        )}
         {isUpcoming && (
           <Button variant="ghost" size="sm" onClick={onCancel} disabled={loading}>
             {t("common.cancel")}
           </Button>
         )}
         {perspective === "patient" && appt.status === "completed" && (
-          <ReviewForm appointmentId={appt.id} doctorName={appt.doctorName} />
+          appt.hasReview ? (
+            <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+              <CheckCircle2 className="size-4 text-green-500" />
+              {t("reviews.reviewed")}
+            </span>
+          ) : (
+            <ReviewForm appointmentId={appt.id} doctorName={appt.doctorName} />
+          )
         )}
       </div>
     </Card>

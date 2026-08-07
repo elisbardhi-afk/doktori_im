@@ -118,10 +118,16 @@ export function AppointmentMessageModal({
           {/* Footer with input */}
           {threadId && !loading && (
             <div className="border-t border-border px-6 py-4">
-              <MessageInput
-                threadId={threadId}
-                onSendSuccess={handleSendSuccess}
-              />
+              {appointment.status === "cancelled" ? (
+                <p className="text-xs text-muted-foreground text-center py-2 border border-border rounded-lg bg-muted/30">
+                  {t("messages.cancelledNotice")}
+                </p>
+              ) : (
+                <MessageInput
+                  threadId={threadId}
+                  onSendSuccess={handleSendSuccess}
+                />
+              )}
             </div>
           )}
         </div>

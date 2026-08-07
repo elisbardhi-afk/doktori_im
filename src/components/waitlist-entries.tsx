@@ -96,6 +96,9 @@ export function WaitlistEntries({ entries }: { entries: WaitlistEntry[] }) {
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex flex-col gap-1">
                     <p className="font-semibold text-foreground">{entry.doctorName}</p>
+                    {entry.serviceName && (
+                      <p className="text-sm text-muted-foreground">{entry.serviceName}</p>
+                    )}
                     {entry.offered_starts_at ? (
                       <>
                         {entry.appointmentStartsAt && (
@@ -162,6 +165,9 @@ export function WaitlistEntries({ entries }: { entries: WaitlistEntry[] }) {
               <CardContent className="flex items-center justify-between gap-2 p-4">
                 <div className="flex flex-col gap-1">
                   <p className="font-semibold text-foreground">{entry.doctorName}</p>
+                  {entry.serviceName && (
+                    <p className="text-sm text-muted-foreground">{entry.serviceName}</p>
+                  )}
                   {entry.appointmentStartsAt && (
                     <p className="text-sm text-muted-foreground">
                       {formatInTirane(entry.appointmentStartsAt)}

@@ -92,12 +92,20 @@ export async function getDoctorBySlug(
 export async function getDoctorReviews(doctorId: string): Promise<DoctorReview[]> {
   const supabase = createClient();
 
-  // NOTE: service_id is intentionally excluded from the select — migration 0018
-  // (which adds that column) has not been applied to the remote production DB.
-  // Selecting a non-existent column causes a HTTP 400 error from PostgREST.
+  // NOTE: reviews.service_id is intentionally NOT selected directly — migration 0018
+  // (which adds that column to reviews) has not been applied to the remote production DB.
+  // Instead, we join through appointment_id → appointments → doctor_services to get the
+  // service name. This works because appointments.service_id IS in production (migration 0004).
+  //
+  // RLS note: appointments are readable by the doctor (doctor_id = auth.uid()), so
+  // service names are visible on the doctor's own reviews page. For anonymous viewers
+  // of the public profile, the appointments join returns null and service name is hidden —
+  // the UI already renders it conditionally so this degrades gracefully.
   const { data, error } = await supabase
     .from("reviews")
-    .select("id, rating, comment, created_at, patient_name")
+    .select(
+      "id, rating, comment, created_at, patient_name, appointments(service_id, doctor_services(name))",
+    )
     .eq("doctor_id", doctorId)
     .order("created_at", { ascending: false })
     .limit(20);
@@ -111,6 +119,10 @@ export async function getDoctorReviews(doctorId: string): Promise<DoctorReview[]
     comment: string | null;
     created_at: string;
     patient_name: string | null;
+    appointments: {
+      service_id: string | null;
+      doctor_services: { name: string } | null;
+    } | null;
   }>;
 
   return rows.map((r) => ({
@@ -119,6 +131,7 @@ export async function getDoctorReviews(doctorId: string): Promise<DoctorReview[]
     comment: r.comment,
     createdAt: r.created_at,
     patientName: r.patient_name ?? "Anonim",
+    serviceName: r.appointments?.doctor_services?.name ?? null,
   }));
 }
 
