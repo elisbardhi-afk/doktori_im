@@ -5,14 +5,17 @@ import { useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import { LogOut, User } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { LogOut } from "lucide-react";
 
 export function UserMenu({
   name,
   dashboardHref,
+  avatarUrl,
 }: {
   name: string;
   dashboardHref: string;
+  avatarUrl?: string | null;
 }) {
   const t = useTranslations();
   const router = useRouter();
@@ -24,11 +27,23 @@ export function UserMenu({
     router.refresh();
   }
 
+  const initials = name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0].toUpperCase())
+    .join("");
+
   return (
     <div className="flex items-center gap-2">
       <Button asChild variant="ghost" size="sm" className="hidden gap-2 sm:flex">
         <Link href={dashboardHref} className="flex items-center gap-2">
-          <User className="size-4 shrink-0" />
+          <Avatar className="size-7 rounded-full">
+            {avatarUrl && <AvatarImage src={avatarUrl} alt={name} />}
+            <AvatarFallback className="rounded-full text-xs">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
           <span className="font-semibold">{name}</span>
         </Link>
       </Button>

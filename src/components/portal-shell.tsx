@@ -14,6 +14,7 @@ export async function PortalShell({
   dashboardHref,
   userId,
   variant,
+  avatarUrl,
   children,
 }: {
   items: NavItem[];
@@ -21,6 +22,7 @@ export async function PortalShell({
   dashboardHref: string;
   userId: string;
   variant: "patient" | "doctor" | "admin";
+  avatarUrl?: string | null;
   children: React.ReactNode;
 }) {
   const t = await getTranslations();
@@ -43,7 +45,7 @@ export async function PortalShell({
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
             <NotificationBell userId={userId} userRole={variant} />
-            <UserMenu name={userName} dashboardHref={dashboardHref} />
+            <UserMenu name={userName} dashboardHref={dashboardHref} avatarUrl={avatarUrl} />
           </div>
         </div>
       </header>
